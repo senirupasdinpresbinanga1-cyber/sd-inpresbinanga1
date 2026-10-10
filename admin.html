@@ -49,6 +49,15 @@
         }
         .btn-sync:hover { background: #138496; }
 
+        .btn-exam-control {
+            padding: 8px 15px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; transition: 0.3s; cursor: pointer; color: white;
+        }
+        .btn-exam-open { background: #28a745; }
+        .btn-exam-open:hover { background: #218838; }
+        .btn-exam-closed { background: #dc3545; }
+        .btn-exam-closed:hover { background: #c82333; }
+
         .content-section { padding: 25px 30px; display: none; }
         .content-section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -69,7 +78,7 @@
         @media(max-width: 1024px) { .dashboard-layout { grid-template-columns: 1fr; } }
 
         .card-table { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;}
-        .card-table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
@@ -94,6 +103,12 @@
             cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s;
         }
         .btn-add-siswa:hover { background: #0b5ed7; }
+
+        .btn-clear-activity {
+            background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 6px;
+            cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s; font-size: 13px;
+        }
+        .btn-clear-activity:hover { background: #c82333; }
         
         .btn-detail { background: #0d6efd; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.3s; }
         .btn-detail:hover { background: #0b5ed7; }
@@ -164,8 +179,9 @@
         <div class="topbar">
             <h1 id="topbar-title">Dashboard Analitik</h1>
             <div class="topbar-right">
+                <button id="examStatusBtn" class="btn-exam-control btn-exam-closed" onclick="toggleExamLock()"><i class="fas fa-lock"></i> Memuat Status...</button>
                 <span style="font-size: 14px; color: #666;">Halo, <b id="adminName">Admin</b></span>
-                <button class="btn-sync" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                <button class="btn-sync" onclick="loadData(true)"><i class="fas fa-sync-alt"></i> Refresh Data</button>
             </div>
         </div>
 
@@ -191,7 +207,10 @@
 
             <div class="dashboard-layout">
                 <div class="card-table">
-                    <h3 style="margin-bottom: 15px; color: #444;">Aktivitas Ujian Terbaru</h3>
+                    <div class="card-table-header">
+                        <h3 style="color: #444;">Aktivitas Ujian Terbaru</h3>
+                        <button class="btn-clear-activity" onclick="clearActivityLogs()"><i class="fas fa-trash-alt"></i> Hapus Semua Aktivitas</button>
+                    </div>
                     <table>
                         <thead><tr><th>Waktu Submit</th><th>NISN</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Status</th></tr></thead>
                         <tbody id="recentActivityBody"></tbody>
@@ -280,6 +299,8 @@
         let globalDataSiswa = []; 
         let globalDataLog = [];
         let globalDataSoal = [];
+        let examStatusGlobal = 'closed';
+        let autoRefreshInterval = null;
 
         const navBtns = document.querySelectorAll('.nav-btn');
         const sections = document.querySelectorAll('.content-section');
@@ -304,8 +325,8 @@
             return '<span class="badge badge-merah">Kurang Baik</span>';
         }
 
-        async function loadData() {
-            showLoader('Mengunduh Data Server...');
+        async function loadData(showLoaderIndicator = false) {
+            if (showLoaderIndicator) showLoader('Menyinkronkan Data Server...');
             const formData = new FormData();
             formData.append('action', 'getAdminData');
 
@@ -317,14 +338,77 @@
                     globalDataSiswa = result.siswa; 
                     globalDataLog = result.log;
                     globalDataSoal = result.soal || [];
+                    examStatusGlobal = result.examStatus || 'closed';
 
                     renderDashboard(globalDataSiswa, globalDataLog);
                     renderLogTable(globalDataLog);
                     renderSiswaTable();
-                } else { alert("Gagal: " + result.message); }
+                    updateExamStatusButton();
+                } else { if(showLoaderIndicator) alert("Gagal: " + result.message); }
             } catch (err) {
-                console.error(err); alert("Koneksi gagal saat menyinkronkan data.");
+                console.error(err); 
+                if(showLoaderIndicator) alert("Koneksi gagal saat menyinkronkan data.");
             } finally {
+                if(showLoaderIndicator) hideLoader();
+            }
+        }
+
+        function updateExamStatusButton() {
+            const btn = document.getElementById('examStatusBtn');
+            if (examStatusGlobal === 'open') {
+                btn.className = 'btn-exam-control btn-exam-open';
+                btn.innerHTML = '<i class="fas fa-unlock"></i> Ujian Terbuka (Buka Kunci)';
+            } else {
+                btn.className = 'btn-exam-control btn-exam-closed';
+                btn.innerHTML = '<i class="fas fa-lock"></i> Ujian Tertutup (Tutup Kunci)';
+            }
+        }
+
+        async function toggleExamLock() {
+            let targetStatus = examStatusGlobal === 'open' ? 'closed' : 'open';
+            let confirmMsg = targetStatus === 'open' ? 'Buka kunci ujian? Siswa dapat melanjutkan login hingga halaman siap ujian.' : 'Tutup kunci ujian? Siswa akan dikunci kembali ke status sedang memuat soal.';
+            
+            if(!confirm(confirmMsg)) return;
+
+            showLoader('Mengubah Status Ujian...');
+            const formData = new FormData();
+            formData.append('action', 'setExamStatus');
+            formData.append('status', targetStatus);
+
+            try {
+                const res = await fetch(scriptURL, { method: 'POST', body: formData });
+                const result = await res.json();
+                if(result.status === 'success') {
+                    examStatusGlobal = targetStatus;
+                    updateExamStatusButton();
+                } else {
+                    alert("Gagal mengubah status: " + result.message);
+                }
+            } catch(e) {
+                alert("Kesalahan koneksi jaringan.");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function clearActivityLogs() {
+            if(!confirm('Apakah Anda yakin ingin menghapus SEMUA data Aktivitas Ujian Terbaru? Tindakan ini tidak dapat dibatalkan.')) return;
+
+            showLoader('Menghapus Data Aktivitas...');
+            const formData = new FormData();
+            formData.append('action', 'clearLogs');
+
+            try {
+                const res = await fetch(scriptURL, { method: 'POST', body: formData });
+                const result = await res.json();
+                if(result.status === 'success') {
+                    loadData(true);
+                } else {
+                    alert("Gagal menghapus aktivitas: " + result.message);
+                    hideLoader();
+                }
+            } catch(e) {
+                alert("Kesalahan jaringan.");
                 hideLoader();
             }
         }
@@ -507,7 +591,7 @@
                 <td><input type="text" class="edit-input new-kelas" placeholder="Misal: Kelas A"></td>
                 <td style="text-align: center;">
                     <button class="action-btn btn-save" style="display:inline-block;" onclick="saveNewSiswa()" title="Simpan"><i class="fas fa-check"></i></button>
-                    <button class="action-btn btn-cancel" style="display:inline-block;" onclick="loadData()" title="Batal"><i class="fas fa-times"></i></button>
+                    <button class="action-btn btn-cancel" style="display:inline-block;" onclick="loadData(true)" title="Batal"><i class="fas fa-times"></i></button>
                 </td>
             `;
             tbody.insertBefore(newRow, tbody.firstChild);
@@ -543,7 +627,7 @@
             try {
                 const res = await fetch(scriptURL, { method: 'POST', body: formData });
                 const result = await res.json();
-                if(result.status === 'success') loadData();
+                if(result.status === 'success') loadData(true);
                 else { alert("Gagal: " + result.message); hideLoader(); }
             } catch (e) { alert("Error koneksi."); hideLoader(); }
         }
@@ -566,7 +650,7 @@
             try {
                 const res = await fetch(scriptURL, { method: 'POST', body: formData });
                 const result = await res.json();
-                if(result.status === 'success') loadData();
+                if(result.status === 'success') loadData(true);
                 else { alert("Gagal: " + result.message); hideLoader(); }
             } catch (e) { alert("Error koneksi."); hideLoader(); }
         }
@@ -582,7 +666,7 @@
             try {
                 const res = await fetch(scriptURL, { method: 'POST', body: formData });
                 const result = await res.json();
-                if(result.status === 'success') loadData();
+                if(result.status === 'success') loadData(true);
                 else { alert("Gagal: " + result.message); hideLoader(); }
             } catch (e) { alert("Error koneksi."); hideLoader(); }
         }
@@ -591,7 +675,11 @@
             if(confirm('Yakin ingin keluar?')) { localStorage.clear(); window.location.href = 'index.html'; }
         }
 
-        window.onload = loadData;
+        window.onload = function() {
+            loadData(true);
+            // Refresh data otomatis setiap 10 detik tanpa loader mengganggu
+            autoRefreshInterval = setInterval(() => { loadData(false); }, 10000);
+        };
     </script>
 </body>
 </html>
