@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin TKA - SD Inpres Binanga 1</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f4f7f6; display: flex; height: 100vh; overflow: hidden; }
+
+        .sidebar { width: 260px; background: #0d47a1; color: white; display: flex; flex-direction: column; flex-shrink: 0; z-index: 50; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header img { width: 60px; border-radius: 50%; background: white; padding: 5px; margin-bottom: 10px; }
+        .sidebar-header h2 { font-size: 16px; letter-spacing: 1px; }
+
+        .nav-links { flex: 1; padding: 20px 0; }
+        .nav-links li { list-style: none; }
+        .nav-links a {
+            display: flex; align-items: center; padding: 15px 25px; color: #bbdefb;
+            text-decoration: none; font-weight: 500; transition: 0.3s; gap: 15px;
+        }
+        .nav-links a:hover, .nav-links a.active { background: #1565c0; color: white; border-left: 4px solid #64b5f6; }
+
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .btn-logout {
+            width: 100%; padding: 10px; background: #ff4757; color: white; border: none;
+            border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+        .btn-logout:hover { background: #ff6b81; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+        
+        .topbar {
+            background: white; padding: 15px 30px; display: flex; justify-content: space-between;
+            align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10;
+        }
+        .topbar h1 { font-size: 20px; color: #333; }
+        .topbar-right { display: flex; gap: 15px; align-items: center; }
+
+        .btn-sync {
+            background: #17a2b8; color: white; padding: 8px 15px; text-decoration: none; border: none;
+            border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+            transition: 0.3s; cursor: pointer;
+        }
+        .btn-sync:hover { background: #138496; }
+
+        .content-section { padding: 25px 30px; display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card {
+            background: white; padding: 20px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 20px;
+        }
+        .stat-icon {
+            width: 55px; height: 55px; border-radius: 12px; display: flex;
+            justify-content: center; align-items: center; font-size: 22px; color: white; flex-shrink: 0;
+        }
+        .stat-info h3 { font-size: 26px; color: #333; line-height: 1; margin-bottom: 5px; }
+        .stat-info p { color: #888; font-size: 12px; text-transform: uppercase; font-weight: 600; }
+
+        .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media(max-width: 1024px) { .dashboard-layout { grid-template-columns: 1fr; } }
+
+        .card-table { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;}
+        .card-table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { color: #666; font-weight: 600; background: #f8f9fa; }
+        tr:hover { background-color: #f1f4f8; }
+        
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; color: white; display: inline-block; text-align: center;}
+        .badge-hijau { background: #28a745; }
+        .badge-kuning { background: #ffc107; color: #333; }
+        .badge-orange { background: #fd7e14; }
+        .badge-merah { background: #dc3545; }
+
+        .edit-input { width: 100%; padding: 8px; border: 1px solid #0d6efd; border-radius: 4px; font-size: 14px; outline: none; }
+        .action-btn { background: none; border: none; cursor: pointer; padding: 5px 8px; border-radius: 4px; transition: 0.2s; font-size: 15px; margin-right: 4px;}
+        .btn-edit { color: #0d6efd; } .btn-edit:hover { background: #e9ecef; }
+        .btn-delete { color: #dc3545; } .btn-delete:hover { background: #f8d7da; }
+        .btn-save { color: #28a745; display: none; } .btn-save:hover { background: #d4edda; }
+        .btn-cancel { color: #6c757d; display: none; } .btn-cancel:hover { background: #e2e3e5; }
+        
+        .btn-add-siswa {
+            background: #0d6efd; color: white; border: none; padding: 8px 15px; border-radius: 6px;
+            cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s;
+        }
+        .btn-add-siswa:hover { background: #0b5ed7; }
+        
+        .btn-detail { background: #0d6efd; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.3s; }
+        .btn-detail:hover { background: #0b5ed7; }
+
+        #loader {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 1000; color: #0d6efd; display: none;
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 2000; display: none;
+            justify-content: center; align-items: center; padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white; width: 100%; max-width: 900px; max-height: 90vh;
+            border-radius: 12px; overflow-y: auto; padding: 30px; position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: fadeIn 0.3s ease;
+        }
+        .btn-close-modal {
+            position: absolute; top: 20px; right: 20px; background: #dc3545; color: white;
+            border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; font-size: 16px;
+        }
+        .btn-close-modal:hover { background: #c82333; }
+        
+        .detail-header {
+            background: #f8f9fa; padding: 15px 20px; border-radius: 8px;
+            border-left: 5px solid #0d6efd; display: flex; flex-direction: column; gap: 6px;
+        }
+        .detail-header h3 { color: #333; font-size: 18px; }
+        .detail-header p { font-size: 14px; color: #555; }
+        
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; align-items: center;}
+        @media(max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } }
+        .chart-container-modal { background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee;}
+        
+        .table-detail-soal th, .table-detail-soal td { font-size: 13px; padding: 10px;}
+        .text-benar { color: #28a745; font-weight: bold; }
+        .text-salah { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/60/ffffff/000000?text=Logo'">
+            <h2>Admin CBT</h2>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="nav-btn active" data-target="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="#" class="nav-btn" data-target="hasil"><i class="fas fa-file-alt"></i> Rekap Hasil Ujian</a></li>
+            <li><a href="#" class="nav-btn" data-target="siswa"><i class="fas fa-users-cog"></i> Kelola Data Siswa</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="loader">
+            <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 15px;"></i>
+            <h3 id="loaderText">Menyinkronkan Data...</h3>
+        </div>
+
+        <div class="topbar">
+            <h1 id="topbar-title">Dashboard Analitik</h1>
+            <div class="topbar-right">
+                <span style="font-size: 14px; color: #666;">Halo, <b id="adminName">Admin</b></span>
+                <button class="btn-sync" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+            </div>
+        </div>
+
+        <div id="dashboard" class="content-section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #0d6efd;"><i class="fas fa-users"></i></div>
+                    <div class="stat-info"><h3 id="totSiswa">0</h3><p>Total Siswa</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #28a745;"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info"><h3 id="totSelesai">0</h3><p>Sudah Ujian</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #6c757d;"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="stat-info"><h3 id="totBelum">0</h3><p>Belum Ujian</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #17a2b8;"><i class="fas fa-star"></i></div>
+                    <div class="stat-info"><h3 id="avgNilai">0</h3><p>Rata-rata Kelas</p></div>
+                </div>
+            </div>
+
+            <div class="dashboard-layout">
+                <div class="card-table">
+                    <h3 style="margin-bottom: 15px; color: #444;">Aktivitas Ujian Terbaru</h3>
+                    <table>
+                        <thead><tr><th>Waktu Submit</th><th>NISN</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Status</th></tr></thead>
+                        <tbody id="recentActivityBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="card-table" style="display: flex; flex-direction: column; align-items: center;">
+                    <h3 style="margin-bottom: 15px; color: #444; width: 100%;">Statistik Jawaban (Rata-rata)</h3>
+                    <div style="width: 80%; margin: auto;">
+                        <canvas id="nilaiChart"></canvas>
+                    </div>
+                    <p style="font-size: 12px; color: #888; margin-top: 15px; text-align: center;">Akumulasi Jawaban Benar (Biru) vs Salah (Merah)</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="hasil" class="content-section">
+            <div class="card-table">
+                <div class="card-table-header">
+                    <h3 style="color: #444;">Rekapitulasi Nilai Akhir & Analisis</h3>
+                </div>
+                <table>
+                    <thead><tr><th>Waktu Submit</th><th>NISN</th><th>Nama Siswa</th><th>Kelas</th><th>Nilai</th><th>Status</th><th style="text-align:center;">Analisis</th></tr></thead>
+                    <tbody id="hasilUjianBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="siswa" class="content-section">
+            <div class="card-table">
+                <div class="card-table-header">
+                    <h3 style="color: #444;">Kelola Database Siswa</h3>
+                    <button class="btn-add-siswa" onclick="addNewRow()"><i class="fas fa-plus"></i> Tambah Siswa Baru</button>
+                </div>
+                <p style="font-size: 13px; color: #888; margin-bottom: 15px;">*Perubahan data disini langsung tersimpan ke Google Sheets. Password default siswa adalah <b>2026</b>.</p>
+                <table>
+                    <thead><tr><th>No</th><th>NISN (Username)</th><th>Nama Lengkap</th><th>Kelas</th><th style="text-align: center;">Aksi</th></tr></thead>
+                    <tbody id="siswaBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DETAIL UJIAN SISWA -->
+    <div id="detailModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="btn-close-modal" onclick="closeDetailModal()"><i class="fas fa-times"></i></button>
+            <h2 style="color: #0d47a1; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">Laporan Analisis Hasil Ujian</h2>
+            
+            <div class="detail-grid">
+                <div class="detail-header" id="detailHeaderContent"></div>
+                <div class="chart-container-modal">
+                    <h4 style="text-align: center; color: #444; margin-bottom: 10px; font-size: 14px;">Grafik Akumulasi Jawaban</h4>
+                    <div style="height: 180px; display: flex; justify-content: center;">
+                        <canvas id="detailStudentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: #444; margin-bottom: 15px; font-size: 16px;"><i class="fas fa-list"></i> Rincian Butir Soal</h3>
+            <table class="table-detail-soal">
+                <thead>
+                    <tr>
+                        <th width="5%">No</th>
+                        <th width="50%">Pertanyaan Soal</th>
+                        <th width="15%">Kunci Asli</th>
+                        <th width="15%">Jawaban Siswa</th>
+                        <th width="15%">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="detailSoalBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxVhowRAW6F_fXDIrMfzDghiqswer4QXY4SVr49MKYLKFw0Q__ODW9nHXkorpuBAMyMCA/exec';
+
+        if (localStorage.getItem('isLoggedIn') !== 'true' || localStorage.getItem('role') !== 'admin') {
+            window.location.href = 'index.html';
+        }
+        document.getElementById('adminName').innerText = localStorage.getItem('namaSiswa') || 'Admin';
+
+        let myChart = null;
+        let studentChart = null;
+        let globalDataSiswa = []; 
+        let globalDataLog = [];
+        let globalDataSoal = [];
+
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const sections = document.querySelectorAll('.content-section');
+        const titles = { 'dashboard': 'Dashboard Analitik', 'hasil': 'Rekapitulasi Hasil Ujian', 'siswa': 'Kelola Database Siswa (Live)' };
+
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navBtns.forEach(b => b.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                btn.classList.add('active');
+                const target = btn.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
+                document.getElementById('topbar-title').innerText = titles[target];
+            });
+        });
+
+        function getStatusBadge(nilai) {
+            if (nilai >= 75) return '<span class="badge badge-hijau">Sangat Baik</span>';
+            if (nilai >= 50) return '<span class="badge badge-kuning">Baik</span>';
+            if (nilai >= 25) return '<span class="badge badge-orange">Cukup Baik</span>';
+            return '<span class="badge badge-merah">Kurang Baik</span>';
+        }
+
+        async function loadData() {
+            showLoader('Mengunduh Data Server...');
+            const formData = new FormData();
+            formData.append('action', 'getAdminData');
+
+            try {
+                const response = await fetch(scriptURL, { method: 'POST', body: formData });
+                const result = await response.json();
+
+                if(result.status === 'success') {
+                    globalDataSiswa = result.siswa; 
+                    globalDataLog = result.log;
+                    globalDataSoal = result.soal || [];
+
+                    renderDashboard(globalDataSiswa, globalDataLog);
+                    renderLogTable(globalDataLog);
+                    renderSiswaTable();
+                } else { alert("Gagal: " + result.message); }
+            } catch (err) {
+                console.error(err); alert("Koneksi gagal saat menyinkronkan data.");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function showLoader(text) {
+            document.getElementById('loaderText').innerText = text;
+            document.getElementById('loader').style.display = 'flex';
+        }
+        function hideLoader() { document.getElementById('loader').style.display = 'none'; }
+
+        function renderDashboard(siswa, log) {
+            document.getElementById('totSiswa').innerText = siswa.length;
+            document.getElementById('totSelesai').innerText = log.length;
+            document.getElementById('totBelum').innerText = siswa.length - log.length;
+
+            let rataRata = 0;
+            if (log.length > 0) {
+                let totalNilai = log.reduce((sum, r) => sum + parseFloat(r.nilai_final || r.nilai_akhir || 0), 0);
+                rataRata = (totalNilai / log.length).toFixed(2);
+                document.getElementById('avgNilai').innerText = rataRata;
+            } else { document.getElementById('avgNilai').innerText = "0"; }
+
+            const recent = log.slice(-5).reverse();
+            let tbody = '';
+            recent.forEach(r => {
+                let dateStr = new Date(r.waktu).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
+                let n = parseFloat(r.nilai_final || r.nilai_akhir || 0);
+                tbody += `<tr><td>${dateStr}</td><td>${r.nisn}</td><td>${r.nama}</td><td>${r.kelas}</td><td><b>${n}</b></td><td>${getStatusBadge(n)}</td></tr>`;
+            });
+            document.getElementById('recentActivityBody').innerHTML = tbody || '<tr><td colspan="6" style="text-align:center;">Belum ada aktivitas.</td></tr>';
+
+            renderClassChart(rataRata);
+        }
+
+        function renderClassChart(rataRataBenar) {
+            let benar = parseFloat(rataRataBenar);
+            let salah = 100 - benar;
+            const ctx = document.getElementById('nilaiChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Benar (%)', 'Salah (%)'],
+                    datasets: [{
+                        data: [benar, salah],
+                        backgroundColor: ['#0d6efd', '#dc3545'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function renderLogTable(log) {
+            let tbody = '';
+            log.slice().reverse().forEach((r, reversedIndex) => {
+                let originalIndex = log.length - 1 - reversedIndex;
+                let dateStr = new Date(r.waktu).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+                let n = parseFloat(r.nilai_final || r.nilai_akhir || 0);
+                
+                tbody += `
+                    <tr>
+                        <td>${dateStr}</td><td>${r.nisn}</td><td>${r.nama}</td><td>${r.kelas}</td>
+                        <td style="font-size:16px; font-weight:bold; color:#0d47a1;">${n}</td>
+                        <td>${getStatusBadge(n)}</td>
+                        <td style="text-align:center;">
+                            <button class="btn-detail" onclick="openDetailModal(${originalIndex})">
+                                <i class="fas fa-eye"></i> Detail Analisis
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('hasilUjianBody').innerHTML = tbody || '<tr><td colspan="7" style="text-align:center;">Belum ada data ujian yang masuk.</td></tr>';
+        }
+
+        function openDetailModal(logIndex) {
+            const data = globalDataLog[logIndex];
+            const nilai = parseFloat(data.nilai_final || data.nilai_akhir || 0);
+            
+            document.getElementById('detailHeaderContent').innerHTML = `
+                <h3><i class="fas fa-user-graduate"></i> ${data.nama}</h3>
+                <p><b>NISN:</b> ${data.nisn} &nbsp; | &nbsp; <b>Kelas:</b> ${data.kelas}</p>
+                <p><b>Skor Akhir:</b> <span style="font-size:18px; font-weight:bold; color:#0d47a1;">${nilai}</span></p>
+                <p><b>Kategori Passing Grade:</b> ${getStatusBadge(nilai)}</p>
+            `;
+
+            let jawabanSiswaObj = {};
+            try {
+                if (data.raw_answers) jawabanSiswaObj = JSON.parse(data.raw_answers);
+            } catch (e) { console.error(e); }
+
+            let totalBenar = 0;
+            let totalSalah = 0;
+            let tbodySoal = '';
+
+            if (globalDataSoal.length > 0) {
+                globalDataSoal.forEach((soal, index) => {
+                    let idSoal = soal.id.toString();
+                    let kunciAsli = soal.kunci ? soal.kunci.toString().trim().toUpperCase() : "-";
+                    let jawabSiswa = jawabanSiswaObj[idSoal] ? jawabanSiswaObj[idSoal].toUpperCase() : "KOSONG";
+                    
+                    let isBenar = (jawabSiswa === kunciAsli);
+                    if (isBenar) totalBenar++; else totalSalah++;
+
+                    let statusTeks = isBenar ? '<span class="text-benar"><i class="fas fa-check"></i> Benar</span>' : '<span class="text-salah"><i class="fas fa-times"></i> Salah</span>';
+                    let ringkasTeks = soal.text.length > 80 ? soal.text.substring(0, 80) + '...' : soal.text;
+
+                    tbodySoal += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${ringkasTeks}</td>
+                            <td style="font-weight:bold;">${kunciAsli}</td>
+                            <td style="color:${isBenar ? '#28a745' : '#dc3545'}; font-weight:bold;">${jawabSiswa}</td>
+                            <td>${statusTeks}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                tbodySoal = `<tr><td colspan="5" style="text-align:center;">Data rincian bank soal belum dimuat.</td></tr>`;
+                totalBenar = nilai; totalSalah = 100 - nilai;
+            }
+
+            document.getElementById('detailSoalBody').innerHTML = tbodySoal;
+            renderStudentChart(totalBenar, totalSalah);
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeDetailModal() { document.getElementById('detailModal').style.display = 'none'; }
+
+        function renderStudentChart(benar, salah) {
+            const ctx = document.getElementById('detailStudentChart').getContext('2d');
+            if (studentChart) studentChart.destroy();
+
+            studentChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Benar', 'Salah / Kosong'],
+                    datasets: [{
+                        data: [benar, salah],
+                        backgroundColor: ['#0d6efd', '#dc3545'],
+                        borderWidth: 1, borderColor: '#fff'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+        }
+
+        function renderSiswaTable() {
+            let tbody = '';
+            globalDataSiswa.forEach((s, index) => {
+                let realRow = index + 2; 
+                tbody += `
+                    <tr id="row-${realRow}">
+                        <td>${index + 1}</td>
+                        <td><span class="display-text">${s.nisn}</span><input type="text" class="edit-input" style="display:none;" value="${s.nisn}"></td>
+                        <td><span class="display-text">${s.nama}</span><input type="text" class="edit-input" style="display:none;" value="${s.nama}"></td>
+                        <td><span class="display-text">${s.kelas}</span><input type="text" class="edit-input" style="display:none;" value="${s.kelas}"></td>
+                        <td style="text-align: center;">
+                            <button class="action-btn btn-edit" onclick="enableEditMode(${realRow})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn btn-delete" onclick="deleteSiswa(${realRow}, '${s.nama}')" title="Hapus"><i class="fas fa-trash-alt"></i></button>
+                            <button class="action-btn btn-save" onclick="saveEdit(${realRow})" title="Simpan"><i class="fas fa-check"></i></button>
+                            <button class="action-btn btn-cancel" onclick="cancelEdit(${realRow})" title="Batal"><i class="fas fa-times"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('siswaBody').innerHTML = tbody;
+        }
+
+        function addNewRow() {
+            let tbody = document.getElementById('siswaBody');
+            let newRow = document.createElement('tr');
+            newRow.id = "row-new";
+            newRow.innerHTML = `
+                <td>-</td>
+                <td><input type="text" class="edit-input new-nisn" placeholder="NISN baru"></td>
+                <td><input type="text" class="edit-input new-nama" placeholder="Nama Lengkap"></td>
+                <td><input type="text" class="edit-input new-kelas" placeholder="Misal: Kelas A"></td>
+                <td style="text-align: center;">
+                    <button class="action-btn btn-save" style="display:inline-block;" onclick="saveNewSiswa()" title="Simpan"><i class="fas fa-check"></i></button>
+                    <button class="action-btn btn-cancel" style="display:inline-block;" onclick="loadData()" title="Batal"><i class="fas fa-times"></i></button>
+                </td>
+            `;
+            tbody.insertBefore(newRow, tbody.firstChild);
+        }
+
+        function enableEditMode(rowId) {
+            let row = document.getElementById(`row-${rowId}`);
+            row.querySelectorAll('.display-text').forEach(d => d.style.display = 'none');
+            row.querySelectorAll('.edit-input').forEach(i => i.style.display = 'inline-block');
+            row.querySelector('.btn-edit').style.display = 'none';
+            row.querySelector('.btn-delete').style.display = 'none';
+            row.querySelector('.btn-save').style.display = 'inline-block';
+            row.querySelector('.btn-cancel').style.display = 'inline-block';
+        }
+
+        function cancelEdit(rowId) { renderSiswaTable(); }
+
+        async function saveNewSiswa() {
+            let row = document.getElementById('row-new');
+            let nisn = row.querySelector('.new-nisn').value.trim();
+            let nama = row.querySelector('.new-nama').value.trim();
+            let kelas = row.querySelector('.new-kelas').value.trim();
+
+            if (!nisn || !nama || !kelas) { alert("Semua kolom harus diisi!"); return; }
+
+            showLoader('Menyimpan Siswa Baru...');
+            const formData = new FormData();
+            formData.append('action', 'createSiswa');
+            formData.append('nisn', nisn);
+            formData.append('nama', nama);
+            formData.append('kelas', kelas);
+
+            try {
+                const res = await fetch(scriptURL, { method: 'POST', body: formData });
+                const result = await res.json();
+                if(result.status === 'success') loadData();
+                else { alert("Gagal: " + result.message); hideLoader(); }
+            } catch (e) { alert("Error koneksi."); hideLoader(); }
+        }
+
+        async function saveEdit(rowId) {
+            let row = document.getElementById(`row-${rowId}`);
+            let inputs = row.querySelectorAll('.edit-input');
+            let nisnBaru = inputs[0].value.trim();
+            let namaBaru = inputs[1].value.trim();
+            let kelasBaru = inputs[2].value.trim();
+
+            showLoader('Memperbarui Siswa...');
+            const formData = new FormData();
+            formData.append('action', 'updateSiswa');
+            formData.append('rowId', rowId); 
+            formData.append('nisn', nisnBaru);
+            formData.append('nama', namaBaru);
+            formData.append('kelas', kelasBaru);
+
+            try {
+                const res = await fetch(scriptURL, { method: 'POST', body: formData });
+                const result = await res.json();
+                if(result.status === 'success') loadData();
+                else { alert("Gagal: " + result.message); hideLoader(); }
+            } catch (e) { alert("Error koneksi."); hideLoader(); }
+        }
+
+        async function deleteSiswa(rowId, namaSiswa) {
+            if(!confirm(`Hapus permanen siswa: ${namaSiswa}?`)) return;
+
+            showLoader('Menghapus Siswa...');
+            const formData = new FormData();
+            formData.append('action', 'deleteSiswa');
+            formData.append('rowId', rowId);
+
+            try {
+                const res = await fetch(scriptURL, { method: 'POST', body: formData });
+                const result = await res.json();
+                if(result.status === 'success') loadData();
+                else { alert("Gagal: " + result.message); hideLoader(); }
+            } catch (e) { alert("Error koneksi."); hideLoader(); }
+        }
+
+        function logout() {
+            if(confirm('Yakin ingin keluar?')) { localStorage.clear(); window.location.href = 'index.html'; }
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
