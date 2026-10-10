@@ -231,7 +231,6 @@
 
                 <div class="input-group">
                     <i class="fas fa-lock icon-left"></i>
-                    <!-- Placeholder diganti untuk memberi petunjuk bahwa password default adalah 2026 -->
                     <input type="password" id="password" placeholder="Password (Gunakan '2026')" required>
                     <i class="fas fa-eye toggle-password" id="toggleBtn" onclick="togglePasswordVisibility()"></i>
                 </div>
@@ -247,11 +246,7 @@
     </div>
 
     <script>
-        // =========================================================================
-        // URL GOOGLE APPS SCRIPT ANDA (JANGAN DIUBAH LAGI JIKA SUDAH BENAR)
-        // =========================================================================
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxVhowRAW6F_fXDIrMfzDghiqswer4QXY4SVr49MKYLKFw0Q__ODW9nHXkorpuBAMyMCA/exec'; 
-        // =========================================================================
 
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById("password");
@@ -277,18 +272,15 @@
             const nisn = document.getElementById("username").value.trim();
             let password = document.getElementById("password").value.trim();
 
-            // Ubah tombol jadi status loading agar user tidak klik berkali-kali
             btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i> Memeriksa...';
             btnLogin.disabled = true;
 
-            // Proses Fetch Data ke Google Apps Script (Metode POST)
             const formData = new FormData();
             formData.append('nisn', nisn);
             formData.append('password', password);
 
             fetch(scriptURL, { method: 'POST', body: formData })
                 .then(response => {
-                    // Cek jika response tidak ok (misalnya karena CORS atau error server)
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
@@ -299,21 +291,18 @@
                     btnLogin.disabled = false;
 
                     if (data.status === 'success') {
-                        // Jika berhasil, simpan data sesi ke localStorage
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('nisnSiswa', nisn);      
                         localStorage.setItem('namaSiswa', data.nama);
                         localStorage.setItem('kelasSiswa', data.kelas);
-                        localStorage.setItem('role', data.role); // 'siswa' atau 'admin'
+                        localStorage.setItem('role', data.role); 
 
-                        // Redirect ke halaman yang sesuai
                         if (data.role === 'admin') {
                             window.location.href = 'admin.html';
                         } else {
                             window.location.href = 'ujian.html';
                         }
                     } else {
-                        // Jika gagal (password/nisn salah)
                         alert("Login Gagal: " + data.message);
                     }
                 })
