@@ -845,6 +845,7 @@
             }
         }
 
+        // Peringatan dan paksaan fullscreen tanpa batasan setiap kali mencoba mengecilkan layar
         document.addEventListener("fullscreenchange", function() {
             if (!document.fullscreenElement && currentUser && !currentUser.isAdmin && currentPacket) {
                 alert("PERINGATAN: Anda tidak diizinkan mengecilkan layar atau keluar dari mode ujian!");
@@ -878,7 +879,6 @@
 
             const student = studentsList.find(s => s.nisn === nisn);
             if (student && pass === '2026') {
-                // Cek apakah siswa sudah pernah mengerjakan/login dan datanya sudah masuk
                 const studentData = appData.results[student.nisn];
                 if (studentData && Object.keys(studentData.scores || {}).length > 0) {
                     alert("Akun ini sudah pernah digunakan untuk ujian dan data nilainya sudah masuk! Anda tidak bisa login kembali kecuali di-reset oleh Panitia Admin.");
@@ -1280,7 +1280,6 @@
                 tbody.appendChild(tr);
             });
 
-            // Grafik lingkaran merah sebagai background tetap, ditutupi biru secara proporsional
             renderChart(answeredCount, totalPossibleSlots);
         }
 
