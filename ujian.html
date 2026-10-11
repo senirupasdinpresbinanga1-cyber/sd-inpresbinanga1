@@ -165,4 +165,506 @@
         .number-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 12px; }
         .btn-num {
             width: 100%; aspect-ratio: 1; border: 2px solid #cbd5e1; background: white; color: #475569;
-            border-radius: 10px; font-size: 16px; font-weight:
+            border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .btn-num:hover { border-color: #0d6efd; color: #0d6efd; }
+        .btn-num.active { border-color: #0d6efd; background: #eff6ff; color: #0d6efd; transform: scale(1.1); }
+        .btn-num.answered { background: #28a745; color: white; border-color: #28a745; }
+        .btn-num.answered.active { background: #218838; border-color: #1e7e34; }
+
+        .sidebar-footer { padding: 25px; border-top: 2px solid #f1f5f9; background: #f8fafc; border-radius: 0 0 16px 16px; }
+        .btn-submit-exam {
+            width: 100%; background: #10b981; color: white; border: none; padding: 15px;
+            border-radius: 10px; font-weight: 700; font-size: 18px; cursor: pointer; transition: 0.3s;
+        }
+        .btn-submit-exam:hover { background: #059669; }
+
+        /* ================= HASIL UJIAN SCREEN ================= */
+        #result-container {
+            display: none; justify-content: center; align-items: center; width: 100vw; height: 100vh;
+            background: #f8fafc; position: fixed; top: 0; left: 0; z-index: 1000; overflow-y: auto; padding: 30px;
+        }
+        .result-card {
+            background: white; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            padding: 50px; max-width: 600px; width: 100%; text-align: center; margin: auto;
+        }
+        .result-info { background: #f1f5f9; border-left: 6px solid #0d6efd; padding: 20px; border-radius: 12px; text-align: left; margin: 25px 0;}
+        .result-info p { margin-bottom: 10px; font-size: 16px; color: #334155;}
+        
+        .badge { padding: 8px 16px; border-radius: 30px; font-size: 14px; font-weight: 700; color: white; display: inline-block;}
+        .badge-hijau { background: #10b981; } .badge-kuning { background: #f59e0b; color: #fff; }
+        .badge-orange { background: #f97316; } .badge-merah { background: #ef4444; }
+
+    </style>
+</head>
+<body>
+
+    <!-- OVERLAY MULAI UJIAN (LAYAR PERTAMA) -->
+    <div id="start-overlay" class="full-overlay">
+        <div class="card">
+            <h2 style="margin-bottom: 10px; color: #0d47a1; font-size: 32px;"><i class="fas fa-desktop"></i> <span id="startOverlayTitle">Sedang Memuat Soal...</span></h2>
+            <p id="startOverlayDesc" style="color: #64748b; font-size: 16px; margin-bottom: 30px; line-height: 1.6;">
+                Sistem akan memeriksa status ujian dan masuk ke mode layar penuh (Full Screen) mutlak.<br>
+                <b>Dilarang keras keluar aplikasi atau membuka tab lain selama ujian berlangsung.</b>
+            </p>
+            <button class="btn-start" id="btnMulaiUjian" onclick="showWaitingRoom()" disabled>
+                <i class="fas fa-spinner fa-spin"></i> Memeriksa Status Ujian...
+            </button>
+        </div>
+    </div>
+
+    <!-- OVERLAY WAITING ROOM (MENUNGGU PANITIA) -->
+    <div id="waiting-modal" class="full-overlay" style="display: none; background: rgba(15, 23, 42, 0.98);">
+        <div class="card" style="text-align: center;">
+            <i class="fas fa-clock" style="font-size: 60px; color: #0d6efd; margin-bottom: 20px;"></i>
+            <h2 style="color: #1e293b; margin-bottom: 10px; font-size: 28px;">Menunggu Panitia...</h2>
+            <p style="color: #64748b; font-size: 16px; margin-bottom: 25px;">Ujian akan dimulai serentak berdasarkan aba-aba Panitia Ujian.</p>
+            
+            <div style="background: #f1f5f9; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                <p style="font-size: 14px; color: #475569; font-weight: 700; margin-bottom: 5px; letter-spacing: 2px;">WAKTU SERVER SAAT INI</p>
+                <div id="liveClock" style="font-size: 42px; font-weight: 800; color: #0d47a1; font-family: monospace;">00:00:00</div>
+            </div>
+
+            <button class="btn-start" onclick="beginExam()">
+                <i class="fas fa-edit"></i> Mulai Kerjakan
+            </button>
+        </div>
+    </div>
+
+    <!-- OVERLAY PERINGATAN KELUAR FULLSCREEN -->
+    <div id="warning-overlay" class="full-overlay" style="display: none; background: rgba(220, 53, 69, 0.95);">
+        <div class="card" style="box-shadow: 0 0 0 5px rgba(255,255,255,0.3);">
+            <h2 style="margin-bottom: 15px; color: #dc3545; font-size: 36px;"><i class="fas fa-exclamation-triangle"></i> PELANGGARAN!</h2>
+            <p style="color: #1e293b; font-size: 18px; font-weight: 700; margin-bottom: 15px;">Anda terdeteksi keluar dari mode layar penuh.</p>
+            <p style="color: #64748b; font-size: 15px; margin-bottom: 35px; line-height: 1.6;">Aktivitas ini telah direkam oleh sistem pengawas. Harap segera kembali ke mode layar penuh untuk melanjutkan ujian Anda.</p>
+            <button class="btn-start" style="background: #dc3545;" onclick="returnToFullscreen()"><i class="fas fa-compress"></i> Kembali ke Ujian</button>
+        </div>
+    </div>
+
+    <!-- CUSTOM MODAL (PENGGANTI ALERT & CONFIRM) -->
+    <div id="custom-modal">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon"><i class="fas fa-question-circle"></i></div>
+            <div class="modal-title" id="modalTitle">Konfirmasi</div>
+            <div class="modal-message" id="modalMessage">Apakah Anda yakin?</div>
+            <div class="modal-actions" id="modalActions"></div>
+        </div>
+    </div>
+
+    <!-- MODAL PASSWORD EXIT -->
+    <div id="exit-modal">
+        <div class="modal-box">
+            <div class="modal-icon"><i class="fas fa-lock" style="color: #dc3545;"></i></div>
+            <div class="modal-title">Verifikasi Keluar</div>
+            <div class="modal-message">Masukkan password pengawas ruangan untuk mengakhiri sesi dan keluar dari aplikasi.</div>
+            
+            <input type="password" id="exitPassword" class="input-pass" placeholder="****" autocomplete="off">
+            <p id="exitErrorText" style="color: #dc3545; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none;">Password salah!</p>
+
+            <div class="modal-actions">
+                <button class="btn-modal btn-modal-cancel" onclick="document.getElementById('exit-modal').style.display='none'">Batal</button>
+                <button class="btn-modal btn-modal-confirm" style="background: #dc3545;" onclick="verifyExit()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER UJIAN -->
+    <div class="header">
+        <div class="header-left">
+            <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/60/ffffff/000000?text=Logo'">
+            <div>
+                <h1>SD INPRES BINANGA 1</h1>
+                <p>TES KEMAMPUAN AKADEMIK 2026</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nama" id="displayNama">MEMUAT NAMA...</div>
+            <div class="kelas" id="displayKelas">Memuat Kelas...</div>
+        </div>
+    </div>
+
+    <!-- KONTEN UTAMA -->
+    <div class="main-wrapper" id="main-container">
+        <div class="container">
+            
+            <!-- Area Soal (Kiri) -->
+            <div class="question-area">
+                <div class="q-header">
+                    <div class="q-badge" id="qNumberBadge">Soal No. 1</div>
+                    <span style="color: #64748b; font-size: 15px;"><i class="fas fa-check-circle"></i> Pilihlah satu jawaban yang benar</span>
+                </div>
+                
+                <div class="q-body">
+                    <div class="q-text" id="questionText">Memuat soal ujian dari server...</div>
+                    <ul class="options-list" id="optionsList"></ul>
+                </div>
+
+                <div class="q-navigation">
+                    <button class="btn-nav btn-prev" onclick="prevQuestion()" id="btnPrev" style="visibility: hidden;">
+                        <i class="fas fa-arrow-left"></i> Sebelumnya
+                    </button>
+                    <button class="btn-nav btn-next" onclick="nextQuestion()" id="btnNext">
+                        Selanjutnya <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Area Navigasi Sidebar (Kanan) -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-th-large"></i> Peta Soal</h3>
+                </div>
+                
+                <div class="sidebar-body">
+                    <div class="number-grid" id="numberGrid"></div>
+                </div>
+
+                <div class="sidebar-footer">
+                    <button class="btn-submit-exam" onclick="triggerSubmitConfirmation()">
+                        <i class="fas fa-paper-plane"></i> Kumpulkan Jawaban
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KONTEN HASIL UJIAN -->
+    <div id="result-container">
+        <div class="result-card">
+            <h2 style="color: #10b981; font-size: 32px; margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Ujian Selesai!</h2>
+            <p style="color: #64748b;">Terima kasih telah mengikuti ujian dengan jujur dan tertib.</p>
+            
+            <div class="result-info">
+                <p><b>Nama :</b> <span id="resNama">Memuat...</span></p>
+                <p><b>NISN :</b> <span id="resNisn">Memuat...</span></p>
+                <p style="margin-top: 15px; border-top: 1px solid #cbd5e1; padding-top: 15px;">
+                    <b>Nilai Akhir :</b> <span id="resNilai" style="font-size: 24px; font-weight: 800; color: #0d47a1;">0</span>
+                </p>
+                <p style="margin-top: 10px;"><b>Predikat :</b> <span id="resStatus">Memuat...</span></p>
+            </div>
+
+            <h4 style="color: #475569; margin-bottom: 15px;">Statistik Jawaban</h4>
+            <div style="width: 200px; height: 200px; margin: 0 auto 30px auto;">
+                <canvas id="studentResultChart"></canvas>
+            </div>
+
+            <button class="btn-start" style="background: #dc3545; width: auto; margin: 0 auto; padding: 12px 40px;" onclick="promptExit()">
+                <i class="fas fa-sign-out-alt"></i> Selesai & Keluar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyNmrws383h4lh4fdL9yD8mCMZzCo95gNYGlvK5UB-y9ensJrc4iwtIUE5G7c1Y3-Pd/exec';
+
+        if (localStorage.getItem('isLoggedIn') !== 'true' || localStorage.getItem('role') !== 'siswa') {
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('displayNama').innerText = localStorage.getItem('namaSiswa') || 'NAMA SISWA';
+        document.getElementById('displayKelas').innerText = localStorage.getItem('kelasSiswa') || 'Kelas';
+
+        let currentQuestionIndex = 0;
+        let examData = []; 
+        let userAnswers = {}; 
+        let isExamFinished = false; 
+        let clockInterval;
+        let autoSyncTimer = null;
+
+        function showModal(type, title, message, onConfirm = null) {
+            const modal = document.getElementById('custom-modal');
+            const icon = document.getElementById('modalIcon');
+            const titleEl = document.getElementById('modalTitle');
+            const msgEl = document.getElementById('modalMessage');
+            const actions = document.getElementById('modalActions');
+
+            titleEl.innerText = title;
+            msgEl.innerHTML = message; 
+
+            if (type === 'alert') {
+                icon.innerHTML = '<i class="fas fa-info-circle" style="color:#0d6efd;"></i>';
+                actions.innerHTML = `<button class="btn-modal btn-modal-confirm" onclick="closeModal()">Mengerti</button>`;
+            } else if (type === 'confirm') {
+                icon.innerHTML = '<i class="fas fa-question-circle" style="color:#ffc107;"></i>';
+                actions.innerHTML = `
+                    <button class="btn-modal btn-modal-cancel" onclick="closeModal()">Kembali Periksa</button>
+                    <button class="btn-modal btn-modal-confirm" id="btnConfirmAction">Ya, Kumpulkan</button>
+                `;
+                document.getElementById('btnConfirmAction').onclick = () => {
+                    closeModal();
+                    if(onConfirm) onConfirm();
+                };
+            }
+            modal.style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('custom-modal').style.display = 'none'; }
+
+        window.onload = async function() {
+            const formData = new FormData();
+            formData.append('action', 'getSoal');
+            try {
+                const response = await fetch(scriptURL, { method: 'POST', body: formData });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    examData = result.data; 
+                    const btnStart = document.getElementById('btnMulaiUjian');
+                    
+                    if (result.examStatus === 'open') {
+                        document.getElementById('startOverlayTitle').innerText = "Ujian Siap Dilaksanakan";
+                        btnStart.disabled = false;
+                        btnStart.innerHTML = '<i class="fas fa-check-circle"></i> Siap Ujian';
+                    } else {
+                        document.getElementById('startOverlayTitle').innerText = "Ujian Masih Ditutup";
+                        document.getElementById('startOverlayDesc').innerHTML = "Panitia belum membuka kunci ujian.<br>Silakan menunggu hingga tombol siap ujian aktif secara otomatis.";
+                        btnStart.disabled = true;
+                        btnStart.innerHTML = '<i class="fas fa-lock"></i> Sedang Memuat Soal (Menunggu Buka Kunci)';
+                        
+                        setInterval(checkExamStatusLive, 5000);
+                    }
+                } else { 
+                    showModal('alert', 'Error Database', 'Gagal memuat soal: ' + result.message); 
+                }
+            } catch (error) { 
+                showModal('alert', 'Error Jaringan', 'Pastikan koneksi internet stabil.'); 
+            }
+        };
+
+        async function checkExamStatusLive() {
+            if (isExamFinished) return;
+            const formData = new FormData();
+            formData.append('action', 'getSoal');
+            try {
+                const response = await fetch(scriptURL, { method: 'POST', body: formData });
+                const result = await response.json();
+                if (result.status === 'success' && result.examStatus === 'open') {
+                    document.getElementById('startOverlayTitle').innerText = "Ujian Siap Dilaksanakan";
+                    document.getElementById('startOverlayDesc').innerHTML = "Sistem akan masuk ke mode layar penuh (Full Screen) mutlak.<br><b>Dilarang keras keluar aplikasi atau membuka tab lain selama ujian berlangsung.</b>";
+                    const btnStart = document.getElementById('btnMulaiUjian');
+                    btnStart.disabled = false;
+                    btnStart.innerHTML = '<i class="fas fa-check-circle"></i> Siap Ujian';
+                }
+            } catch (e) {}
+        }
+
+        function showWaitingRoom() {
+            document.getElementById('start-overlay').style.display = 'none';
+            document.getElementById('waiting-modal').style.display = 'flex';
+            
+            updateClock();
+            clockInterval = setInterval(updateClock, 1000);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            let h = String(now.getHours()).padStart(2, '0');
+            let m = String(now.getMinutes()).padStart(2, '0');
+            let s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('liveClock').innerText = `${h}:${m}:${s}`;
+        }
+
+        function beginExam() {
+            clearInterval(clockInterval);
+
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) { elem.requestFullscreen(); } 
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } 
+            else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); }
+
+            document.getElementById('waiting-modal').style.display = 'none';
+            
+            generateNumberGrid();
+            renderQuestion(0);
+
+            autoSyncTimer = setInterval(backgroundSyncAnswers, 1000);
+        }
+
+        function returnToFullscreen() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) elem.requestFullscreen();
+            document.getElementById('warning-overlay').style.display = 'none';
+        }
+
+        function renderQuestion(index) {
+            currentQuestionIndex = index;
+            const q = examData[index];
+            
+            document.getElementById('qNumberBadge').innerText = `Soal No. ${index + 1}`;
+            document.getElementById('questionText').innerText = q.text;
+
+            const optionsHtml = `
+                <label class="option-item ${userAnswers[q.id] === 'A' ? 'selected' : ''}" onclick="saveAnswer(${q.id}, 'A')">
+                    <input type="radio" name="answer" value="A" ${userAnswers[q.id] === 'A' ? 'checked' : ''}> A. ${q.a}
+                </label>
+                <label class="option-item ${userAnswers[q.id] === 'B' ? 'selected' : ''}" onclick="saveAnswer(${q.id}, 'B')">
+                    <input type="radio" name="answer" value="B" ${userAnswers[q.id] === 'B' ? 'checked' : ''}> B. ${q.b}
+                </label>
+                <label class="option-item ${userAnswers[q.id] === 'C' ? 'selected' : ''}" onclick="saveAnswer(${q.id}, 'C')">
+                    <input type="radio" name="answer" value="C" ${userAnswers[q.id] === 'C' ? 'checked' : ''}> C. ${q.c}
+                </label>
+                <label class="option-item ${userAnswers[q.id] === 'D' ? 'selected' : ''}" onclick="saveAnswer(${q.id}, 'D')">
+                    <input type="radio" name="answer" value="D" ${userAnswers[q.id] === 'D' ? 'checked' : ''}> D. ${q.d}
+                </label>
+            `;
+            document.getElementById('optionsList').innerHTML = optionsHtml;
+            document.getElementById('btnPrev').style.visibility = index === 0 ? 'hidden' : 'visible';
+            document.getElementById('btnNext').style.visibility = index === examData.length - 1 ? 'hidden' : 'visible';
+            updateActiveNumber(index);
+        }
+
+        function saveAnswer(soalId, answerVal) {
+            userAnswers[soalId] = answerVal;
+            document.getElementById(`btn-num-${currentQuestionIndex}`).classList.add('answered');
+            
+            const items = document.querySelectorAll('.option-item');
+            items.forEach(item => item.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+
+        function backgroundSyncAnswers() {
+            if (isExamFinished) return;
+            const formData = new FormData();
+            formData.append('action', 'submitUjian');
+            formData.append('nisn', localStorage.getItem('nisnSiswa') || 'N/A'); 
+            formData.append('nama', localStorage.getItem('namaSiswa'));
+            formData.append('kelas', localStorage.getItem('kelasSiswa'));
+            formData.append('answers', JSON.stringify(userAnswers)); 
+
+            fetch(scriptURL, { method: 'POST', body: formData }).catch(err => {});
+        }
+
+        function nextQuestion() { if (currentQuestionIndex < examData.length - 1) renderQuestion(currentQuestionIndex + 1); }
+        function prevQuestion() { if (currentQuestionIndex > 0) renderQuestion(currentQuestionIndex - 1); }
+        function jumpToQuestion(index) { renderQuestion(index); }
+
+        function generateNumberGrid() {
+            const grid = document.getElementById('numberGrid');
+            grid.innerHTML = '';
+            examData.forEach((q, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-num';
+                btn.id = `btn-num-${i}`;
+                btn.innerText = i + 1;
+                btn.onclick = () => jumpToQuestion(i);
+                grid.appendChild(btn);
+            });
+        }
+
+        function updateActiveNumber(index) {
+            document.querySelectorAll('.btn-num').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-num-${index}`).classList.add('active');
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (isExamFinished) return;
+            if (document.visibilityState === 'hidden' && document.getElementById('start-overlay').style.display === 'none' && document.getElementById('waiting-modal').style.display === 'none') {
+                document.getElementById('warning-overlay').style.display = 'flex';
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (isExamFinished) return;
+            if (!document.fullscreenElement && document.getElementById('start-overlay').style.display === 'none' && document.getElementById('waiting-modal').style.display === 'none') {
+                document.getElementById('warning-overlay').style.display = 'flex';
+            }
+        });
+
+        function triggerSubmitConfirmation() {
+            const totalJawab = Object.keys(userAnswers).length;
+            const belumJawab = examData.length - totalJawab;
+
+            let pesan = `Anda telah menjawab <b style="color:#0d47a1;">${totalJawab}</b> dari <b style="color:#0d47a1;">${examData.length}</b> soal.<br><br>`;
+            if (belumJawab > 0) {
+                pesan += `<span style="color:#dc3545; font-weight:bold;"><i class="fas fa-exclamation-triangle"></i> PERINGATAN: Masih ada ${belumJawab} soal kosong!</span><br><br>`;
+            }
+            pesan += "Apakah Anda yakin ingin mengakhiri dan mengumpulkan ujian?";
+
+            showModal('confirm', 'Kumpulkan Jawaban?', pesan, prosesKirimData);
+        }
+
+        function prosesKirimData() {
+            if (autoSyncTimer) clearInterval(autoSyncTimer);
+
+            document.getElementById('main-container').innerHTML = `
+                <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:white; border-radius:16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                    <i class="fas fa-paper-plane" style="font-size: 60px; color: #0d6efd; margin-bottom: 25px; animation: bounce 1s infinite;"></i>
+                    <h2 style="color: #1e293b; margin-bottom: 10px;">Mengirim Jawaban Akhir...</h2>
+                    <p style="color: #64748b;">Mohon jangan matikan perangkat atau menutup jendela browser.</p>
+                </div>
+            `;
+            
+            const formData = new FormData();
+            formData.append('action', 'submitUjian');
+            formData.append('nisn', localStorage.getItem('nisnSiswa') || 'N/A'); 
+            formData.append('nama', localStorage.getItem('namaSiswa'));
+            formData.append('kelas', localStorage.getItem('kelasSiswa'));
+            formData.append('answers', JSON.stringify(userAnswers)); 
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status === 'success') {
+                        isExamFinished = true; 
+                        tampilkanHasilSiswa(data.nilai);
+                    } else {
+                        showModal('alert', 'Gagal', "Gagal mengirim jawaban: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    showModal('alert', 'Error', "Koneksi terputus! Lapor ke Pengawas Ujian.");
+                });
+        }
+
+        function getStatusBadge(nilai) {
+            if (nilai >= 75) return '<span class="badge badge-hijau">Sangat Baik</span>';
+            if (nilai >= 50) return '<span class="badge badge-kuning">Baik</span>';
+            if (nilai >= 25) return '<span class="badge badge-orange">Cukup Baik</span>';
+            return '<span class="badge badge-merah">Kurang Baik</span>';
+        }
+
+        function tampilkanHasilSiswa(nilaiAkhir) {
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'flex';
+
+            document.getElementById('resNama').innerText = localStorage.getItem('namaSiswa');
+            document.getElementById('resNisn').innerText = localStorage.getItem('nisnSiswa');
+            document.getElementById('resNilai').innerText = nilaiAkhir;
+            document.getElementById('resStatus').innerHTML = getStatusBadge(nilaiAkhir);
+
+            let benar = parseFloat(nilaiAkhir);
+            let salah = 100 - benar;
+            const ctx = document.getElementById('studentResultChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Benar (%)', 'Salah / Kosong (%)'],
+                    datasets: [{
+                        data: [benar, salah],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderWidth: 3, borderColor: '#f8fafc'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function promptExit() {
+            document.getElementById('exit-modal').style.display = 'flex';
+            document.getElementById('exitPassword').value = '';
+            document.getElementById('exitErrorText').style.display = 'none';
+        }
+
+        function verifyExit() {
+            const pass = document.getElementById('exitPassword').value.trim();
+            if (pass === '2026') {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('exitErrorText').style.display = 'block';
+                document.getElementById('exitPassword').value = '';
+                document.getElementById('exitPassword').focus();
+            }
+        }
+    </script>
+</body>
+</html>
