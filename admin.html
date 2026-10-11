@@ -677,7 +677,6 @@
 
         window.onload = function() {
             loadData(true);
-            // Refresh data otomatis setiap 10 detik tanpa loader mengganggu
             autoRefreshInterval = setInterval(() => { loadData(false); }, 10000);
         };
     </script>
