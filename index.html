@@ -44,7 +44,7 @@
             margin-bottom: 20px;
         }
 
-        /* Styling Login Baru sesuai referensi */
+        /* Styling Login */
         .login-wrapper {
             min-height: 100vh;
             background: #f0f2f5;
@@ -146,7 +146,6 @@
             color: #3c4043;
         }
 
-        /* PERBAIKAN WIDGET INPUT PASSWORD & ICON MATA */
         .input-icon-wrap {
             position: relative;
             display: flex;
@@ -183,7 +182,7 @@
 
         .form-group input {
             width: 100%;
-            padding: 12px 42px 12px 40px !important; /* Memberi ruang di kiri (icon user/lock) & kanan (icon mata) */
+            padding: 12px 42px 12px 40px !important;
             border: 1px solid #dadce0;
             border-radius: 6px;
             font-size: 14px;
@@ -404,10 +403,14 @@
             background-color: #f8f9fa;
         }
 
-        .chart-container {
+        .chart-box-wrapper {
             width: 100%;
-            max-width: 300px;
-            margin: 20px auto;
+            background: #fdfdfd;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: center;
         }
 
         .status-lock {
@@ -588,18 +591,19 @@
 
         <!-- 3B. STUDENT RESULT & REVIEW SCREEN -->
         <div id="screen-result" class="screen">
-            <div class="card" style="max-width: 800px; margin: 20px auto;">
+            <div class="card" style="max-width: 900px; margin: 20px auto;">
                 <h2>Hasil Ujian Paket <span id="res-packet-name"></span></h2>
                 <div style="font-size: 24px; font-weight: bold; margin: 15px 0; color: #1a73e8;">
                     Nilai Anda: <span id="res-score"></span> / 100
                 </div>
                 
-                <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
-                    <div style="flex: 1; min-width: 250px;">
-                        <p><b>Kategori Passing Grade:</b> <span id="res-badge"></span></p>
-                        <p style="margin-top: 8px; color: #666; font-size: 14px;">Grafik di samping menunjukkan komposisi jawaban benar dan salah Anda secara proporsional.</p>
-                    </div>
-                    <div style="width: 200px; height: 200px; margin: 0 auto;">
+                <p><b>Kategori Passing Grade:</b> <span id="res-badge"></span></p>
+
+                <!-- MODEL GRAFIK AKUMULASI BERTUMPUK -->
+                <div class="chart-box-wrapper">
+                    <h3 style="font-size:16px; font-weight:bold; color:#202124;">Grafik Analisis Jawaban Ujian</h3>
+                    <p style="font-size:12px; color:#666; margin-bottom:15px;">Grafik akumulasi bertumpuk: Merah (Salah/Kosong) & Biru (Benar).</p>
+                    <div style="height: 320px; width: 100%;">
                         <canvas id="studentResultChart"></canvas>
                     </div>
                 </div>
@@ -632,7 +636,7 @@
                     🔓 Status Akses Ujian: TERBUKA (Siswa dapat mengakses soal)
                 </div>
 
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start;">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
                     <div>
                         <h3>Data Passing Grade Live (Update setiap detik)</h3>
                         <table>
@@ -650,10 +654,10 @@
                         </table>
                     </div>
 
-                    <div>
-                        <h3 style="text-align: center;">Grafik Perbandingan Nilai</h3>
-                        <p style="font-size:12px; text-align:center; color:#666;">Merah: Latar Belakang | Biru: Siswa Menjawab / Masuk</p>
-                        <div class="chart-container">
+                    <div class="chart-box-wrapper">
+                        <h3 style="font-size:16px; font-weight:bold; color:#202124;">Grafik Analisis Partisipasi / Jawaban Siswa</h3>
+                        <p style="font-size:12px; color:#666; margin-bottom:15px;">Grafik akumulasi bertumpuk: Merah (Belum Masuk/Salah) & Biru (Sudah Masuk/Benar).</p>
+                        <div style="height: 300px; width: 100%;">
                             <canvas id="gradeChart"></canvas>
                         </div>
                     </div>
@@ -939,7 +943,6 @@
             enterFullscreen();
         }
 
-        // Ketika mengecilkan layar / ESC, munculkan Overlay Modal buatan
         document.addEventListener("fullscreenchange", function() {
             if (!document.fullscreenElement && currentUser && !currentUser.isAdmin && currentPacket) {
                 document.getElementById('fullscreen-warning-modal').style.display = 'flex';
@@ -1137,6 +1140,7 @@
             let essayWeight = 70 / (essayCount || 1);
 
             let reviewDetails = [];
+            let questionResults = []; // menyimpan status per nomor soal
 
             activeQuestions.forEach((q, idx) => {
                 const ans = studentAnswers[idx];
@@ -1179,6 +1183,7 @@
                     }
                 }
 
+                questionResults.push(isCorrect);
                 reviewDetails.push({
                     question: q.text,
                     isCorrect: isCorrect,
@@ -1189,10 +1194,110 @@
             let finalScore = Math.round(totalPgScore + totalEssayScore);
             if (finalScore > 100) finalScore = 100;
 
-            return { score: finalScore, correct: correctCount, incorrect: incorrectCount, review: reviewDetails };
+            return { 
+                score: finalScore, 
+                correct: correctCount, 
+                incorrect: incorrectCount, 
+                review: reviewDetails,
+                questionResults: questionResults 
+            };
         }
 
         let studentResultChartInstance = null;
+
+        /* FUNGSI GRAFIK AKUMULASI BERTUMPUK PERSIS GAMBAR REFERENSI */
+        function renderStackedBarChart(canvasId, questionResults, isStudentChart = true) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            if (isStudentChart && studentResultChartInstance) {
+                studentResultChartInstance.destroy();
+            } else if (!isStudentChart && chartInstance) {
+                chartInstance.destroy();
+            }
+
+            let labels = [];
+            let redData = [];   // Salah / Kosong / Merah
+            let blueData = [];  // Benar / Sudah / Biru
+
+            let accumRed = 0;
+            let accumBlue = 0;
+
+            questionResults.forEach((isCorrect, index) => {
+                labels.push(`S${index + 1}`);
+                if (isCorrect) {
+                    accumBlue += 1;
+                } else {
+                    accumRed += 1;
+                }
+                redData.push(accumRed);
+                blueData.push(accumBlue);
+            });
+
+            const newChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: isStudentChart ? 'Jawaban Salah / Kosong (Merah)' : 'Belum Masuk / Kurang (Merah)',
+                            data: redData,
+                            backgroundColor: '#dc3545', // Merah
+                            barPercentage: 1.0,
+                            categoryPercentage: 1.0
+                        },
+                        {
+                            label: isStudentChart ? 'Jawaban Benar (Biru)' : 'Sudah Masuk / Baik (Biru)',
+                            data: blueData,
+                            backgroundColor: '#3b82f6', // Biru
+                            barPercentage: 1.0,
+                            categoryPercentage: 1.0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: false,
+                                boxWidth: 20
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: { display: false },
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 20,
+                                font: { size: 10 }
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: isStudentChart ? 'Jumlah Soal' : 'Jumlah Akumulasi'
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (isStudentChart) {
+                studentResultChartInstance = newChart;
+            } else {
+                chartInstance = newChart;
+            }
+        }
 
         function finishExam() {
             if (confirm("Apakah Anda yakin ingin menyelesaikan ujian paket ini?")) {
@@ -1220,19 +1325,8 @@
                 else badgeHTML = `<span class="status-badge bg-kurang">Kurang Baik</span>`;
                 document.getElementById('res-badge').innerHTML = badgeHTML;
 
-                const ctxRes = document.getElementById('studentResultChart').getContext('2d');
-                if (studentResultChartInstance) studentResultChartInstance.destroy();
-                studentResultChartInstance = new Chart(ctxRes, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Benar / Tinggi', 'Salah / Rendah'],
-                        datasets: [{
-                            data: [resData.correct, resData.incorrect],
-                            backgroundColor: ['#007bff', '#dc3545']
-                        }]
-                    },
-                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-                });
+                // Render Grafik Akumulasi Bertumpuk
+                renderStackedBarChart('studentResultChart', resData.questionResults, true);
 
                 const reviewContainer = document.getElementById('review-container');
                 reviewContainer.innerHTML = '';
@@ -1333,8 +1427,7 @@
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
 
-            let totalPossibleSlots = studentsList.length * 3;
-            let answeredCount = 0;
+            let adminQuestionResults = [];
 
             let mappedStudents = studentsList.map(student => {
                 const studentResult = appData.results[student.nisn] || { scores: {} };
@@ -1346,6 +1439,8 @@
                 let countActive = (scoreA !== undefined ? 1 : 0) + (scoreB !== undefined ? 1 : 0) + (scoreC !== undefined ? 1 : 0);
                 let avg = countActive > 0 ? sumScores / countActive : -1;
 
+                adminQuestionResults.push(countActive > 0);
+
                 return { student, scoreA, scoreB, scoreC, avg, hasData: countActive > 0 };
             });
 
@@ -1353,12 +1448,6 @@
 
             mappedStudents.forEach(item => {
                 const { student, scoreA, scoreB, scoreC, hasData } = item;
-
-                [scoreA, scoreB, scoreC].forEach(s => {
-                    if (s !== undefined && s !== null) {
-                        answeredCount++;
-                    }
-                });
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -1374,28 +1463,7 @@
                 tbody.appendChild(tr);
             });
 
-            renderChart(answeredCount, totalPossibleSlots);
-        }
-
-        function renderChart(answered, total) {
-            const ctx = document.getElementById('gradeChart').getContext('2d');
-            
-            if (chartInstance) chartInstance.destroy();
-
-            chartInstance = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Sudah Masuk / Menjawab (Biru)', 'Belum Masuk (Merah Background)'],
-                    datasets: [{
-                        data: [answered, total],
-                        backgroundColor: ['#007bff', '#dc3545'],
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { position: 'bottom' } }
-                }
-            });
+            renderStackedBarChart('gradeChart', adminQuestionResults, false);
         }
 
         let lastTriggerCheck = appData.forceFinishTrigger;
