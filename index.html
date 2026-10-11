@@ -221,7 +221,7 @@
             background-color: #bd2130;
         }
 
-        /* Tombol Hijau */
+        /* Tombol Hijau Pengganti Kuning */
         .btn-warning {
             background-color: #28a745;
             color: #fff;
@@ -947,18 +947,6 @@
             localStorage.setItem('cbt_app_data', JSON.stringify(appData));
         }
 
-        // Sinkronisasi data real-time jika dibuka di tab/browser/laptop berbeda dalam 1 jaringan lokal (atau file yang sama)
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'cbt_app_data') {
-                appData = JSON.parse(e.newValue) || appData;
-                if (currentUser && !currentUser.isAdmin) {
-                    checkLockStatus();
-                } else if (currentUser && currentUser.isAdmin) {
-                    updateAdminView();
-                }
-            }
-        });
-
         function enterFullscreen() {
             let elem = document.documentElement;
             if (elem.requestFullscreen) {
@@ -1532,4 +1520,33 @@
             }
 
             const res6A = buildClassTable(class6A, 'admin-table-6a');
-            const
+            const res6B = buildClassTable(class6B, 'admin-table-6b');
+
+            let totalCompleted = res6A.completedCount + res6B.completedCount;
+            let totalUncompleted = res6A.uncompletedCount + res6B.uncompletedCount;
+
+            renderAdminPieChart(totalCompleted, totalUncompleted);
+        }
+
+        let lastTriggerCheck = appData.forceFinishTrigger;
+        setInterval(() => {
+            appData = JSON.parse(localStorage.getItem('cbt_app_data')) || { lockedPackets: { A: false, B: false, C: false }, forceFinishTrigger: 0, results: {}, activeSessions: {} };
+            
+            if (currentUser && currentUser.isAdmin) {
+                updateAdminView();
+            } else if (currentUser && !currentUser.isAdmin) {
+                checkLockStatus();
+                if (appData.forceFinishTrigger > lastTriggerCheck) {
+                    lastTriggerCheck = appData.forceFinishTrigger;
+                    if (currentPacket) {
+                        alert("Ujian dihentikan serentak oleh Panitia Admin!");
+                        exitFullscreen();
+                        showScreen('screen-packets');
+                        currentPacket = null;
+                    }
+                }
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
