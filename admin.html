@@ -193,7 +193,7 @@
                 <div class="card-table">
                     <h3 style="margin-bottom: 15px; color: #444;">Aktivitas Ujian Terbaru</h3>
                     <table>
-                        <thead><tr><th>Waktu Submit</th><th>NISN</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Status</th></tr></thead>
+                        <thead><tr><th>Waktu Submit</th><th>NISN</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Status</th><th style="text-align:center;">Aksi</th></tr></thead>
                         <tbody id="recentActivityBody"></tbody>
                     </table>
                 </div>
@@ -267,7 +267,7 @@
         </div>
     </div>
 
-    <script>
+    <script[cite: 1]>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxVhowRAW6F_fXDIrMfzDghiqswer4QXY4SVr49MKYLKFw0Q__ODW9nHXkorpuBAMyMCA/exec';
 
         if (localStorage.getItem('isLoggedIn') !== 'true' || localStorage.getItem('role') !== 'admin') {
@@ -280,6 +280,7 @@
         let globalDataSiswa = []; 
         let globalDataLog = [];
         let globalDataSoal = [];
+        let autoSyncInterval = null;
 
         const navBtns = document.querySelectorAll('.nav-btn');
         const sections = document.querySelectorAll('.content-section');
@@ -304,8 +305,8 @@
             return '<span class="badge badge-merah">Kurang Baik</span>';
         }
 
-        async function loadData() {
-            showLoader('Mengunduh Data Server...');
+        async function loadData(isBackground = false) {
+            if (!isBackground) showLoader('Mengunduh Data Server...');
             const formData = new FormData();
             formData.append('action', 'getAdminData');
 
@@ -321,11 +322,12 @@
                     renderDashboard(globalDataSiswa, globalDataLog);
                     renderLogTable(globalDataLog);
                     renderSiswaTable();
-                } else { alert("Gagal: " + result.message); }
+                } else { if (!isBackground) alert("Gagal: " + result.message); }
             } catch (err) {
-                console.error(err); alert("Koneksi gagal saat menyinkronkan data.");
+                console.error(err); 
+                if (!isBackground) alert("Koneksi gagal saat menyinkronkan data.");
             } finally {
-                hideLoader();
+                if (!isBackground) hideLoader();
             }
         }
 
@@ -338,7 +340,7 @@
         function renderDashboard(siswa, log) {
             document.getElementById('totSiswa').innerText = siswa.length;
             document.getElementById('totSelesai').innerText = log.length;
-            document.getElementById('totBelum').innerText = siswa.length - log.length;
+            document.getElementById('totBelum').innerText = Math.max(0, siswa.length - log.length);
 
             let rataRata = 0;
             if (log.length > 0) {
@@ -349,14 +351,37 @@
 
             const recent = log.slice(-5).reverse();
             let tbody = '';
-            recent.forEach(r => {
+            recent.forEach((r, idx) => {
+                let realIndex = log.length - 1 - idx;
                 let dateStr = new Date(r.waktu).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
                 let n = parseFloat(r.nilai_final || r.nilai_akhir || 0);
-                tbody += `<tr><td>${dateStr}</td><td>${r.nisn}</td><td>${r.nama}</td><td>${r.kelas}</td><td><b>${n}</b></td><td>${getStatusBadge(n)}</td></tr>`;
+                tbody += `
+                    <tr>
+                        <td>${dateStr}</td>
+                        <td>${r.nisn}</td>
+                        <td>${r.nama}</td>
+                        <td>${r.kelas}</td>
+                        <td><b>${n}</b></td>
+                        <td>${getStatusBadge(n)}</td>
+                        <td style="text-align:center;">
+                            <button class="action-btn btn-delete" onclick="deleteActivityLog(${realIndex}, '${r.nama}')" title="Hapus Aktivitas"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>`;
             });
-            document.getElementById('recentActivityBody').innerHTML = tbody || '<tr><td colspan="6" style="text-align:center;">Belum ada aktivitas.</td></tr>';
+            document.getElementById('recentActivityBody').innerHTML = tbody || '<tr><td colspan="7" style="text-align:center;">Belum ada aktivitas.</td></tr>';
 
             renderClassChart(rataRata);
+        }
+
+        // --- SISTEM HAPUS LOKAL / HAPUS AKTIVITAS UJIAN TERBARU TANPA UBAH APPS SCRIPT ---
+        function deleteActivityLog(index, namaSiswa) {
+            if (confirm(`Apakah Anda yakin ingin menghapus catatan aktivitas ujian untuk siswa: ${namaSiswa} dari tampilan panel ini?`)) {
+                // Menghapus data dari array global log secara client-side murni
+                globalDataLog.splice(index, 1);
+                // Re-render ulang dashboard & tabel rekapitulasi secara instan tanpa refresh browser/apps script
+                renderDashboard(globalDataSiswa, globalDataLog);
+                renderLogTable(globalDataLog);
+            }
         }
 
         function renderClassChart(rataRataBenar) {
@@ -591,7 +616,13 @@
             if(confirm('Yakin ingin keluar?')) { localStorage.clear(); window.location.href = 'index.html'; }
         }
 
-        window.onload = loadData;
+        window.onload = function() {
+            loadData();
+            // FITUR AUTO-UPDATE (POLLING OTOMATIS SETIAP 10 DETIK TANPA REFRESH MANUAL)
+            autoSyncInterval = setInterval(() => {
+                loadData(true); // true agar berjalan di background tanpa menampilkan layar loader kedip-kedip
+            }, 10000);
+        };
     </script>
 </body>
 </html>
