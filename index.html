@@ -135,17 +135,9 @@
             cursor: pointer;
             text-align: center;
             transition: 0.3s;
-            position: relative;
         }
 
-        .packet-card.locked {
-            background-color: #f8f9fa;
-            border-color: #ccc;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .packet-card:not(.locked):hover {
+        .packet-card:hover {
             border-color: #1a73e8;
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.1);
@@ -312,6 +304,7 @@
         .status-unlocked { background-color: #d4edda; color: #155724; }
         .status-locked { background-color: #f8d7da; color: #721c24; }
 
+        /* Review Item styling */
         .review-item {
             padding: 12px;
             border-radius: 6px;
@@ -320,39 +313,15 @@
         }
         .review-correct { background-color: #d4edda; border-color: #c3e6cb; }
         .review-incorrect { background-color: #f8d7da; border-color: #f5c6cb; }
-
-        /* Fullscreen Block Overlay */
-        #fullscreen-blocker {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 99999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
     </style>
 </head>
 <body>
-
-    <!-- OVERLAY PERINGATAN KELUAR FULLSCREEN -->
-    <div id="fullscreen-blocker">
-        <h2 style="color: #ffc107; margin-bottom: 15px;">PERINGATAN UJIAN!</h2>
-        <p style="font-size: 18px; margin-bottom: 25px;">Anda tidak diperbolehkan keluar dari mode layar penuh (Fullscreen) atau menekan tombol ESC selama ujian berlangsung!</p>
-        <button class="btn" style="width: auto; font-size: 18px; padding: 12px 30px;" onclick="restoreFullscreen()">Kembali ke Layar Penuh</button>
-    </div>
 
     <div class="container">
         <!-- 1. LOGIN SCREEN -->
         <div id="screen-login" class="screen active">
             <div class="card login-box">
+                <!-- Logo Manual: Pastikan ada file logo.png di folder yang sama atau ganti path -->
                 <img src="logo.png" alt="Logo Sekolah" class="logo-img" onerror="this.style.display='none'">
                 <h2>CBT Ujian Online</h2>
                 <div class="sub-title">TES KEMAMPUAN AKADEMIK 2026</div>
@@ -373,21 +342,21 @@
             <div class="card">
                 <h2>Selamat Datang, <span id="student-name"></span>!</h2>
                 <div class="sub-title" style="margin-bottom:10px;">TES KEMAMPUAN AKADEMIK 2026</div>
-                <p>Silahkan pilih paket ujian yang tersedia (Paket akan terbuka jika diizinkan Panitia):</p>
+                <p>Silahkan pilih paket ujian yang tersedia:</p>
                 <div id="lock-warning" class="status-lock status-locked" style="display:none; margin-top:15px;">
-                    🔒 Sebagian besar paket ujian saat ini dikunci oleh Panitia.
+                    🔒 Ujian saat ini SEDANG DIKUNCI oleh Panitia. Anda tidak dapat memilih paket ujian.
                 </div>
                 <div class="packet-grid">
-                    <div id="card-packet-a" class="packet-card locked" onclick="selectPacket('A')">
-                        <h3 id="title-packet-a">Paket A (Terkunci 🔒)</h3>
+                    <div class="packet-card" onclick="selectPacket('A')">
+                        <h3>Paket A</h3>
                         <p>Agama Islam, Pancasila, B. Indonesia</p>
                     </div>
-                    <div id="card-packet-b" class="packet-card locked" onclick="selectPacket('B')">
-                        <h3 id="title-packet-b">Paket B (Terkunci 🔒)</h3>
+                    <div class="packet-card" onclick="selectPacket('B')">
+                        <h3>Paket B</h3>
                         <p>Matematika, IPAS, PJOK</p>
                     </div>
-                    <div id="card-packet-c" class="packet-card locked" onclick="selectPacket('C')">
-                        <h3 id="title-packet-c">Paket C (Terkunci 🔒)</h3>
+                    <div class="packet-card" onclick="selectPacket('C')">
+                        <h3>Paket C</h3>
                         <p>Seni Budaya, B. Inggris</p>
                     </div>
                 </div>
@@ -454,7 +423,7 @@
                 <h3>Review Kunci Jawaban (Benar & Salah)</h3>
                 <div id="review-container" style="max-height: 400px; overflow-y: auto; margin-top: 15px;"></div>
 
-                <button class="btn" style="margin-top: 20px;" onclick="returnToPacketOrLogout()">Kembali ke Pemilihan Paket / Logout</button>
+                <button class="btn" style="margin-top: 20px;" onclick="showScreen('screen-packets')">Kembali ke Pemilihan Paket</button>
             </div>
         </div>
 
@@ -465,28 +434,15 @@
                 <div class="sub-title">TES KEMAMPUAN AKADEMIK 2026</div>
                 <hr style="margin: 15px 0;">
                 
-                <!-- PENGATURAN PASSWORD SISWA MANUAL -->
-                <div class="card" style="background: #f8f9fa; border: 1px solid #ddd; margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 10px; color: #1a73e8;">Pengaturan Password Global Siswa</h3>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Ubah password yang digunakan seluruh siswa untuk login ke dalam sistem.</p>
-                    <div style="display: flex; gap: 10px; max-width: 400px;">
-                        <input type="text" id="admin-custom-pass-input" placeholder="Masukkan password baru siswa" style="padding: 8px; border: 1px solid #ccc; border-radius: 5px; flex: 1;">
-                        <button class="btn" style="width: auto;" onclick="updateGlobalStudentPassword()">Update Password</button>
-                    </div>
-                </div>
-
                 <div class="admin-controls">
-                    <!-- KUNCI / BUKA PAKET SOAL MASING-MASING -->
-                    <button id="admin-btn-packet-A" class="btn btn-warning" style="width: auto;" onclick="togglePacketLock('A')">Buka Kunci Paket A</button>
-                    <button id="admin-btn-packet-B" class="btn btn-warning" style="width: auto;" onclick="togglePacketLock('B')">Buka Kunci Paket B</button>
-                    <button id="admin-btn-packet-C" class="btn btn-warning" style="width: auto;" onclick="togglePacketLock('C')">Buka Kunci Paket C</button>
+                    <button id="btn-toggle-lock" class="btn btn-warning" style="width: auto;" onclick="toggleExamLock()">Kunci Soal</button>
                     <button class="btn btn-warning" style="width: auto; background-color: #17a2b8; color: white;" onclick="forceFinishAllStudents()">Selesaikan Semua Ujian</button>
                     <button class="btn btn-danger" style="width: auto;" onclick="resetAllActivity()">Reset / Hapus Semua Aktivitas</button>
                     <button class="btn" style="width: auto; background-color: #6c757d;" onclick="logout()">Logout Admin</button>
                 </div>
 
                 <div id="admin-lock-status" class="status-lock status-unlocked">
-                    🔓 Kontrol Akses Paket Soal Aktif
+                    🔓 Status Akses Ujian: TERBUKA (Siswa dapat mengakses soal)
                 </div>
 
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start;">
@@ -508,7 +464,7 @@
 
                     <div>
                         <h3 style="text-align: center;">Grafik Perbandingan Nilai</h3>
-                        <p style="font-size:12px; text-align:center; color:#666;">Grafik default penuh merah, biru bergerak mendorong jika ada nilai benar/tinggi.</p>
+                        <p style="font-size:12px; text-align:center; color:#666;">Merah: Nilai Rendah (&lt;75) | Biru: Nilai Tinggi (&ge;75)</p>
                         <div class="chart-container">
                             <canvas id="gradeChart"></canvas>
                         </div>
@@ -764,11 +720,9 @@
         let studentAnswers = {};
 
         let appData = JSON.parse(localStorage.getItem('cbt_app_data')) || {
-            packetLocks: { A: true, B: true, C: true },
-            globalStudentPass: "2026",
+            isLocked: false,
             forceFinishTrigger: 0,
-            results: {},
-            loggedSessions: {} // Menyimpan status login aktif siswa
+            results: {}
         };
 
         function saveData() {
@@ -784,21 +738,9 @@
             }
         }
 
-        function restoreFullscreen() {
-            enterFullscreen();
-            document.getElementById('fullscreen-blocker').style.display = 'none';
-        }
-
-        // Peringatan jika keluar dari fullscreen / tekan Esc saat ujian atau setelah login
-        document.addEventListener("fullscreenchange", function() {
-            if (!document.fullscreenElement && currentUser && !currentUser.isAdmin) {
-                document.getElementById('fullscreen-blocker').style.display = 'flex';
-            }
-        });
-
         document.addEventListener("visibilitychange", function() {
-            if (document.hidden && currentUser && !currentUser.isAdmin) {
-                alert("PERINGATAN: Anda kedapatan keluar/membuka tab lain!");
+            if (document.hidden && currentUser && !currentUser.isAdmin && currentPacket) {
+                alert("PERINGATAN: Anda kedapatan membuka tab/aplikasi lain! Tetap fokus pada ujian.");
             }
         });
 
@@ -821,20 +763,11 @@
             }
 
             const student = studentsList.find(s => s.nisn === nisn);
-            if (student && pass === (appData.globalStudentPass || "2026")) {
-                // Aturan: Satu akun hanya bisa menggunakan satu password, dan satu akun hanya bisa login sekali kecuali logout/password berbeda
-                if (appData.loggedSessions[student.nisn] && appData.loggedSessions[student.nisn] === pass) {
-                    alert("Akun ini sudah sedang aktif login di perangkat/sesi lain! Harap logout terlebih dahulu atau gunakan password yang berbeda.");
-                    return;
-                }
-
-                appData.loggedSessions[student.nisn] = pass;
-                saveData();
-
+            if (student && pass === '2026') {
                 currentUser = { nisn: student.nisn, name: student.name, isAdmin: false };
                 document.getElementById('student-name').innerText = student.name;
                 enterFullscreen();
-                checkPacketLocks();
+                checkLockStatus();
                 showScreen('screen-packets');
             } else {
                 alert("NISN atau Password Salah!");
@@ -842,43 +775,20 @@
         }
 
         function logout() {
-            if (currentUser && !currentUser.isAdmin) {
-                // Hapus sesi login aktif siswa agar bisa login kembali
-                delete appData.loggedSessions[currentUser.nisn];
-                saveData();
-            }
             currentUser = null;
             currentPacket = null;
             document.getElementById('login-nisn').value = '';
             document.getElementById('login-pass').value = '';
-            
-            // Keluar dari fullscreen saat logout (Aturan 4)
-            if (document.fullscreenElement) {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().catch(err => {});
-                }
-            }
-            document.getElementById('fullscreen-blocker').style.display = 'none';
             showScreen('screen-login');
         }
 
-        function returnToPacketOrLogout() {
-            // Siswa yang sudah menyelesaikan ujian, kembali ke halaman login (ter-logout) sesuai Aturan 6
-            logout();
-        }
-
-        function checkPacketLocks() {
-            ['A', 'B', 'C'].forEach(pkg => {
-                const card = document.getElementById(`card-packet-${pkg}`);
-                const title = document.getElementById(`title-packet-${pkg}`);
-                if (appData.packetLocks[pkg]) {
-                    card.classList.add('locked');
-                    title.innerText = `Paket ${pkg} (Terkunci 🔒)`;
-                } else {
-                    card.classList.remove('locked');
-                    title.innerText = `Paket ${pkg} (Terbuka 🔓)`;
-                }
-            });
+        function checkLockStatus() {
+            const lockWarning = document.getElementById('lock-warning');
+            if (appData.isLocked) {
+                lockWarning.style.display = 'block';
+            } else {
+                lockWarning.style.display = 'none';
+            }
         }
 
         function shuffle(array) {
@@ -891,8 +801,8 @@
         }
 
         function selectPacket(packet) {
-            if (appData.packetLocks[packet]) {
-                alert(`Paket ${packet} saat ini SEDANG DIKUNCI oleh Panitia Admin.`);
+            if (appData.isLocked) {
+                alert("Soal saat ini SEDANG DIKUNCI oleh Panitia Admin. Anda tidak dapat memulai/melanjutkan ujian.");
                 return;
             }
 
@@ -1074,9 +984,11 @@
                 appData.results[currentUser.nisn].scores[currentPacket] = resData.score;
                 saveData();
 
+                // Tampilkan Screen Hasil & Review
                 document.getElementById('res-packet-name').innerText = currentPacket;
                 document.getElementById('res-score').innerText = resData.score;
                 
+                // Kategori Badge
                 let badgeHTML = "";
                 if (resData.score >= 85) badgeHTML = `<span class="status-badge bg-sangat-baik">Sangat Baik</span>`;
                 else if (resData.score >= 70) badgeHTML = `<span class="status-badge bg-baik">Baik</span>`;
@@ -1084,6 +996,7 @@
                 else badgeHTML = `<span class="status-badge bg-kurang">Kurang Baik</span>`;
                 document.getElementById('res-badge').innerHTML = badgeHTML;
 
+                // Render Chart Personal
                 const ctxRes = document.getElementById('studentResultChart').getContext('2d');
                 if (studentResultChartInstance) studentResultChartInstance.destroy();
                 studentResultChartInstance = new Chart(ctxRes, {
@@ -1098,6 +1011,7 @@
                     options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
                 });
 
+                // Render Review List
                 const reviewContainer = document.getElementById('review-container');
                 reviewContainer.innerHTML = '';
                 resData.review.forEach((item, i) => {
@@ -1120,30 +1034,18 @@
         let chartInstance = null;
 
         function initAdminDashboard() {
-            document.getElementById('admin-custom-pass-input').value = appData.globalStudentPass || "2026";
             updateAdminView();
         }
 
-        function updateGlobalStudentPassword() {
-            const newPass = document.getElementById('admin-custom-pass-input').value.trim();
-            if (newPass === "") {
-                alert("Password tidak boleh kosong!");
-                return;
-            }
-            appData.globalStudentPass = newPass;
-            saveData();
-            alert("Password global siswa berhasil di-update!");
-        }
-
-        function togglePacketLock(packet) {
-            appData.packetLocks[packet] = !appData.packetLocks[packet];
+        function toggleExamLock() {
+            appData.isLocked = !appData.isLocked;
             saveData();
             updateAdminView();
         }
 
         function forceFinishAllStudents() {
             if (confirm("PERHATIAN: Apakah Anda yakin ingin memaksa SEMUA siswa menyelesaikan ujian serentak sekarang?")) {
-                appData.packetLocks = { A: true, B: true, C: true };
+                appData.isLocked = true;
                 appData.forceFinishTrigger = Date.now();
                 saveData();
                 updateAdminView();
@@ -1154,7 +1056,6 @@
         function resetAllActivity() {
             if (confirm("Apakah Anda YAKIN ingin menghapus/reset SEMUA data aktivitas dan nilai siswa?")) {
                 appData.results = {};
-                appData.loggedSessions = {};
                 saveData();
                 updateAdminView();
                 alert("Semua data aktivitas dan nilai berhasil di-reset!");
@@ -1176,24 +1077,24 @@
         }
 
         function updateAdminView() {
-            ['A', 'B', 'C'].forEach(pkg => {
-                const btn = document.getElementById(`admin-btn-packet-${pkg}`);
-                if (appData.packetLocks[pkg]) {
-                    btn.innerText = `Buka Kunci Paket ${pkg}`;
-                    btn.className = "btn btn-warning";
-                } else {
-                    btn.innerText = `Kunci Paket ${pkg}`;
-                    btn.className = "btn btn-danger";
-                }
-            });
-
+            const lockBtn = document.getElementById('btn-toggle-lock');
             const lockStatus = document.getElementById('admin-lock-status');
-            lockStatus.innerText = `🔓 Status Paket: Paket A (${appData.packetLocks.A ? 'Terkunci' : 'Terbuka'}), Paket B (${appData.packetLocks.B ? 'Terkunci' : 'Terbuka'}), Paket C (${appData.packetLocks.C ? 'Terkunci' : 'Terbuka'})`;
+
+            if (appData.isLocked) {
+                lockBtn.innerText = "Buka Soal";
+                lockBtn.className = "btn btn-warning";
+                lockStatus.className = "status-lock status-locked";
+                lockStatus.innerText = "🔒 Status Akses Ujian: TERKUNCI (Siswa tidak bisa mengakses/memilih soal)";
+            } else {
+                lockBtn.innerText = "Kunci Soal";
+                lockBtn.className = "btn btn-danger";
+                lockStatus.className = "status-lock status-unlocked";
+                lockStatus.innerText = "🔓 Status Akses Ujian: TERBUKA (Siswa dapat mengakses soal)";
+            }
 
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
 
-            let hasValidScores = false;
             let highScoresCount = 0;
             let lowScoresCount = 0;
 
@@ -1205,7 +1106,6 @@
 
                 [scoreA, scoreB, scoreC].forEach(s => {
                     if (s !== undefined && s !== null) {
-                        hasValidScores = true;
                         if (s >= 75) highScoresCount++;
                         else lowScoresCount++;
                     }
@@ -1222,29 +1122,21 @@
                 tbody.appendChild(tr);
             });
 
-            renderChart(hasValidScores, highScoresCount, lowScoresCount);
+            renderChart(highScoresCount, lowScoresCount);
         }
 
-        function renderChart(hasValidScores, high, low) {
+        function renderChart(high, low) {
             const ctx = document.getElementById('gradeChart').getContext('2d');
             
             if (chartInstance) chartInstance.destroy();
-
-            // Aturan 1: Grafik admin default full merah. Biru jalan mendorong merah jika sudah diisi benar.
-            let dataValues = [0, 100]; // Default full merah
-            let bgColors = ['#007bff', '#dc3545'];
-
-            if (hasValidScores && (high > 0 || low > 0)) {
-                dataValues = [high, low];
-            }
 
             chartInstance = new Chart(ctx, {
                 type: 'pie',
                 data: {
                     labels: ['Nilai Tinggi (≥75)', 'Nilai Rendah (<75)'],
                     datasets: [{
-                        data: dataValues,
-                        backgroundColor: bgColors,
+                        data: [high, low],
+                        backgroundColor: ['#007bff', '#dc3545'],
                     }]
                 },
                 options: {
@@ -1254,16 +1146,16 @@
             });
         }
 
+        // Auto Refresh Data Admin & Cek Perintah Force Finish Setiap Detik
         let lastTriggerCheck = appData.forceFinishTrigger;
         setInterval(() => {
-            let remoteData = JSON.parse(localStorage.getItem('cbt_app_data'));
-            if (!remoteData) return;
-            appData = remoteData;
+            appData = JSON.parse(localStorage.getItem('cbt_app_data')) || { isLocked: false, forceFinishTrigger: 0, results: {} };
             
             if (currentUser && currentUser.isAdmin) {
                 updateAdminView();
             } else if (currentUser && !currentUser.isAdmin) {
-                checkPacketLocks();
+                checkLockStatus();
+                // Jika admin menekan tombol "Selesaikan Semua Ujian"
                 if (appData.forceFinishTrigger > lastTriggerCheck) {
                     lastTriggerCheck = appData.forceFinishTrigger;
                     if (currentPacket) {
