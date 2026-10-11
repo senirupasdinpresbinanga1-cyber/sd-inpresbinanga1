@@ -17,7 +17,7 @@
         body {
             background-color: #f0f2f5;
             color: #333;
-            user-select: none; /* Mencegah seleksi teks saat ujian */
+            user-select: none;
         }
 
         .container {
@@ -26,7 +26,6 @@
             padding: 20px;
         }
 
-        /* Screen Management */
         .screen {
             display: none;
         }
@@ -35,7 +34,6 @@
             display: block;
         }
 
-        /* Card Component */
         .card {
             background: white;
             padding: 25px;
@@ -44,16 +42,30 @@
             margin-bottom: 20px;
         }
 
-        /* Login Screen */
         .login-box {
             max-width: 400px;
-            margin: 80px auto;
+            margin: 50px auto;
             text-align: center;
         }
 
+        .logo-img {
+            max-width: 100px;
+            height: auto;
+            margin-bottom: 15px;
+            object-fit: contain;
+        }
+
         .login-box h2 {
-            margin-bottom: 20px;
             color: #1a73e8;
+            margin-bottom: 5px;
+        }
+
+        .sub-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
         .form-group {
@@ -108,7 +120,6 @@
             background-color: #e0a800;
         }
 
-        /* Packet Selection */
         .packet-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -137,7 +148,6 @@
             margin-bottom: 10px;
         }
 
-        /* Exam Layout */
         .exam-header {
             display: flex;
             justify-content: space-between;
@@ -199,7 +209,6 @@
             resize: vertical;
         }
 
-        /* Number Navigation Grid (3 Columns Horizontal Scroll / Layout) */
         .nav-grid-container {
             max-height: 400px;
             overflow-y: auto;
@@ -238,7 +247,6 @@
             margin-top: 20px;
         }
 
-        /* Admin Dashboard */
         .admin-controls {
             display: flex;
             gap: 10px;
@@ -255,10 +263,10 @@
             font-size: 12px;
         }
 
-        .bg-sangat-baik { background-color: #28a745; } /* Hijau */
-        .bg-baik { background-color: #ffc107; color: #000; } /* Kuning */
-        .bg-cukup { background-color: #fd7e14; } /* Orange */
-        .bg-kurang { background-color: #dc3545; } /* Merah */
+        .bg-sangat-baik { background-color: #28a745; }
+        .bg-baik { background-color: #ffc107; color: #000; }
+        .bg-cukup { background-color: #fd7e14; }
+        .bg-kurang { background-color: #dc3545; }
 
         table {
             width: 100%;
@@ -281,7 +289,7 @@
 
         .chart-container {
             width: 100%;
-            max-width: 350px;
+            max-width: 300px;
             margin: 20px auto;
         }
 
@@ -295,6 +303,16 @@
 
         .status-unlocked { background-color: #d4edda; color: #155724; }
         .status-locked { background-color: #f8d7da; color: #721c24; }
+
+        /* Review Item styling */
+        .review-item {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+        }
+        .review-correct { background-color: #d4edda; border-color: #c3e6cb; }
+        .review-incorrect { background-color: #f8d7da; border-color: #f5c6cb; }
     </style>
 </head>
 <body>
@@ -303,7 +321,10 @@
         <!-- 1. LOGIN SCREEN -->
         <div id="screen-login" class="screen active">
             <div class="card login-box">
+                <!-- Logo Manual: Pastikan ada file logo.png di folder yang sama atau ganti path -->
+                <img src="logo.png" alt="Logo Sekolah" class="logo-img" onerror="this.style.display='none'">
                 <h2>CBT Ujian Online</h2>
+                <div class="sub-title">TES KEMAMPUAN AKADEMIK 2026</div>
                 <div class="form-group">
                     <label>NISN / Username</label>
                     <input type="text" id="login-nisn" placeholder="Masukkan NISN / admin">
@@ -320,9 +341,10 @@
         <div id="screen-packets" class="screen">
             <div class="card">
                 <h2>Selamat Datang, <span id="student-name"></span>!</h2>
+                <div class="sub-title" style="margin-bottom:10px;">TES KEMAMPUAN AKADEMIK 2026</div>
                 <p>Silahkan pilih paket ujian yang tersedia:</p>
                 <div id="lock-warning" class="status-lock status-locked" style="display:none; margin-top:15px;">
-                    🔒 Ujian saat ini SEDANG DIKUNCI oleh Panitia. Mohon tunggu arahan.
+                    🔒 Ujian saat ini SEDANG DIKUNCI oleh Panitia. Anda tidak dapat memilih paket ujian.
                 </div>
                 <div class="packet-grid">
                     <div class="packet-card" onclick="selectPacket('A')">
@@ -357,10 +379,8 @@
                     <h4 id="question-number">Soal Nomor 1</h4>
                     <p id="question-text" style="margin-top: 15px; font-size: 16px; line-height: 1.5;"></p>
                     
-                    <!-- Pilihan Ganda -->
                     <ul id="options-container" class="options-list"></ul>
                     
-                    <!-- Uraian -->
                     <div id="essay-container" style="display: none;">
                         <textarea id="essay-answer" class="essay-input" placeholder="Tuliskan jawaban Anda di sini..." oninput="saveEssayAnswer()"></textarea>
                     </div>
@@ -371,7 +391,6 @@
                     </div>
                 </div>
 
-                <!-- Navigation Sidebar (3 Baris ke samping) -->
                 <div class="card">
                     <h4>Navigasi Soal</h4>
                     <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Grid 3 Baris Ke Samping</p>
@@ -382,14 +401,42 @@
             </div>
         </div>
 
+        <!-- 3B. STUDENT RESULT & REVIEW SCREEN -->
+        <div id="screen-result" class="screen">
+            <div class="card" style="max-width: 800px; margin: 20px auto;">
+                <h2>Hasil Ujian Paket <span id="res-packet-name"></span></h2>
+                <div style="font-size: 24px; font-weight: bold; margin: 15px 0; color: #1a73e8;">
+                    Nilai Anda: <span id="res-score"></span> / 100
+                </div>
+                
+                <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <p><b>Kategori Passing Grade:</b> <span id="res-badge"></span></p>
+                        <p style="margin-top: 8px; color: #666; font-size: 14px;">Grafik di samping menunjukkan komposisi jawaban benar dan salah Anda secara proporsional.</p>
+                    </div>
+                    <div style="width: 200px; height: 200px; margin: 0 auto;">
+                        <canvas id="studentResultChart"></canvas>
+                    </div>
+                </div>
+
+                <hr style="margin: 20px 0;">
+                <h3>Review Kunci Jawaban (Benar & Salah)</h3>
+                <div id="review-container" style="max-height: 400px; overflow-y: auto; margin-top: 15px;"></div>
+
+                <button class="btn" style="margin-top: 20px;" onclick="showScreen('screen-packets')">Kembali ke Pemilihan Paket</button>
+            </div>
+        </div>
+
         <!-- 4. ADMIN DASHBOARD SCREEN -->
         <div id="screen-admin" class="screen">
             <div class="card">
                 <h2>Dashboard Admin Panitia Ujian</h2>
+                <div class="sub-title">TES KEMAMPUAN AKADEMIK 2026</div>
                 <hr style="margin: 15px 0;">
                 
                 <div class="admin-controls">
                     <button id="btn-toggle-lock" class="btn btn-warning" style="width: auto;" onclick="toggleExamLock()">Kunci Soal</button>
+                    <button class="btn btn-warning" style="width: auto; background-color: #17a2b8; color: white;" onclick="forceFinishAllStudents()">Selesaikan Semua Ujian</button>
                     <button class="btn btn-danger" style="width: auto;" onclick="resetAllActivity()">Reset / Hapus Semua Aktivitas</button>
                     <button class="btn" style="width: auto; background-color: #6c757d;" onclick="logout()">Logout Admin</button>
                 </div>
@@ -432,7 +479,6 @@
         // 1. DATA MASTER SISWA (KELAS 6A & 6B)
         // ==========================================
         const studentsList = [
-            // Kelas 6A
             { nisn: "3156000315", name: "ABID AQILAH WAHYUDI" },
             { nisn: "3147561743", name: "AINUN HAKIMAH" },
             { nisn: "0142128968", name: "AINUN NUR AZIZAH A" },
@@ -459,7 +505,6 @@
             { nisn: "0141999506", name: "SYAFWAAN SABQI" },
             { nisn: "3158929490", name: "YUSUF GIBRAN Y" },
             { nisn: "0141239341", name: "ZAM ZAMMY KHAIRIL MALIKI ABHAL" },
-            // Kelas 6B
             { nisn: "3140466270", name: "AIRIN RAHMI ANDINI" },
             { nisn: "3144872142", name: "ALKAUSAR" },
             { nisn: "3145816553", name: "ANINDYA JINAN RISQI" },
@@ -493,7 +538,6 @@
         // ==========================================
         const rawQuestions = {
             A: [
-                // Agama Islam (15 PG, 5 Uraian)
                 { type: 'pg', text: "Rukun iman yang keenam adalah iman kepada ....", options: ["A. Rasul", "B. Hari akhir", "C. Qada dan Qadar", "D. Malaikat"], key: 2 },
                 { type: 'pg', text: "Rudi sudah belajar dengan giat, tetapi nilai ulangannya belum sesuai harapan. Sikap yang sesuai dengan iman kepada Qada dan Qadar adalah ....", options: ["A. Menyalahkan gurunya", "B. Berhenti belajar", "C. Mencontek agar nilai naik", "D. Bersabar, mengevaluasi diri, dan tetap berusaha"], key: 3 },
                 { type: 'pg', text: "Asmaul Husna Ar-Rahman berarti ....", options: ["A. Maha Pengasih", "B. Maha Melihat", "C. Maha Mendengar", "D. Maha Kuasa"], key: 0 },
@@ -515,7 +559,6 @@
                 { type: 'essay', text: "Sebutkan tiga hal yang dapat membatalkan puasa!", keywords: ["makan", "minum", "muntah", "haid", "sengaja"] },
                 { type: 'essay', text: "Saat ujian, Hana melihat temannya menyontek. Apa yang sebaiknya dilakukan Hana menurut akhlak terpuji? Jelaskan alasannya!", keywords: ["mengingatkan", "melapor", "guru", "jujur", "akhlak"] },
 
-                // Pancasila (15 PG, 5 Uraian)
                 { type: 'pg', text: "Sila ketiga Pancasila berbunyi ....", options: ["A. Kemanusiaan yang adil dan beradab", "B. Persatuan Indonesia", "C. Kerakyatan yang dipimpin...", "D. Keadilan sosial..."], key: 1 },
                 { type: 'pg', text: "Pak RT mengajak seluruh warga membersihkan selokan bersama-sama tanpa membedakan suku dan agama. Nilai yang tampak dari kegiatan tersebut adalah ....", options: ["A. Ketuhanan semata", "B. Kekuasaan", "C. Persaingan", "D. Persatuan dan gotong royong"], key: 3 },
                 { type: 'pg', text: "Berikut yang termasuk hak warga negara adalah ....", options: ["A. Mendapatkan pendidikan", "B. Membayar pajak", "C. Menaati hukum", "D. Membela negara"], key: 0 },
@@ -537,7 +580,6 @@
                 { type: 'essay', text: "Seorang siswa baru berbeda suku dan logat bicaranya sering diejek. Analisislah tindakan tersebut dan berikan solusinya!", keywords: ["perundungan", "sila", "menghargai", "minta maaf", "berteman"] },
                 { type: 'essay', text: "Jelaskan pentingnya gotong royong dan berikan dua contoh penerapannya di lingkungan tempat tinggalmu!", keywords: ["ringan", "persatuan", "kerja bakti", "membantu", "tetangga"] },
 
-                // Bahasa Indonesia (15 PG, 5 Uraian)
                 { type: 'pg', text: "Gagasan utama bacaan 'Hutan Mangrove Penjaga Pantai' adalah ....", options: ["A. Mangrove banyak ditebang", "B. Nelayan kesulitan mencari ikan", "C. Pentingnya hutan mangrove bagi pesisir", "D. Warga Desa Bahari menanam bibit"], key: 2 },
                 { type: 'pg', text: "Manfaat akar mangrove menurut bacaan adalah ....", options: ["A. Menahan ombak sehingga abrasi berkurang", "B. Menyuburkan tambak", "C. Memperluas permukiman", "D. Menarik wisatawan"], key: 0 },
                 { type: 'pg', text: "Hasil tangkapan nelayan menurun karena ....", options: ["A. Ombak semakin tenang", "B. Warga menanam bibit mangrove", "C. Jumlah nelayan bertambah", "D. Mangrove ditebang sehingga tempat berkembang biak ikan hilang"], key: 3 },
@@ -560,7 +602,6 @@
                 { type: 'essay', text: "Kembangkan gagasan utama 'Membaca bermanfaat bagi kita' menjadi satu paragraf!", keywords: ["membaca", "ilmu", "pengetahuan", "wawasan", "buku"] }
             ],
             B: [
-                // Matematika (15 PG, 5 Uraian)
                 { type: 'pg', text: "Suhu di puncak gunung -3°C, sedangkan di kaki gunung 25°C. Selisih suhunya adalah ....", options: ["A. 22°C", "B. 25°C", "C. 28°C", "D. 30°C"], key: 2 },
                 { type: 'pg', text: "Sebuah kapal selam berada 40 m di bawah permukaan laut. Kapal naik 15 m, lalu turun lagi 30 m. Posisi akhir kapal selam adalah ....", options: ["A. 55 m di bawah permukaan laut", "B. 25 m di bawah permukaan laut", "C. 55 m di atas permukaan laut", "D. 85 m di bawah permukaan laut"], key: 0 },
                 { type: 'pg', text: "Hasil dari (-12) + 8 - (-5) adalah ....", options: ["A. -9", "B. -1", "C. 1", "D. 9"], key: 2 },
@@ -582,7 +623,6 @@
                 { type: 'essay', text: "Kolam balok 12m x 6m x 1,5m. Pompa mengalirkan 9 m³/jam. Berapa jam sampai penuh?", keywords: ["108", "12", "jam"] },
                 { type: 'essay', text: "Dari 40 siswa: 16 olahraga, 12 membaca, 8 menggambar, sisa hobi lain. Tentukan persentase dan hobi paling diminati!", keywords: ["40%", "30%", "20%", "10%", "olahraga"] },
 
-                // IPAS (15 PG, 5 Uraian)
                 { type: 'pg', text: "Organ tubuh yang berfungsi memompa darah ke seluruh tubuh adalah ....", options: ["A. Paru-paru", "B. Jantung", "C. Lambung", "D. Ginjal"], key: 1 },
                 { type: 'pg', text: "Rafi berlari 10 menit, napas dan detak jantungnya meningkat karena ....", options: ["A. Sakit", "B. Paru-paru rusak", "C. Jantung lelah", "D. Otot butuh lebih banyak oksigen"], key: 3 },
                 { type: 'pg', text: "Fungsi utama usus halus adalah ....", options: ["A. Menyerap sari-sari makanan", "B. Menyimpan sisa makanan", "C. Menyaring darah", "D. Memompa darah"], key: 0 },
@@ -604,7 +644,6 @@
                 { type: 'essay', text: "Sebutkan 3 contoh perubahan energi di rumah!", keywords: ["lampu", "cahaya", "setrika", "panas", "kipas", "gerak"] },
                 { type: 'essay', text: "Berikan 3 solusi penanganan sungai yang keruh dan berbau!", keywords: ["sampah", "kerja bakti", "limbah", "dilarang"] },
 
-                // PJOK (15 PG, 5 Uraian)
                 { type: 'pg', text: "Berikut yang termasuk permainan bola besar adalah ....", options: ["A. Kasti", "B. Bulu tangkis", "C. Sepak bola", "D. Tenis meja"], key: 2 },
                 { type: 'pg', text: "Teknik dasar mengoper bola pendek dalam sepak bola menggunakan ....", options: ["A. Kaki bagian dalam", "B. Ujung jari kaki", "C. Tumit", "D. Lutut"], key: 0 },
                 { type: 'pg', text: "Pemain kasti yang bertugas melambungkan bola disebut ....", options: ["A. Penjaga", "B. Pemukul", "C. Penangkap", "D. Pelambung"], key: 3 },
@@ -627,7 +666,6 @@
                 { type: 'essay', text: "Susun jadwal sederhana harian pola hidup sehat!", keywords: ["makan", "tidur", "olahraga", "belajar"] }
             ],
             C: [
-                // Seni Budaya (15 PG, 5 Uraian)
                 { type: 'pg', text: "Unsur seni rupa yang terbentuk dari titik yang bergerak adalah ....", options: ["A. Bidang", "B. Garis", "C. Warna", "D. Tekstur"], key: 1 },
                 { type: 'pg', text: "Warna primer terdiri atas ....", options: ["A. Hijau, jingga, ungu", "B. Hitam, putih, abu", "C. Merah, hijau, biru", "D. Merah, kuning, biru"], key: 3 },
                 { type: 'pg', text: "Campuran warna merah dan kuning menghasilkan warna ....", options: ["A. Jingga", "B. Hijau", "C. Ungu", "D. Cokelat"], key: 0 },
@@ -649,7 +687,6 @@
                 { type: 'essay', text: "Analisislah manfaat tempat pensil dari kaleng bekas!", keywords: ["sampah", "kreatif", "hemat", "lingkungan"] },
                 { type: 'essay', text: "Mengapa kain Sutra Mandar perlu dilestarikan dan bagaimana caranya?", keywords: ["warisan", "budaya", "ekonomi", "pakai", "belajar"] },
 
-                // Bahasa Inggris (15 PG, 5 Uraian)
                 { type: 'pg', text: "How old is Sinta? (Based on text: Sinta is 12 years old)", options: ["A. Eleven", "B. Twelve", "C. Thirteen", "D. Ten"], key: 1 },
                 { type: 'pg', text: "What time does Sinta wake up? (Text: 5.30)", options: ["A. 5.00", "B. 6.00", "C. 6.30", "D. 5.30"], key: 3 },
                 { type: 'pg', text: "How does Sinta go to school?", options: ["A. By bicycle", "B. By bus", "C. On foot", "D. By motorbike"], key: 0 },
@@ -676,25 +713,22 @@
         // ==========================================
         // 3. STATE APLIKASI
         // ==========================================
-        let currentUser = null; // { nisn, name, isAdmin }
+        let currentUser = null;
         let currentPacket = null;
         let activeQuestions = [];
         let currentQuestionIndex = 0;
-        let studentAnswers = {}; // { questionIndex: answer }
+        let studentAnswers = {};
 
-        // LocalStorage Data Management
         let appData = JSON.parse(localStorage.getItem('cbt_app_data')) || {
             isLocked: false,
-            results: {} // { nisn: { name, scores: { A: score, B: score, C: score } } }
+            forceFinishTrigger: 0,
+            results: {}
         };
 
         function saveData() {
             localStorage.setItem('cbt_app_data', JSON.stringify(appData));
         }
 
-        // ==========================================
-        // 4. KUNCI LAYAR & KEAMANAN
-        // ==========================================
         function enterFullscreen() {
             let elem = document.documentElement;
             if (elem.requestFullscreen) {
@@ -704,19 +738,14 @@
             }
         }
 
-        // Deteksi Pindah Tab / Layar
         document.addEventListener("visibilitychange", function() {
             if (document.hidden && currentUser && !currentUser.isAdmin && currentPacket) {
-                alert("PERINGATAN MANDIRI: Anda kedapatan membuka tab/aplikasi lain! Tetap fokus pada ujian.");
+                alert("PERINGATAN: Anda kedapatan membuka tab/aplikasi lain! Tetap fokus pada ujian.");
             }
         });
 
-        // Block Right Click
         document.addEventListener('contextmenu', event => event.preventDefault());
 
-        // ==========================================
-        // 5. SISTEM LOGIN & NAVIGASI SCREEN
-        // ==========================================
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
@@ -737,10 +766,7 @@
             if (student && pass === '2026') {
                 currentUser = { nisn: student.nisn, name: student.name, isAdmin: false };
                 document.getElementById('student-name').innerText = student.name;
-                
-                // Minta Fullscreen saat Login Siswa
                 enterFullscreen();
-                
                 checkLockStatus();
                 showScreen('screen-packets');
             } else {
@@ -765,7 +791,6 @@
             }
         }
 
-        // Shuffle Array (Acak Soal & Pilihan)
         function shuffle(array) {
             let arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
@@ -775,20 +800,15 @@
             return arr;
         }
 
-        // ==========================================
-        // 6. MODUL UJIAN SISWA
-        // ==========================================
         function selectPacket(packet) {
             if (appData.isLocked) {
-                alert("Soal saat ini dikunci oleh Panitia Admin. Hubungi panitia!");
+                alert("Soal saat ini SEDANG DIKUNCI oleh Panitia Admin. Anda tidak dapat memulai/melanjutkan ujian.");
                 return;
             }
 
             currentPacket = packet;
             studentAnswers = {};
             currentQuestionIndex = 0;
-
-            // Acak Soal
             activeQuestions = shuffle(rawQuestions[packet]);
 
             document.getElementById('exam-title').innerText = `Ujian Paket ${packet}`;
@@ -816,7 +836,6 @@
             currentQuestionIndex = index;
             const q = activeQuestions[index];
 
-            // Update Active Nav Button
             document.querySelectorAll('.nav-btn').forEach((b, i) => {
                 b.classList.remove('active');
                 if (i === index) b.classList.add('active');
@@ -834,8 +853,8 @@
                 optionsContainer.innerHTML = '';
 
                 q.options.forEach((opt, oIdx) => {
-                    const li = document.createElement('li');
                     const isChecked = studentAnswers[index] === oIdx ? 'checked' : '';
+                    const li = document.createElement('li');
                     li.innerHTML = `
                         <label>
                             <input type="radio" name="option" value="${oIdx}" ${isChecked} onchange="savePgAnswer(${oIdx})">
@@ -882,24 +901,34 @@
             }
         }
 
-        // Penilaian Otomatis (PG & Kata Kunci Uraian)
-        function calculateScore() {
+        function calculateDetailedScore() {
             let totalPgScore = 0;
             let totalEssayScore = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
 
-            // Hitung Jumlah Soal berdasarkan Tipe
             let pgCount = activeQuestions.filter(q => q.type === 'pg').length;
             let essayCount = activeQuestions.filter(q => q.type === 'essay').length;
 
-            let pgWeight = 30 / (pgCount || 1); // Maksimal Nilai PG = 30
-            let essayWeight = 70 / (essayCount || 1); // Maksimal Nilai Uraian = 70
+            let pgWeight = 30 / (pgCount || 1);
+            let essayWeight = 70 / (essayCount || 1);
+
+            let reviewDetails = [];
 
             activeQuestions.forEach((q, idx) => {
                 const ans = studentAnswers[idx];
+                let isCorrect = false;
+                let detailNote = "";
+
                 if (q.type === 'pg') {
                     if (ans === q.key) {
                         totalPgScore += pgWeight;
+                        isCorrect = true;
+                        correctCount++;
+                    } else {
+                        incorrectCount++;
                     }
+                    detailNote = `Jawaban Anda: ${ans !== undefined ? q.options[ans] : 'Tidak dijawab'} | Kunci: ${q.options[q.key]}`;
                 } else if (q.type === 'essay') {
                     if (ans && ans.trim() !== '') {
                         let matchedKeywords = 0;
@@ -912,43 +941,95 @@
                         });
 
                         if (matchedKeywords > 0) {
-                            // Menghitung Proporsi Kata Kunci yang Cocok
                             let ratio = matchedKeywords / q.keywords.length;
                             if (ratio > 1) ratio = 1;
                             totalEssayScore += (essayWeight * ratio);
+                            if (ratio >= 0.5) { isCorrect = true; correctCount++; } else { incorrectCount++; }
                         } else {
-                            // Tetap Ada Nilai Sedikit jika Terisi (Sesuai Aturan Kebutuhan)
                             totalEssayScore += (essayWeight * 0.15); 
+                            incorrectCount++;
                         }
+                        detailNote = `Jawaban Uraian Anda: "${ans}"`;
+                    } else {
+                        incorrectCount++;
+                        detailNote = `Tidak dijawab`;
                     }
                 }
+
+                reviewDetails.push({
+                    question: q.text,
+                    isCorrect: isCorrect,
+                    note: detailNote
+                });
             });
 
             let finalScore = Math.round(totalPgScore + totalEssayScore);
-            return finalScore > 100 ? 100 : finalScore; // Maksimal 100
+            if (finalScore > 100) finalScore = 100;
+
+            return { score: finalScore, correct: correctCount, incorrect: incorrectCount, review: reviewDetails };
         }
+
+        let studentResultChartInstance = null;
 
         function finishExam() {
             if (confirm("Apakah Anda yakin ingin menyelesaikan ujian paket ini?")) {
-                const score = calculateScore();
+                const resData = calculateDetailedScore();
 
-                // Simpan Nilai Siswa
                 if (!appData.results[currentUser.nisn]) {
                     appData.results[currentUser.nisn] = {
                         name: currentUser.name,
                         scores: {}
                     };
                 }
-                appData.results[currentUser.nisn].scores[currentPacket] = score;
+                appData.results[currentUser.nisn].scores[currentPacket] = resData.score;
                 saveData();
 
-                alert(`Ujian Selesai!\nNilai Anda untuk Paket ${currentPacket} adalah: ${score}`);
-                showScreen('screen-packets');
+                // Tampilkan Screen Hasil & Review
+                document.getElementById('res-packet-name').innerText = currentPacket;
+                document.getElementById('res-score').innerText = resData.score;
+                
+                // Kategori Badge
+                let badgeHTML = "";
+                if (resData.score >= 85) badgeHTML = `<span class="status-badge bg-sangat-baik">Sangat Baik</span>`;
+                else if (resData.score >= 70) badgeHTML = `<span class="status-badge bg-baik">Baik</span>`;
+                else if (resData.score >= 50) badgeHTML = `<span class="status-badge bg-cukup">Cukup Baik</span>`;
+                else badgeHTML = `<span class="status-badge bg-kurang">Kurang Baik</span>`;
+                document.getElementById('res-badge').innerHTML = badgeHTML;
+
+                // Render Chart Personal
+                const ctxRes = document.getElementById('studentResultChart').getContext('2d');
+                if (studentResultChartInstance) studentResultChartInstance.destroy();
+                studentResultChartInstance = new Chart(ctxRes, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Benar / Tinggi', 'Salah / Rendah'],
+                        datasets: [{
+                            data: [resData.correct, resData.incorrect],
+                            backgroundColor: ['#007bff', '#dc3545']
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                });
+
+                // Render Review List
+                const reviewContainer = document.getElementById('review-container');
+                reviewContainer.innerHTML = '';
+                resData.review.forEach((item, i) => {
+                    const div = document.createElement('div');
+                    div.className = `review-item ${item.isCorrect ? 'review-correct' : 'review-incorrect'}`;
+                    div.innerHTML = `
+                        <p><b>Soal ${i+1}:</b> ${item.question}</p>
+                        <p style="font-size:13px; margin-top:4px;">${item.note} - <b>${item.isCorrect ? '✔ Benar / Sesuai' : '✖ Kurang / Salah'}</b></p>
+                    `;
+                    reviewContainer.appendChild(div);
+                });
+
+                showScreen('screen-result');
             }
         }
 
         // ==========================================
-        // 7. MODUL ADMIN DASHBOARD & LIVE MONITORING
+        // 4. MODUL ADMIN DASHBOARD & LIVE MONITORING
         // ==========================================
         let chartInstance = null;
 
@@ -960,6 +1041,16 @@
             appData.isLocked = !appData.isLocked;
             saveData();
             updateAdminView();
+        }
+
+        function forceFinishAllStudents() {
+            if (confirm("PERHATIAN: Apakah Anda yakin ingin memaksa SEMUA siswa menyelesaikan ujian serentak sekarang?")) {
+                appData.isLocked = true;
+                appData.forceFinishTrigger = Date.now();
+                saveData();
+                updateAdminView();
+                alert("Perintah selesai serentak telah dikirim ke semua sesi siswa aktif.");
+            }
         }
 
         function resetAllActivity() {
@@ -977,25 +1068,15 @@
             let category = "";
             let badgeClass = "";
 
-            if (score >= 85) {
-                category = "Sangat Baik";
-                badgeClass = "bg-sangat-baik";
-            } else if (score >= 70) {
-                category = "Baik";
-                badgeClass = "bg-baik";
-            } else if (score >= 50) {
-                category = "Cukup Baik";
-                badgeClass = "bg-cukup";
-            } else {
-                category = "Kurang Baik";
-                badgeClass = "bg-kurang";
-            }
+            if (score >= 85) { category = "Sangat Baik"; badgeClass = "bg-sangat-baik"; }
+            else if (score >= 70) { category = "Baik"; badgeClass = "bg-baik"; }
+            else if (score >= 50) { category = "Cukup Baik"; badgeClass = "bg-cukup"; }
+            else { category = "Kurang Baik"; badgeClass = "bg-kurang"; }
 
             return `${score} - <span class="status-badge ${badgeClass}">${category}</span>`;
         }
 
         function updateAdminView() {
-            // Lock Status UI
             const lockBtn = document.getElementById('btn-toggle-lock');
             const lockStatus = document.getElementById('admin-lock-status');
 
@@ -1003,7 +1084,7 @@
                 lockBtn.innerText = "Buka Soal";
                 lockBtn.className = "btn btn-warning";
                 lockStatus.className = "status-lock status-locked";
-                lockStatus.innerText = "🔒 Status Akses Ujian: TERKUNCI (Siswa tidak bisa mengakses soal)";
+                lockStatus.innerText = "🔒 Status Akses Ujian: TERKUNCI (Siswa tidak bisa mengakses/memilih soal)";
             } else {
                 lockBtn.innerText = "Kunci Soal";
                 lockBtn.className = "btn btn-danger";
@@ -1011,12 +1092,11 @@
                 lockStatus.innerText = "🔓 Status Akses Ujian: TERBUKA (Siswa dapat mengakses soal)";
             }
 
-            // Update Tabel Passing Grade
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
 
-            let highScoresCount = 0; // Biru (>=75)
-            let lowScoresCount = 0;  // Merah (<75)
+            let highScoresCount = 0;
+            let lowScoresCount = 0;
 
             studentsList.forEach(student => {
                 const studentResult = appData.results[student.nisn] || { scores: {} };
@@ -1024,7 +1104,6 @@
                 const scoreB = studentResult.scores['B'];
                 const scoreC = studentResult.scores['C'];
 
-                // Count for chart
                 [scoreA, scoreB, scoreC].forEach(s => {
                     if (s !== undefined && s !== null) {
                         if (s >= 75) highScoresCount++;
@@ -1043,16 +1122,13 @@
                 tbody.appendChild(tr);
             });
 
-            // Update Chart Pie
             renderChart(highScoresCount, lowScoresCount);
         }
 
         function renderChart(high, low) {
             const ctx = document.getElementById('gradeChart').getContext('2d');
             
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
+            if (chartInstance) chartInstance.destroy();
 
             chartInstance = new Chart(ctx, {
                 type: 'pie',
@@ -1060,26 +1136,34 @@
                     labels: ['Nilai Tinggi (≥75)', 'Nilai Rendah (<75)'],
                     datasets: [{
                         data: [high, low],
-                        backgroundColor: ['#007bff', '#dc3545'], // Biru & Merah
+                        backgroundColor: ['#007bff', '#dc3545'],
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                        }
-                    }
+                    plugins: { legend: { position: 'bottom' } }
                 }
             });
         }
 
-        // Auto Refresh Data Admin Setiap Detik
+        // Auto Refresh Data Admin & Cek Perintah Force Finish Setiap Detik
+        let lastTriggerCheck = appData.forceFinishTrigger;
         setInterval(() => {
+            appData = JSON.parse(localStorage.getItem('cbt_app_data')) || { isLocked: false, forceFinishTrigger: 0, results: {} };
+            
             if (currentUser && currentUser.isAdmin) {
-                // Fetch fresh data from LocalStorage
-                appData = JSON.parse(localStorage.getItem('cbt_app_data')) || { isLocked: false, results: {} };
                 updateAdminView();
+            } else if (currentUser && !currentUser.isAdmin) {
+                checkLockStatus();
+                // Jika admin menekan tombol "Selesaikan Semua Ujian"
+                if (appData.forceFinishTrigger > lastTriggerCheck) {
+                    lastTriggerCheck = appData.forceFinishTrigger;
+                    if (currentPacket) {
+                        alert("Ujian dihentikan serentak oleh Panitia Admin!");
+                        showScreen('screen-packets');
+                        currentPacket = null;
+                    }
+                }
             }
         }, 1000);
     </script>
