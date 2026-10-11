@@ -221,13 +221,14 @@
             background-color: #bd2130;
         }
 
+        /* Tombol Hijau */
         .btn-warning {
-            background-color: #ffc107;
-            color: #212529;
+            background-color: #28a745;
+            color: #fff;
         }
 
         .btn-warning:hover {
-            background-color: #e0a800;
+            background-color: #218838;
         }
 
         .btn-sm {
@@ -737,7 +738,7 @@
             { nisn: "3145816553", name: "ANINDYA JINAN RISQI" },
             { nisn: "3155916287", name: "ANNISA RAMADANI" },
             { nisn: "3153814142", name: "ANNISA SALSABILA" },
-            { nisn: "3153207429", name: "ASYKAR ALFATIH" },
+            { nisn: "3153207429", name: "Asykar Alfatih" },
             { nisn: "0157237608", name: "CAHAYA AURA NAZHIFA" },
             { nisn: "0144017685", name: "DEWA AYU RESTTI GAURI" },
             { nisn: "3140013762", name: "DIAN AFIKA" },
@@ -756,7 +757,7 @@
             { nisn: "3146513265", name: "MUH. MIRZA UKAIL" },
             { nisn: "3142351906", name: "MUHAMMAD ALGHAZHALY" },
             { nisn: "3157774636", name: "MUHAMMAD NUR" },
-            { nisn: "0127036921", name: "SITI ALMIRAH" },
+            { nisn: "0127036921", name: "Siti Almirah" },
             { nisn: "0157732812", name: "UTARI MAHYA SANJAYA" }
         ];
 
@@ -945,6 +946,18 @@
         function saveData() {
             localStorage.setItem('cbt_app_data', JSON.stringify(appData));
         }
+
+        // Sinkronisasi data real-time jika dibuka di tab/browser/laptop berbeda dalam 1 jaringan lokal (atau file yang sama)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'cbt_app_data') {
+                appData = JSON.parse(e.newValue) || appData;
+                if (currentUser && !currentUser.isAdmin) {
+                    checkLockStatus();
+                } else if (currentUser && currentUser.isAdmin) {
+                    updateAdminView();
+                }
+            }
+        });
 
         function enterFullscreen() {
             let elem = document.documentElement;
@@ -1503,7 +1516,7 @@
                         btn.className = "btn btn-warning";
                     } else {
                         btn.innerText = `Kunci Soal Paket ${pkt}`;
-                        btn.className = "btn btn-danger";
+                        btn.className = "btn btn-warning";
                     }
                 }
             });
@@ -1519,33 +1532,4 @@
             }
 
             const res6A = buildClassTable(class6A, 'admin-table-6a');
-            const res6B = buildClassTable(class6B, 'admin-table-6b');
-
-            let totalCompleted = res6A.completedCount + res6B.completedCount;
-            let totalUncompleted = res6A.uncompletedCount + res6B.uncompletedCount;
-
-            renderAdminPieChart(totalCompleted, totalUncompleted);
-        }
-
-        let lastTriggerCheck = appData.forceFinishTrigger;
-        setInterval(() => {
-            appData = JSON.parse(localStorage.getItem('cbt_app_data')) || { lockedPackets: { A: false, B: false, C: false }, forceFinishTrigger: 0, results: {}, activeSessions: {} };
-            
-            if (currentUser && currentUser.isAdmin) {
-                updateAdminView();
-            } else if (currentUser && !currentUser.isAdmin) {
-                checkLockStatus();
-                if (appData.forceFinishTrigger > lastTriggerCheck) {
-                    lastTriggerCheck = appData.forceFinishTrigger;
-                    if (currentPacket) {
-                        alert("Ujian dihentikan serentak oleh Panitia Admin!");
-                        exitFullscreen();
-                        showScreen('screen-packets');
-                        currentPacket = null;
-                    }
-                }
-            }
-        }, 1000);
-    </script>
-</body>
-</html>
+            const
