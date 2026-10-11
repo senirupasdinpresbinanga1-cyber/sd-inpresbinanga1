@@ -24,7 +24,7 @@
             color: #333;
             width: 100vw;
             height: 100vh;
-            overflow: hidden; 
+            overflow: hidden; /* Mengunci scrollbar utama browser */
             display: flex;
             flex-direction: column;
         }
@@ -106,7 +106,7 @@
         /* ================= KONTEN UTAMA (RATA TENGAH) ================= */
         .main-wrapper {
             flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px;
-            overflow: hidden; 
+            overflow: hidden; /* Mencegah scroll luar */
         }
         .container {
             display: flex; gap: 30px; width: 100%; max-width: 1400px; height: 100%;
@@ -124,7 +124,7 @@
         .q-badge { background: #0d6efd; color: white; padding: 8px 20px; border-radius: 20px; font-size: 18px; font-weight: 700; }
         
         .q-body {
-            padding: 30px; overflow-y: auto; flex: 1; 
+            padding: 30px; overflow-y: auto; flex: 1; /* Scroll internal jika soal super panjang */
         }
         .q-text { font-size: 18px; line-height: 1.8; margin-bottom: 35px; color: #1e293b; text-align: justify; }
 
@@ -202,13 +202,13 @@
     <!-- OVERLAY MULAI UJIAN (LAYAR PERTAMA) -->
     <div id="start-overlay" class="full-overlay">
         <div class="card">
-            <h2 style="margin-bottom: 10px; color: #0d47a1; font-size: 32px;"><i class="fas fa-desktop"></i> <span id="startOverlayTitle">Sedang Memuat Soal...</span></h2>
-            <p id="startOverlayDesc" style="color: #64748b; font-size: 16px; margin-bottom: 30px; line-height: 1.6;">
-                Sistem akan memeriksa status ujian dan masuk ke mode layar penuh (Full Screen) mutlak.<br>
+            <h2 style="margin-bottom: 10px; color: #0d47a1; font-size: 32px;"><i class="fas fa-desktop"></i> Ujian Siap Dilaksanakan</h2>
+            <p style="color: #64748b; font-size: 16px; margin-bottom: 30px; line-height: 1.6;">
+                Sistem akan masuk ke mode layar penuh (Full Screen) mutlak.<br>
                 <b>Dilarang keras keluar aplikasi atau membuka tab lain selama ujian berlangsung.</b>
             </p>
             <button class="btn-start" id="btnMulaiUjian" onclick="showWaitingRoom()" disabled>
-                <i class="fas fa-spinner fa-spin"></i> Memeriksa Status Ujian...
+                <i class="fas fa-spinner fa-spin"></i> Sedang Memuat Soal...
             </button>
         </div>
     </div>
@@ -247,7 +247,9 @@
             <div class="modal-icon" id="modalIcon"><i class="fas fa-question-circle"></i></div>
             <div class="modal-title" id="modalTitle">Konfirmasi</div>
             <div class="modal-message" id="modalMessage">Apakah Anda yakin?</div>
-            <div class="modal-actions" id="modalActions"></div>
+            <div class="modal-actions" id="modalActions">
+                <!-- Tombol akan disuntikkan via JS -->
+            </div>
         </div>
     </div>
 
@@ -283,7 +285,7 @@
         </div>
     </div>
 
-    <!-- KONTEN UTAMA -->
+    <!-- KONTEN UTAMA (RATA TENGAH & ANTI SCROLL) -->
     <div class="main-wrapper" id="main-container">
         <div class="container">
             
@@ -296,7 +298,9 @@
                 
                 <div class="q-body">
                     <div class="q-text" id="questionText">Memuat soal ujian dari server...</div>
-                    <ul class="options-list" id="optionsList"></ul>
+                    <ul class="options-list" id="optionsList">
+                        <!-- Opsi dirender JS -->
+                    </ul>
                 </div>
 
                 <div class="q-navigation">
@@ -316,7 +320,9 @@
                 </div>
                 
                 <div class="sidebar-body">
-                    <div class="number-grid" id="numberGrid"></div>
+                    <div class="number-grid" id="numberGrid">
+                        <!-- Tombol angka -->
+                    </div>
                 </div>
 
                 <div class="sidebar-footer">
@@ -328,7 +334,7 @@
         </div>
     </div>
 
-    <!-- KONTEN HASIL UJIAN -->
+    <!-- KONTEN HASIL UJIAN (PASCA SUBMIT) -->
     <div id="result-container">
         <div class="result-card">
             <h2 style="color: #10b981; font-size: 32px; margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Ujian Selesai!</h2>
@@ -348,6 +354,7 @@
                 <canvas id="studentResultChart"></canvas>
             </div>
 
+            <!-- Tombol Keluar ini kini memanggil Modal Exit, BUKAN logout instan -->
             <button class="btn-start" style="background: #dc3545; width: auto; margin: 0 auto; padding: 12px 40px;" onclick="promptExit()">
                 <i class="fas fa-sign-out-alt"></i> Selesai & Keluar
             </button>
@@ -355,8 +362,9 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycby3s6QE5t9UVK10-pr9tCtGZ5tgE8wHQMT6ywPfsvj2iMcUSr-rQArTvyVIA6M_vngfrA/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxVhowRAW6F_fXDIrMfzDghiqswer4QXY4SVr49MKYLKFw0Q__ODW9nHXkorpuBAMyMCA/exec';
 
+        // --- 1. AUTENTIKASI ---
         if (localStorage.getItem('isLoggedIn') !== 'true' || localStorage.getItem('role') !== 'siswa') {
             window.location.href = 'index.html';
         }
@@ -364,13 +372,14 @@
         document.getElementById('displayNama').innerText = localStorage.getItem('namaSiswa') || 'NAMA SISWA';
         document.getElementById('displayKelas').innerText = localStorage.getItem('kelasSiswa') || 'Kelas';
 
+        // --- 2. VARIABEL GLOBAL ---
         let currentQuestionIndex = 0;
         let examData = []; 
         let userAnswers = {}; 
         let isExamFinished = false; 
         let clockInterval;
-        let autoSyncTimer = null;
 
+        // --- 3. CUSTOM MODAL LOGIC (Anti Keluar Fullscreen) ---
         function showModal(type, title, message, onConfirm = null) {
             const modal = document.getElementById('custom-modal');
             const icon = document.getElementById('modalIcon');
@@ -399,6 +408,7 @@
         }
         function closeModal() { document.getElementById('custom-modal').style.display = 'none'; }
 
+        // --- 4. FETCH DATA SOAL ---
         window.onload = async function() {
             const formData = new FormData();
             formData.append('action', 'getSoal');
@@ -408,48 +418,18 @@
                 if (result.status === 'success') {
                     examData = result.data; 
                     const btnStart = document.getElementById('btnMulaiUjian');
-                    
-                    if (result.examStatus === 'open') {
-                        document.getElementById('startOverlayTitle').innerText = "Ujian Siap Dilaksanakan";
-                        btnStart.disabled = false;
-                        btnStart.innerHTML = '<i class="fas fa-check-circle"></i> Siap Ujian';
-                    } else {
-                        document.getElementById('startOverlayTitle').innerText = "Ujian Masih Ditutup";
-                        document.getElementById('startOverlayDesc').innerHTML = "Panitia belum membuka kunci ujian.<br>Silakan menunggu hingga tombol siap ujian aktif secara otomatis.";
-                        btnStart.disabled = true;
-                        btnStart.innerHTML = '<i class="fas fa-lock"></i> Sedang Memuat Soal (Menunggu Buka Kunci)';
-                        
-                        setInterval(checkExamStatusLive, 5000);
-                    }
-                } else { 
-                    showModal('alert', 'Error Database', 'Gagal memuat soal: ' + result.message); 
-                }
-            } catch (error) { 
-                showModal('alert', 'Error Jaringan', 'Pastikan koneksi internet stabil.'); 
-            }
-        };
-
-        async function checkExamStatusLive() {
-            if (isExamFinished) return;
-            const formData = new FormData();
-            formData.append('action', 'getSoal');
-            try {
-                const response = await fetch(scriptURL, { method: 'POST', body: formData });
-                const result = await response.json();
-                if (result.status === 'success' && result.examStatus === 'open') {
-                    document.getElementById('startOverlayTitle').innerText = "Ujian Siap Dilaksanakan";
-                    document.getElementById('startOverlayDesc').innerHTML = "Sistem akan masuk ke mode layar penuh (Full Screen) mutlak.<br><b>Dilarang keras keluar aplikasi atau membuka tab lain selama ujian berlangsung.</b>";
-                    const btnStart = document.getElementById('btnMulaiUjian');
                     btnStart.disabled = false;
                     btnStart.innerHTML = '<i class="fas fa-check-circle"></i> Siap Ujian';
-                }
-            } catch (e) {}
-        }
+                } else { showModal('alert', 'Error Database', 'Gagal memuat soal: ' + result.message); }
+            } catch (error) { showModal('alert', 'Error Jaringan', 'Pastikan koneksi internet stabil.'); }
+        };
 
+        // --- 5. LOGIKA WAITING ROOM & START EXAM ---
         function showWaitingRoom() {
             document.getElementById('start-overlay').style.display = 'none';
             document.getElementById('waiting-modal').style.display = 'flex';
             
+            // Inisiasi Jam Server (Live Time)
             updateClock();
             clockInterval = setInterval(updateClock, 1000);
         }
@@ -463,8 +443,10 @@
         }
 
         function beginExam() {
+            // Hentikan Jam
             clearInterval(clockInterval);
 
+            // Masuk Mode Layar Penuh (Harus dipicu dari klik user di tombol "Mulai Kerjakan")
             let elem = document.documentElement;
             if (elem.requestFullscreen) { elem.requestFullscreen(); } 
             else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } 
@@ -474,8 +456,6 @@
             
             generateNumberGrid();
             renderQuestion(0);
-
-            autoSyncTimer = setInterval(backgroundSyncAnswers, 1000);
         }
 
         function returnToFullscreen() {
@@ -484,6 +464,7 @@
             document.getElementById('warning-overlay').style.display = 'none';
         }
 
+        // --- 6. RENDER SOAL ---
         function renderQuestion(index) {
             currentQuestionIndex = index;
             const q = examData[index];
@@ -520,18 +501,6 @@
             event.currentTarget.classList.add('selected');
         }
 
-        function backgroundSyncAnswers() {
-            if (isExamFinished) return;
-            const formData = new FormData();
-            formData.append('action', 'submitUjian');
-            formData.append('nisn', localStorage.getItem('nisnSiswa') || 'N/A'); 
-            formData.append('nama', localStorage.getItem('namaSiswa'));
-            formData.append('kelas', localStorage.getItem('kelasSiswa'));
-            formData.append('answers', JSON.stringify(userAnswers)); 
-
-            fetch(scriptURL, { method: 'POST', body: formData }).catch(err => {});
-        }
-
         function nextQuestion() { if (currentQuestionIndex < examData.length - 1) renderQuestion(currentQuestionIndex + 1); }
         function prevQuestion() { if (currentQuestionIndex > 0) renderQuestion(currentQuestionIndex - 1); }
         function jumpToQuestion(index) { renderQuestion(index); }
@@ -554,6 +523,7 @@
             document.getElementById(`btn-num-${index}`).classList.add('active');
         }
 
+        // --- 7. ANTI CHEAT (Deteksi keluar tab/fullscreen) ---
         document.addEventListener('visibilitychange', () => {
             if (isExamFinished) return;
             if (document.visibilityState === 'hidden' && document.getElementById('start-overlay').style.display === 'none' && document.getElementById('waiting-modal').style.display === 'none') {
@@ -568,6 +538,7 @@
             }
         });
 
+        // --- 8. SUBMIT UJIAN KE SERVER ---
         function triggerSubmitConfirmation() {
             const totalJawab = Object.keys(userAnswers).length;
             const belumJawab = examData.length - totalJawab;
@@ -582,12 +553,11 @@
         }
 
         function prosesKirimData() {
-            if (autoSyncTimer) clearInterval(autoSyncTimer);
-
+            // Mode Loading Pengiriman
             document.getElementById('main-container').innerHTML = `
                 <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background:white; border-radius:16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
                     <i class="fas fa-paper-plane" style="font-size: 60px; color: #0d6efd; margin-bottom: 25px; animation: bounce 1s infinite;"></i>
-                    <h2 style="color: #1e293b; margin-bottom: 10px;">Mengirim Jawaban Akhir...</h2>
+                    <h2 style="color: #1e293b; margin-bottom: 10px;">Mengirim Jawaban...</h2>
                     <p style="color: #64748b;">Mohon jangan matikan perangkat atau menutup jendela browser.</p>
                 </div>
             `;
@@ -603,7 +573,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.status === 'success') {
-                        isExamFinished = true; 
+                        isExamFinished = true; // Matikan sensor anti-cheat agar siswa aman
                         tampilkanHasilSiswa(data.nilai);
                     } else {
                         showModal('alert', 'Gagal', "Gagal mengirim jawaban: " + data.message);
@@ -614,6 +584,7 @@
                 });
         }
 
+        // --- 9. TAMPILKAN LAYAR HASIL & GRAFIK ---
         function getStatusBadge(nilai) {
             if (nilai >= 75) return '<span class="badge badge-hijau">Sangat Baik</span>';
             if (nilai >= 50) return '<span class="badge badge-kuning">Baik</span>';
@@ -648,6 +619,7 @@
             });
         }
 
+        // --- 10. FITUR KELUAR DENGAN PASSWORD PENGAWAS ---
         function promptExit() {
             document.getElementById('exit-modal').style.display = 'flex';
             document.getElementById('exitPassword').value = '';
