@@ -387,7 +387,8 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 10px;
+            margin-bottom: 25px;
         }
 
         table, th, td {
@@ -395,8 +396,9 @@
         }
 
         th, td {
-            padding: 12px;
+            padding: 10px;
             text-align: left;
+            font-size: 14px;
         }
 
         th {
@@ -503,13 +505,13 @@
                 <div class="form-group">
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-user icon-left"></i>
-                        <input type="text" id="login-nisn" placeholder="Masukkan NISN">
+                        <input type="text" id="login-nisn" placeholder="Username (NISN)">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-lock icon-left"></i>
-                        <input type="password" id="login-pass" placeholder="Password">
+                        <input type="password" id="login-pass" placeholder="Password (Gunakan '2026')">
                         <i class="fa-solid fa-eye toggle-password" id="toggle-pass-icon" onclick="togglePasswordVisibility()" title="Tampilkan/Sembunyikan Password"></i>
                     </div>
                 </div>
@@ -638,26 +640,45 @@
 
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <div>
-                        <h3>Data Passing Grade Live (Update setiap detik)</h3>
+                        <h3 style="color: #1a73e8; margin-bottom: 5px;">Data Passing Grade Live - KELAS 6A (Update Real-Time)</h3>
                         <table>
                             <thead>
                                 <tr>
+                                    <th style="width: 50px;">No</th>
                                     <th>NISN</th>
-                                    <th>Nama</th>
+                                    <th>Nama Siswa</th>
                                     <th>Paket A</th>
                                     <th>Paket B</th>
                                     <th>Paket C</th>
-                                    <th>Aksi Reset</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="admin-table-body"></tbody>
+                            <tbody id="admin-table-6a"></tbody>
                         </table>
                     </div>
 
-                    <div class="chart-box-wrapper">
-                        <h3 style="font-size:16px; font-weight:bold; color:#202124;">Grafik Analisis Partisipasi / Jawaban Siswa</h3>
-                        <p style="font-size:12px; color:#666; margin-bottom:15px;">Grafik akumulasi bertumpuk: Merah (Belum Masuk/Salah) & Biru (Sudah Masuk/Benar).</p>
-                        <div style="height: 300px; width: 100%;">
+                    <div>
+                        <h3 style="color: #1a73e8; margin-bottom: 5px;">Data Passing Grade Live - KELAS 6B (Update Real-Time)</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">No</th>
+                                    <th>NISN</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Paket A</th>
+                                    <th>Paket B</th>
+                                    <th>Paket C</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table-6b"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="chart-box-wrapper" style="max-width: 500px; margin: 0 auto;">
+                        <h3 style="font-size:16px; font-weight:bold; color:#202124;">Persentase Partisipasi / Kelulusan Siswa</h3>
+                        <p style="font-size:12px; color:#666; margin-bottom:15px;">Merah (Belum Selesai / Belum Ujian) & Biru (Sudah Selesai Ujian).</p>
+                        <div style="height: 300px; width: 100%; position: relative;">
                             <canvas id="gradeChart"></canvas>
                         </div>
                     </div>
@@ -681,7 +702,7 @@
             }
         }
 
-        const studentsList = [
+        const class6A = [
             { nisn: "3156000315", name: "ABID AQILAH WAHYUDI" },
             { nisn: "3147561743", name: "AINUN HAKIMAH" },
             { nisn: "0142128968", name: "AINUN NUR AZIZAH A" },
@@ -707,7 +728,10 @@
             { nisn: "0149106374", name: "ST ASSYURAH JUHARBI" },
             { nisn: "0141999506", name: "SYAFWAAN SABQI" },
             { nisn: "3158929490", name: "YUSUF GIBRAN Y" },
-            { nisn: "0141239341", name: "ZAM ZAMMY KHAIRIL MALIKI ABHAL" },
+            { nisn: "0141239341", name: "ZAM ZAMMY KHAIRIL MALIKI ABHAL" }
+        ];
+
+        const class6B = [
             { nisn: "3140466270", name: "AIRIN RAHMI ANDINI" },
             { nisn: "3144872142", name: "ALKAUSAR" },
             { nisn: "3145816553", name: "ANINDYA JINAN RISQI" },
@@ -914,7 +938,8 @@
         let appData = JSON.parse(localStorage.getItem('cbt_app_data')) || {
             lockedPackets: { A: false, B: false, C: false },
             forceFinishTrigger: 0,
-            results: {}
+            results: {},
+            activeSessions: {}
         };
 
         function saveData() {
@@ -962,6 +987,8 @@
             document.getElementById(screenId).classList.add('active');
         }
 
+        const allStudentsFlat = [...class6A, ...class6B];
+
         function handleLogin() {
             const nisn = document.getElementById('login-nisn').value.trim();
             const pass = document.getElementById('login-pass').value.trim();
@@ -973,15 +1000,19 @@
                 return;
             }
 
-            const student = studentsList.find(s => s.nisn === nisn);
+            const student = allStudentsFlat.find(s => s.nisn === nisn);
             if (student && pass === '2026') {
                 const studentData = appData.results[student.nisn];
-                if (studentData && Object.keys(studentData.scores || {}).length > 0) {
-                    alert("Akun ini sudah pernah digunakan untuk ujian dan data nilainya sudah masuk! Anda tidak bisa login kembali kecuali di-reset oleh Panitia Admin.");
+                if (studentData && Object.keys(studentData.scores || {}).length >= 3) {
+                    alert("Akun ini sudah menyelesaikan seluruh paket ujian!");
                     return;
                 }
 
                 currentUser = { nisn: student.nisn, name: student.name, isAdmin: false };
+                if (!appData.activeSessions) appData.activeSessions = {};
+                appData.activeSessions[student.nisn] = true;
+                saveData();
+
                 document.getElementById('student-name').innerText = student.name;
                 enterFullscreen();
                 checkLockStatus();
@@ -992,6 +1023,12 @@
         }
 
         function logout() {
+            if (currentUser && !currentUser.isAdmin) {
+                if (appData.activeSessions && appData.activeSessions[currentUser.nisn]) {
+                    delete appData.activeSessions[currentUser.nisn];
+                    saveData();
+                }
+            }
             exitFullscreen();
             currentUser = null;
             currentPacket = null;
@@ -1140,7 +1177,7 @@
             let essayWeight = 70 / (essayCount || 1);
 
             let reviewDetails = [];
-            let questionResults = []; // menyimpan status per nomor soal
+            let questionResults = [];
 
             activeQuestions.forEach((q, idx) => {
                 const ans = studentAnswers[idx];
@@ -1205,7 +1242,6 @@
 
         let studentResultChartInstance = null;
 
-        /* FUNGSI GRAFIK AKUMULASI BERTUMPUK PERSIS GAMBAR REFERENSI */
         function renderStackedBarChart(canvasId, questionResults, isStudentChart = true) {
             const ctx = document.getElementById(canvasId).getContext('2d');
             
@@ -1216,8 +1252,8 @@
             }
 
             let labels = [];
-            let redData = [];   // Salah / Kosong / Merah
-            let blueData = [];  // Benar / Sudah / Biru
+            let redData = [];
+            let blueData = [];
 
             let accumRed = 0;
             let accumBlue = 0;
@@ -1239,16 +1275,16 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: isStudentChart ? 'Jawaban Salah / Kosong (Merah)' : 'Belum Masuk / Kurang (Merah)',
+                            label: 'Jawaban Salah / Kosong (Merah)',
                             data: redData,
-                            backgroundColor: '#dc3545', // Merah
+                            backgroundColor: '#dc3545',
                             barPercentage: 1.0,
                             categoryPercentage: 1.0
                         },
                         {
-                            label: isStudentChart ? 'Jawaban Benar (Biru)' : 'Sudah Masuk / Baik (Biru)',
+                            label: 'Jawaban Benar (Biru)',
                             data: blueData,
-                            backgroundColor: '#3b82f6', // Biru
+                            backgroundColor: '#3b82f6',
                             barPercentage: 1.0,
                             categoryPercentage: 1.0
                         }
@@ -1258,36 +1294,12 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                usePointStyle: false,
-                                boxWidth: 20
-                            }
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false
-                        }
+                        legend: { position: 'top', labels: { boxWidth: 20 } },
+                        tooltip: { mode: 'index', intersect: false }
                     },
                     scales: {
-                        x: {
-                            stacked: true,
-                            grid: { display: false },
-                            ticks: {
-                                autoSkip: true,
-                                maxTicksLimit: 20,
-                                font: { size: 10 }
-                            }
-                        },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: isStudentChart ? 'Jumlah Soal' : 'Jumlah Akumulasi'
-                            }
-                        }
+                        x: { stacked: true, grid: { display: false }, ticks: { autoSkip: true, maxTicksLimit: 20, font: { size: 10 } } },
+                        y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Jumlah Soal' } }
                     }
                 }
             });
@@ -1297,6 +1309,34 @@
             } else {
                 chartInstance = newChart;
             }
+        }
+
+        let chartInstance = null;
+        function renderAdminPieChart(completedCount, uncompletedCount) {
+            const ctx = document.getElementById('gradeChart').getContext('2d');
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Belum Selesai / Belum Ujian', 'Sudah Selesai Ujian'],
+                    datasets: [{
+                        data: [uncompletedCount, completedCount],
+                        backgroundColor: ['#dc3545', '#17a2b8'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
         }
 
         function finishExam() {
@@ -1310,6 +1350,10 @@
                     };
                 }
                 appData.results[currentUser.nisn].scores[currentPacket] = resData.score;
+                
+                if (appData.activeSessions && appData.activeSessions[currentUser.nisn]) {
+                    delete appData.activeSessions[currentUser.nisn];
+                }
                 saveData();
 
                 exitFullscreen();
@@ -1325,7 +1369,6 @@
                 else badgeHTML = `<span class="status-badge bg-kurang">Kurang Baik</span>`;
                 document.getElementById('res-badge').innerHTML = badgeHTML;
 
-                // Render Grafik Akumulasi Bertumpuk
                 renderStackedBarChart('studentResultChart', resData.questionResults, true);
 
                 const reviewContainer = document.getElementById('review-container');
@@ -1344,8 +1387,6 @@
             }
         }
 
-        let chartInstance = null;
-
         function initAdminDashboard() {
             updateAdminView();
         }
@@ -1360,6 +1401,7 @@
         function forceFinishAllStudents() {
             if (confirm("PERHATIAN: Apakah Anda yakin ingin memaksa SEMUA siswa menyelesaikan ujian serentak sekarang?")) {
                 appData.forceFinishTrigger = Date.now();
+                appData.activeSessions = {};
                 saveData();
                 updateAdminView();
                 alert("Perintah selesai serentak telah dikirim ke semua sesi siswa aktif.");
@@ -1369,6 +1411,7 @@
         function resetAllActivity() {
             if (confirm("Apakah Anda YAKIN ingin menghapus/reset SEMUA data aktivitas dan nilai siswa?")) {
                 appData.results = {};
+                appData.activeSessions = {};
                 saveData();
                 updateAdminView();
                 alert("Semua data aktivitas dan nilai berhasil di-reset!");
@@ -1379,10 +1422,13 @@
             if (confirm(`Apakah Anda yakin ingin mereset data siswa dengan NISN ${nisn} agar bisa login kembali?`)) {
                 if (appData.results && appData.results[nisn]) {
                     delete appData.results[nisn];
-                    saveData();
-                    updateAdminView();
-                    alert("Data siswa berhasil di-reset!");
                 }
+                if (appData.activeSessions && appData.activeSessions[nisn]) {
+                    delete appData.activeSessions[nisn];
+                }
+                saveData();
+                updateAdminView();
+                alert("Data siswa berhasil di-reset!");
             }
         }
 
@@ -1398,6 +1444,54 @@
             else { category = "Kurang Baik"; badgeClass = "bg-kurang"; }
 
             return `${score} - <span class="status-badge ${badgeClass}">${category}</span>`;
+        }
+
+        function buildClassTable(classList, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = '';
+
+            let completedCount = 0;
+            let uncompletedCount = 0;
+
+            classList.forEach((student, index) => {
+                const studentResult = appData.results[student.nisn] || { scores: {} };
+                const scoreA = studentResult.scores['A'];
+                const scoreB = studentResult.scores['B'];
+                const scoreC = studentResult.scores['C'];
+                
+                let countActive = (scoreA !== undefined ? 1 : 0) + (scoreB !== undefined ? 1 : 0) + (scoreC !== undefined ? 1 : 0);
+                let hasData = countActive > 0;
+                let isOnline = appData.activeSessions && appData.activeSessions[student.nisn];
+
+                if (hasData) {
+                    completedCount++;
+                } else {
+                    uncompletedCount++;
+                }
+
+                let statusActionHTML = "";
+                if (hasData) {
+                    statusActionHTML = `<button class="btn btn-danger btn-sm" onclick="resetSingleStudent('${student.nisn}')">Reset</button>`;
+                } else if (isOnline) {
+                    statusActionHTML = `<span style="color:#1a73e8; font-weight:bold; font-size:12px;"><i class="fa-solid fa-spinner fa-spin"></i> Sedang Mengerjakan</span>`;
+                } else {
+                    statusActionHTML = `<span style="color:#888; font-size:12px;">Belum Login</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align:center;">${index + 1}</td>
+                    <td>${student.nisn}</td>
+                    <td><b>${student.name}</b></td>
+                    <td>${getPassingGradeBadge(scoreA)}</td>
+                    <td>${getPassingGradeBadge(scoreB)}</td>
+                    <td>${getPassingGradeBadge(scoreC)}</td>
+                    <td>${statusActionHTML}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            return { completedCount, uncompletedCount };
         }
 
         function updateAdminView() {
@@ -1424,51 +1518,18 @@
                 lockStatus.innerText = "🔓 Status Akses Ujian: SEBAGIAN/SELURUHNYA TERBUKA";
             }
 
-            const tbody = document.getElementById('admin-table-body');
-            tbody.innerHTML = '';
+            const res6A = buildClassTable(class6A, 'admin-table-6a');
+            const res6B = buildClassTable(class6B, 'admin-table-6b');
 
-            let adminQuestionResults = [];
+            let totalCompleted = res6A.completedCount + res6B.completedCount;
+            let totalUncompleted = res6A.uncompletedCount + res6B.uncompletedCount;
 
-            let mappedStudents = studentsList.map(student => {
-                const studentResult = appData.results[student.nisn] || { scores: {} };
-                const scoreA = studentResult.scores['A'];
-                const scoreB = studentResult.scores['B'];
-                const scoreC = studentResult.scores['C'];
-                
-                let sumScores = (scoreA || 0) + (scoreB || 0) + (scoreC || 0);
-                let countActive = (scoreA !== undefined ? 1 : 0) + (scoreB !== undefined ? 1 : 0) + (scoreC !== undefined ? 1 : 0);
-                let avg = countActive > 0 ? sumScores / countActive : -1;
-
-                adminQuestionResults.push(countActive > 0);
-
-                return { student, scoreA, scoreB, scoreC, avg, hasData: countActive > 0 };
-            });
-
-            mappedStudents.sort((a, b) => b.avg - a.avg);
-
-            mappedStudents.forEach(item => {
-                const { student, scoreA, scoreB, scoreC, hasData } = item;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${student.nisn}</td>
-                    <td><b>${student.name}</b></td>
-                    <td>${getPassingGradeBadge(scoreA)}</td>
-                    <td>${getPassingGradeBadge(scoreB)}</td>
-                    <td>${getPassingGradeBadge(scoreC)}</td>
-                    <td>
-                        ${hasData ? `<button class="btn btn-danger btn-sm" onclick="resetSingleStudent('${student.nisn}')">Reset</button>` : `<span style="color:#888; font-size:12px;">Belum Login</span>`}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            renderStackedBarChart('gradeChart', adminQuestionResults, false);
+            renderAdminPieChart(totalCompleted, totalUncompleted);
         }
 
         let lastTriggerCheck = appData.forceFinishTrigger;
         setInterval(() => {
-            appData = JSON.parse(localStorage.getItem('cbt_app_data')) || { lockedPackets: { A: false, B: false, C: false }, forceFinishTrigger: 0, results: {} };
+            appData = JSON.parse(localStorage.getItem('cbt_app_data')) || { lockedPackets: { A: false, B: false, C: false }, forceFinishTrigger: 0, results: {}, activeSessions: {} };
             
             if (currentUser && currentUser.isAdmin) {
                 updateAdminView();
