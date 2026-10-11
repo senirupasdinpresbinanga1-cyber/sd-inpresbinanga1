@@ -845,11 +845,13 @@
             }
         }
 
-        // Peringatan dan paksaan fullscreen tanpa batasan setiap kali mencoba mengecilkan layar
+        // Ketika layar mengecil/keluar fullscreen, muncul peringatan lalu otomatis masuk kembali ke fullscreen
         document.addEventListener("fullscreenchange", function() {
             if (!document.fullscreenElement && currentUser && !currentUser.isAdmin && currentPacket) {
                 alert("PERINGATAN: Anda tidak diizinkan mengecilkan layar atau keluar dari mode ujian!");
-                enterFullscreen();
+                setTimeout(() => {
+                    enterFullscreen();
+                }, 100);
             }
         });
 
