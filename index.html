@@ -3,165 +3,1085 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Ujian TKA - SD Inpres Binanga 1 Mamuju</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <title>Sistem Ujian Online CBT Kelas VI</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: #f0f2f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-        .header-bg {
-            background: linear-gradient(135deg, #1a5ca6 0%, #0d47a1 100%);
-            width: 100%; height: 250px; display: flex; justify-content: center; align-items: flex-start;
-            padding-top: 30px; position: absolute; top: 0; z-index: 1;
-            border-bottom-left-radius: 50% 10%; border-bottom-right-radius: 50% 10%;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .header-content { display: flex; align-items: center; color: white; gap: 15px; }
-        .header-content img { width: 60px; height: 60px; object-fit: contain; background-color: white; border-radius: 50%; padding: 5px; }
-        .header-text h1 { font-size: 24px; font-weight: 700; letter-spacing: 1px; margin-bottom: -5px; }
-        .header-text p { font-size: 14px; font-weight: 400; color: #d1e4fb; letter-spacing: 2px; }
-        .login-wrapper { position: relative; z-index: 2; margin-top: 130px; width: 100%; max-width: 450px; padding: 20px; }
-        .login-card { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .contact-info { font-size: 11px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
-        .contact-info b { color: #333; }
-        .login-card h2 { color: #444; font-weight: 600; margin-bottom: 8px; font-size: 26px; }
-        .subtitle { font-size: 13px; color: #777; margin-bottom: 20px; line-height: 1.5; }
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-group i.icon-left { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; font-size: 14px; }
-        .input-group input, .input-group select {
-            width: 100%; padding: 12px 40px; border: 1px solid #e0e0e0; border-radius: 8px;
-            font-size: 14px; color: #333; outline: none; transition: all 0.3s; background: white;
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            user-select: none; /* Mencegah seleksi teks saat ujian */
         }
-        .input-group input:focus, .input-group select:focus { border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1); }
-        .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #999; cursor: pointer; font-size: 14px; }
-        .btn-login {
-            width: 100%; background-color: #0d6efd; color: white; padding: 12px; border: none;
-            border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background-color 0.3s;
-            margin-top: 10px; display: flex; justify-content: center; align-items: center;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .btn-login:hover { background-color: #0b5ed7; }
-        .footer { text-align: center; margin-top: 25px; font-size: 12px; color: #888; }
-        .footer p { margin-bottom: 5px; }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Card Component */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Login Screen */
+        .login-box {
+            max-width: 400px;
+            margin: 80px auto;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #1a73e8;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #1557b0;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        /* Packet Selection */
+        .packet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .packet-card {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .packet-card:hover {
+            border-color: #1a73e8;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .packet-card h3 {
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+
+        /* Exam Layout */
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a73e8;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .exam-body {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        .question-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .options-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .options-list li {
+            margin-bottom: 10px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .options-list label:hover {
+            background-color: #f8f9fa;
+        }
+
+        .options-list input {
+            margin-right: 10px;
+        }
+
+        textarea.essay-input {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        /* Number Navigation Grid (3 Columns Horizontal Scroll / Layout) */
+        .nav-grid-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .nav-btn.active {
+            border-color: #1a73e8;
+            background-color: #e8f0fe;
+        }
+
+        .nav-btn.answered {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .exam-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* Admin Dashboard */
+        .admin-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .bg-sangat-baik { background-color: #28a745; } /* Hijau */
+        .bg-baik { background-color: #ffc107; color: #000; } /* Kuning */
+        .bg-cukup { background-color: #fd7e14; } /* Orange */
+        .bg-kurang { background-color: #dc3545; } /* Merah */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 350px;
+            margin: 20px auto;
+        }
+
+        .status-lock {
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .status-unlocked { background-color: #d4edda; color: #155724; }
+        .status-locked { background-color: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
 
-    <div class="header-bg">
-        <div class="header-content">
-            <img src="logo.png" alt="Logo Sekolah" onerror="this.src='https://via.placeholder.com/60/ffffff/000000?text=Logo'">
-            <div class="header-text">
-                <h1>SD INPRES BINANGA 1</h1>
-                <p>TES KEMAMPUAN AKADEMIK TAHUN 2026</p>
+    <div class="container">
+        <!-- 1. LOGIN SCREEN -->
+        <div id="screen-login" class="screen active">
+            <div class="card login-box">
+                <h2>CBT Ujian Online</h2>
+                <div class="form-group">
+                    <label>NISN / Username</label>
+                    <input type="text" id="login-nisn" placeholder="Masukkan NISN / admin">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-pass" placeholder="Masukkan Password">
+                </div>
+                <button class="btn" onclick="handleLogin()">Login</button>
             </div>
         </div>
-    </div>
 
-    <div class="login-wrapper">
-        <div class="login-card">
-            <div class="contact-info">
-                LUPA USERNAME / PASSWORD ? : hubungi <b>Admin Sekolah</b>
+        <!-- 2. STUDENT PACKET SELECTION SCREEN -->
+        <div id="screen-packets" class="screen">
+            <div class="card">
+                <h2>Selamat Datang, <span id="student-name"></span>!</h2>
+                <p>Silahkan pilih paket ujian yang tersedia:</p>
+                <div id="lock-warning" class="status-lock status-locked" style="display:none; margin-top:15px;">
+                    🔒 Ujian saat ini SEDANG DIKUNCI oleh Panitia. Mohon tunggu arahan.
+                </div>
+                <div class="packet-grid">
+                    <div class="packet-card" onclick="selectPacket('A')">
+                        <h3>Paket A</h3>
+                        <p>Agama Islam, Pancasila, B. Indonesia</p>
+                    </div>
+                    <div class="packet-card" onclick="selectPacket('B')">
+                        <h3>Paket B</h3>
+                        <p>Matematika, IPAS, PJOK</p>
+                    </div>
+                    <div class="packet-card" onclick="selectPacket('C')">
+                        <h3>Paket C</h3>
+                        <p>Seni Budaya, B. Inggris</p>
+                    </div>
+                </div>
+                <button class="btn btn-danger" style="margin-top: 20px; width: auto;" onclick="logout()">Logout</button>
             </div>
-            
-            <h2>Selamat Datang</h2>
-            <p class="subtitle">Silakan login dan pilih paket soal yang ingin dikerjakan.</p>
-
-            <form id="formLogin">
-                <div class="input-group">
-                    <i class="fas fa-user icon-left"></i>
-                    <input type="text" id="username" placeholder="Username (NISN)" required autocomplete="off">
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-lock icon-left"></i>
-                    <input type="password" id="password" placeholder="Password (Gunakan '2026')" required>
-                    <i class="fas fa-eye toggle-password" id="toggleBtn" onclick="togglePasswordVisibility()"></i>
-                </div>
-
-                <!-- PILIHAN PAKET SOAL -->
-                <div class="input-group">
-                    <i class="fas fa-layer-group icon-left"></i>
-                    <select id="pilihPaket" required>
-                        <option value="" disabled selected>-- Pilih Paket Soal --</option>
-                        <option value="Paket A">Paket A (Agama Islam, Pancasila, B. Indonesia)</option>
-                        <option value="Paket B">Paket B (Matematika, IPAS, PJOK)</option>
-                        <option value="Paket C">Paket C (Seni Budaya, B. Inggris)</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn-login" id="submitBtn">Login & Mulai Ujian</button>
-            </form>
         </div>
 
-        <div class="footer">
-            <p>&copy; Copyright 2026, TKA SD Inpres Binanga 1 Mamuju</p>
-            <p>Aplikasi Ujian: v1.2.0</p>
+        <!-- 3. EXAM SCREEN -->
+        <div id="screen-exam" class="screen">
+            <div class="exam-header">
+                <div>
+                    <h3 id="exam-title">Ujian Paket A</h3>
+                    <span id="exam-student-info"></span>
+                </div>
+                <button class="btn btn-warning" style="width: auto;" onclick="finishExam()">Selesaikan Ujian</button>
+            </div>
+
+            <div class="exam-body">
+                <div class="question-box">
+                    <h4 id="question-number">Soal Nomor 1</h4>
+                    <p id="question-text" style="margin-top: 15px; font-size: 16px; line-height: 1.5;"></p>
+                    
+                    <!-- Pilihan Ganda -->
+                    <ul id="options-container" class="options-list"></ul>
+                    
+                    <!-- Uraian -->
+                    <div id="essay-container" style="display: none;">
+                        <textarea id="essay-answer" class="essay-input" placeholder="Tuliskan jawaban Anda di sini..." oninput="saveEssayAnswer()"></textarea>
+                    </div>
+
+                    <div class="exam-footer">
+                        <button class="btn" style="width: auto;" onclick="prevQuestion()">Sebelumnya</button>
+                        <button class="btn" style="width: auto;" onclick="nextQuestion()">Selanjutnya</button>
+                    </div>
+                </div>
+
+                <!-- Navigation Sidebar (3 Baris ke samping) -->
+                <div class="card">
+                    <h4>Navigasi Soal</h4>
+                    <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Grid 3 Baris Ke Samping</p>
+                    <div class="nav-grid-container">
+                        <div id="nav-grid" class="nav-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. ADMIN DASHBOARD SCREEN -->
+        <div id="screen-admin" class="screen">
+            <div class="card">
+                <h2>Dashboard Admin Panitia Ujian</h2>
+                <hr style="margin: 15px 0;">
+                
+                <div class="admin-controls">
+                    <button id="btn-toggle-lock" class="btn btn-warning" style="width: auto;" onclick="toggleExamLock()">Kunci Soal</button>
+                    <button class="btn btn-danger" style="width: auto;" onclick="resetAllActivity()">Reset / Hapus Semua Aktivitas</button>
+                    <button class="btn" style="width: auto; background-color: #6c757d;" onclick="logout()">Logout Admin</button>
+                </div>
+
+                <div id="admin-lock-status" class="status-lock status-unlocked">
+                    🔓 Status Akses Ujian: TERBUKA (Siswa dapat mengakses soal)
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start;">
+                    <div>
+                        <h3>Data Passing Grade Live (Update setiap detik)</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>NISN</th>
+                                    <th>Nama</th>
+                                    <th>Paket A</th>
+                                    <th>Paket B</th>
+                                    <th>Paket C</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <h3 style="text-align: center;">Grafik Perbandingan Nilai</h3>
+                        <p style="font-size:12px; text-align:center; color:#666;">Merah: Nilai Rendah (&lt;75) | Biru: Nilai Tinggi (&ge;75)</p>
+                        <div class="chart-container">
+                            <canvas id="gradeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxVhowRAW6F_fXDIrMfzDghiqswer4QXY4SVr49MKYLKFw0Q__ODW9nHXkorpuBAMyMCA/exec'; 
+        // ==========================================
+        // 1. DATA MASTER SISWA (KELAS 6A & 6B)
+        // ==========================================
+        const studentsList = [
+            // Kelas 6A
+            { nisn: "3156000315", name: "ABID AQILAH WAHYUDI" },
+            { nisn: "3147561743", name: "AINUN HAKIMAH" },
+            { nisn: "0142128968", name: "AINUN NUR AZIZAH A" },
+            { nisn: "3145705181", name: "AMELIA AHMAD" },
+            { nisn: "0141377777", name: "ANDI FAISYA SYAHIRA" },
+            { nisn: "3140573690", name: "ANDI MUHAMMAD FAQIH AIRY H" },
+            { nisn: "3147604091", name: "CAHYA AINUN" },
+            { nisn: "0148954249", name: "DZAKY" },
+            { nisn: "0158527938", name: "FARDHAN ZAKI JASMAR" },
+            { nisn: "3154882039", name: "FEBY KHAIRUNNISA" },
+            { nisn: "0158898393", name: "KHAIRA NAJWA BAZIMA" },
+            { nisn: "3141393725", name: "LISNA YANTI" },
+            { nisn: "0134551900", name: "MUH ARDIANSYAH" },
+            { nisn: "3151725727", name: "MUH REVAN APRILIAN" },
+            { nisn: "0151615246", name: "MUH RIFKI AL FAHREZA Z" },
+            { nisn: "3139286099", name: "MUH. ARIFKI" },
+            { nisn: "3141628787", name: "MUH. MIFTAHUL YAFI ASIS" },
+            { nisn: "0143085041", name: "MUH. RAFLI" },
+            { nisn: "3144207806", name: "MUHAMMAD ARAS QURUSYA" },
+            { nisn: "3159066266", name: "MUHAMMAD SYAWAL" },
+            { nisn: "0148124368", name: "NAYLA SALSABILLAH" },
+            { nisn: "3157945789", name: "NURUL ADIVA AMRAN" },
+            { nisn: "0149106374", name: "ST ASSYURAH JUHARBI" },
+            { nisn: "0141999506", name: "SYAFWAAN SABQI" },
+            { nisn: "3158929490", name: "YUSUF GIBRAN Y" },
+            { nisn: "0141239341", name: "ZAM ZAMMY KHAIRIL MALIKI ABHAL" },
+            // Kelas 6B
+            { nisn: "3140466270", name: "AIRIN RAHMI ANDINI" },
+            { nisn: "3144872142", name: "ALKAUSAR" },
+            { nisn: "3145816553", name: "ANINDYA JINAN RISQI" },
+            { nisn: "3155916287", name: "ANNISA RAMADANI" },
+            { nisn: "3153814142", name: "ANNISA SALSABILA" },
+            { nisn: "3153207429", name: "Asykar Alfatih" },
+            { nisn: "0157237608", name: "CAHAYA AURA NAZHIFA" },
+            { nisn: "0144017685", name: "DEWA AYU RESTTI GAURI" },
+            { nisn: "3140013762", name: "DIAN AFIKA" },
+            { nisn: "3143677322", name: "FACHRU RAFAY" },
+            { nisn: "3146161150", name: "FITRAH RAMADHAN ABDILLA" },
+            { nisn: "3155806770", name: "JANUAR MUSA P" },
+            { nisn: "3158220865", name: "KHARMAWAN" },
+            { nisn: "3157251088", name: "M HILAL FIQRI AUTHAR R" },
+            { nisn: "3158928704", name: "MIRZA SIDDIQIYAH RUSADY" },
+            { nisn: "3143756321", name: "MUH FARIS GHAIZAN" },
+            { nisn: "3159351673", name: "MUH IQWAL" },
+            { nisn: "3144800157", name: "MUH MUHAIMIN FAIZAL. M" },
+            { nisn: "0131400871", name: "MUH NAUFAL HAFIDZ" },
+            { nisn: "0158917600", name: "MUH. AL HAFIDZ NASWAR" },
+            { nisn: "0149770417", name: "MUH. AL QADRI" },
+            { nisn: "3146513265", name: "MUH. MIRZA UKAIL" },
+            { nisn: "3142351906", name: "MUHAMMAD ALGHAZHALY" },
+            { nisn: "3157774636", name: "MUHAMMAD NUR" },
+            { nisn: "0127036921", name: "Siti Almirah" },
+            { nisn: "0157732812", name: "UTARI MAHYA SANJAYA" }
+        ];
 
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById("password");
-            const toggleIcon = document.getElementById("toggleBtn");
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                toggleIcon.classList.remove("fa-eye");
-                toggleIcon.classList.add("fa-eye-slash");
-            } else {
-                passwordInput.type = "password";
-                toggleIcon.classList.remove("fa-eye-slash");
-                toggleIcon.classList.add("fa-eye");
+        // ==========================================
+        // 2. BANK SOAL LENGKAP TIAP PAKET
+        // ==========================================
+        const rawQuestions = {
+            A: [
+                // Agama Islam (15 PG, 5 Uraian)
+                { type: 'pg', text: "Rukun iman yang keenam adalah iman kepada ....", options: ["A. Rasul", "B. Hari akhir", "C. Qada dan Qadar", "D. Malaikat"], key: 2 },
+                { type: 'pg', text: "Rudi sudah belajar dengan giat, tetapi nilai ulangannya belum sesuai harapan. Sikap yang sesuai dengan iman kepada Qada dan Qadar adalah ....", options: ["A. Menyalahkan gurunya", "B. Berhenti belajar", "C. Mencontek agar nilai naik", "D. Bersabar, mengevaluasi diri, dan tetap berusaha"], key: 3 },
+                { type: 'pg', text: "Asmaul Husna Ar-Rahman berarti ....", options: ["A. Maha Pengasih", "B. Maha Melihat", "C. Maha Mendengar", "D. Maha Kuasa"], key: 0 },
+                { type: 'pg', text: "Siti menemukan dompet berisi uang di jalan dekat sekolah. Sikap amanah yang tepat adalah ....", options: ["A. Mengambil uangnya lalu membuang dompetnya", "B. Mencari pemiliknya atau menyerahkannya kepada guru atau pihak berwenang", "C. Membiarkan dompet itu di jalan", "D. Membagikan uangnya kepada teman"], key: 1 },
+                { type: 'pg', text: "Sebelum diangkat menjadi rasul, Nabi Muhammad saw. dijuluki Al-Amin karena beliau ....", options: ["A. Sangat kaya", "B. Sangat kuat", "C. Dapat dipercaya", "D. Pandai berdagang"], key: 2 },
+                { type: 'pg', text: "Sifat wajib rasul yang berarti jujur adalah ....", options: ["A. Siddiq", "B. Amanah", "C. Tabligh", "D. Fathanah"], key: 0 },
+                { type: 'pg', text: "Berikut ini yang membatalkan puasa adalah ....", options: ["A. Berkumur tanpa menelan air", "B. Menggosok gigi", "C. Mandi", "D. Makan dan minum dengan sengaja"], key: 3 },
+                { type: 'pg', text: "Zakat fitrah dikeluarkan pada ....", options: ["A. Awal bulan Rajab", "B. Bulan Ramadan sampai sebelum salat Idulfitri", "C. Hari raya Iduladha", "D. Bulan Muharam"], key: 1 },
+                { type: 'pg', text: "Orang yang berhak menerima zakat disebut ....", options: ["A. Muzaki", "B. Munfik", "C. Mustahik", "D. Mujtahid"], key: 2 },
+                { type: 'pg', text: "Salat berjemaah lebih utama daripada salat sendirian, yaitu dengan pahala sebanyak ... derajat.", options: ["A. 27", "B. 25", "C. 10", "D. 7"], key: 0 },
+                { type: 'pg', text: "Nabi Yusuf a.s. tetap sabar ketika dibuang oleh saudara-saudaranya dan kemudian memaafkan mereka. Teladan yang dapat kita ambil adalah ....", options: ["A. Membalas dendam", "B. Mudah putus asa", "C. Berbohong demi selamat", "D. Sabar dan pemaaf"], key: 3 },
+                { type: 'pg', text: "Nabi Ayyub a.s. menjadi teladan dalam hal ....", options: ["A. Kekayaan", "B. Kesabaran menghadapi penyakit dan cobaan", "C. Keberanian di medan perang", "D. Kepandaian berdagang"], key: 1 },
+                { type: 'pg', text: "Rina melihat temannya membuang sampah sembarangan. Ia mengingatkannya karena kebersihan adalah ....", options: ["A. Sebagian dari iman", "B. Syarat naik kelas", "C. Tugas petugas kebersihan saja", "D. Aturan yang boleh dilanggar"], key: 0 },
+                { type: 'pg', text: "Husnuzan artinya ....", options: ["A. Prasangka buruk", "B. Iri hati", "C. Berprasangka baik", "D. Marah"], key: 2 },
+                { type: 'pg', text: "Dua orang teman bertengkar. Andi lalu meminta maaf lebih dulu dan memaafkan temannya. Akhlak yang ditunjukkan Andi adalah ....", options: ["A. Tamak", "B. Hasad", "C. Takabur", "D. Pemaaf"], key: 3 },
+                { type: 'essay', text: "Jelaskan arti beriman kepada Qada dan Qadar, lalu berikan satu contoh penerapannya di sekolah!", keywords: ["percaya", "ketentuan", "takdir", "allah", "usaha", "belajar", "tawakal"] },
+                { type: 'essay', text: "Dimas sudah berlatih keras, tetapi gagal menjuarai lomba. Ia kecewa dan ingin berhenti mengikuti lomba. Berikan nasihat kepada Dimas berdasarkan sikap sabar dan tawakal!", keywords: ["sabar", "tawakal", "pelajaran", "evaluasi", "berusaha", "berdoa"] },
+                { type: 'essay', text: "Sebutkan empat sifat wajib rasul beserta artinya!", keywords: ["siddiq", "jujur", "amanah", "percaya", "tabligh", "fathanah", "cerdas"] },
+                { type: 'essay', text: "Sebutkan tiga hal yang dapat membatalkan puasa!", keywords: ["makan", "minum", "muntah", "haid", "sengaja"] },
+                { type: 'essay', text: "Saat ujian, Hana melihat temannya menyontek. Apa yang sebaiknya dilakukan Hana menurut akhlak terpuji? Jelaskan alasannya!", keywords: ["mengingatkan", "melapor", "guru", "jujur", "akhlak"] },
+
+                // Pancasila (15 PG, 5 Uraian)
+                { type: 'pg', text: "Sila ketiga Pancasila berbunyi ....", options: ["A. Kemanusiaan yang adil dan beradab", "B. Persatuan Indonesia", "C. Kerakyatan yang dipimpin...", "D. Keadilan sosial..."], key: 1 },
+                { type: 'pg', text: "Pak RT mengajak seluruh warga membersihkan selokan bersama-sama tanpa membedakan suku dan agama. Nilai yang tampak dari kegiatan tersebut adalah ....", options: ["A. Ketuhanan semata", "B. Kekuasaan", "C. Persaingan", "D. Persatuan dan gotong royong"], key: 3 },
+                { type: 'pg', text: "Berikut yang termasuk hak warga negara adalah ....", options: ["A. Mendapatkan pendidikan", "B. Membayar pajak", "C. Menaati hukum", "D. Membela negara"], key: 0 },
+                { type: 'pg', text: "Contoh kewajiban warga negara adalah ....", options: ["A. Memilih agama", "B. Mendapat pekerjaan", "C. Membayar pajak", "D. Mengeluarkan pendapat"], key: 2 },
+                { type: 'pg', text: "Andi dan Budi berbeda pendapat tentang tema kegiatan kelas. Cara penyelesaian yang sesuai dengan sila keempat adalah ....", options: ["A. Memaksakan kehendak", "B. Musyawarah untuk mufakat", "C. Bertaruh dengan undian", "D. Diputuskan sepihak"], key: 1 },
+                { type: 'pg', text: "Di kelas VI terdapat murid dari berbagai suku dengan logat yang berbeda. Sikap yang tepat adalah ....", options: ["A. Saling menghargai perbedaan", "B. Hanya berteman dengan yang sesuku", "C. Menirukan logat teman untuk mengejek", "D. Menjauhi teman yang berbeda"], key: 0 },
+                { type: 'pg', text: "Semboyan Bhinneka Tunggal Ika berarti ....", options: ["A. Bersatu kita teguh", "B. Satu nusa satu bangsa", "C. Maju terus pantang mundur", "D. Berbeda-beda tetapi tetap satu"], key: 3 },
+                { type: 'pg', text: "Norma yang aturannya dibuat oleh negara dan memiliki sanksi tegas adalah norma ....", options: ["A. Kesusilaan", "B. Kesopanan", "C. Hukum", "D. Kebiasaan"], key: 2 },
+                { type: 'pg', text: "Berbicara kasar kepada guru termasuk pelanggaran norma ....", options: ["A. Hukum", "B. Kesopanan", "C. Lalu lintas", "D. Pajak"], key: 1 },
+                { type: 'pg', text: "Sikap yang mencerminkan sila kelima adalah ....", options: ["A. Menyontek saat ulangan", "B. Memilih-milih teman", "C. Menang sendiri", "D. Bersikap adil dalam membagi tugas kelompok"], key: 3 },
+                { type: 'pg', text: "Pancasila sebagai dasar negara tercantum dalam ....", options: ["A. Pembukaan UUD 1945", "B. Sumpah Pemuda", "C. Teks Proklamasi", "D. Pasal 33 UUD 1945"], key: 0 },
+                { type: 'pg', text: "Sumpah Pemuda diikrarkan pada tanggal ....", options: ["A. 17 Agustus 1945", "B. 20 Mei 1908", "C. 28 Oktober 1928", "D. 1 Juni 1945"], key: 2 },
+                { type: 'pg', text: "Di sekolah diadakan pemilihan ketua OSIS. Setiap siswa memilih sesuai hati nurani tanpa paksaan. Hal ini mencerminkan prinsip ....", options: ["A. Otoriter", "B. Demokrasi", "C. Monarki", "D. Anarki"], key: 1 },
+                { type: 'pg', text: "Di desa Sari, warga berbeda agama hidup rukun. Saat ada hari raya, mereka tidak mengganggu ibadah satu sama lain dan saling membantu. Sikap ini disebut ....", options: ["A. Toleransi", "B. Egoisme", "C. Diskriminasi", "D. Fanatisme"], key: 0 },
+                { type: 'pg', text: "Beni menuntut haknya memakai fasilitas sekolah tetapi tidak mau ikut menjaga kebersihan. Sikap yang benar adalah ....", options: ["A. Menuntut hak saja", "B. Menjalankan kewajiban saja", "C. Tidak peduli", "D. Menjalankan kewajiban menjaga sarana bersamaan dengan menggunakan haknya"], key: 3 },
+                { type: 'essay', text: "Tuliskan bunyi kelima sila Pancasila secara berurutan!", keywords: ["ketuhanan", "kemanusiaan", "persatuan", "kerakyatan", "keadilan"] },
+                { type: 'essay', text: "Dua kelompok murid berselisih karena sama-sama ingin memakai lapangan. Bagaimana cara menyelesaikannya melalui musyawarah?", keywords: ["musyawarah", "pendapat", "jalan tengah", "bergantian", "sepakat"] },
+                { type: 'essay', text: "Jelaskan perbedaan hak dan kewajiban, lalu berikan masing-masing dua contoh di lingkungan sekolah!", keywords: ["hak", "terima", "kewajiban", "lakukan", "belajar", "tertib"] },
+                { type: 'essay', text: "Seorang siswa baru berbeda suku dan logat bicaranya sering diejek. Analisislah tindakan tersebut dan berikan solusinya!", keywords: ["perundungan", "sila", "menghargai", "minta maaf", "berteman"] },
+                { type: 'essay', text: "Jelaskan pentingnya gotong royong dan berikan dua contoh penerapannya di lingkungan tempat tinggalmu!", keywords: ["ringan", "persatuan", "kerja bakti", "membantu", "tetangga"] },
+
+                // Bahasa Indonesia (15 PG, 5 Uraian)
+                { type: 'pg', text: "Gagasan utama bacaan 'Hutan Mangrove Penjaga Pantai' adalah ....", options: ["A. Mangrove banyak ditebang", "B. Nelayan kesulitan mencari ikan", "C. Pentingnya hutan mangrove bagi pesisir", "D. Warga Desa Bahari menanam bibit"], key: 2 },
+                { type: 'pg', text: "Manfaat akar mangrove menurut bacaan adalah ....", options: ["A. Menahan ombak sehingga abrasi berkurang", "B. Menyuburkan tambak", "C. Memperluas permukiman", "D. Menarik wisatawan"], key: 0 },
+                { type: 'pg', text: "Hasil tangkapan nelayan menurun karena ....", options: ["A. Ombak semakin tenang", "B. Warga menanam bibit mangrove", "C. Jumlah nelayan bertambah", "D. Mangrove ditebang sehingga tempat berkembang biak ikan hilang"], key: 3 },
+                { type: 'pg', text: "Arti kata 'abrasi' pada bacaan adalah ....", options: ["A. Banjir di daratan", "B. Pengikisan tepi pantai oleh ombak", "C. Kekeringan di pesisir", "D. Naiknya suhu udara"], key: 1 },
+                { type: 'pg', text: "Sikap yang dapat diteladani dari warga Desa Bahari adalah ....", options: ["A. Peduli menjaga lingkungan dengan menanam mangrove", "B. Menebang pohon untuk tambak", "C. Menunggu bantuan", "D. Memindahkan permukiman"], key: 0 },
+                { type: 'pg', text: "Watak Dani dalam cerita membantu Nenek Ina adalah ....", options: ["A. Pemalas", "B. Pemarah", "C. Penolong", "D. Sombong"], key: 2 },
+                { type: 'pg', text: "Latar waktu dan suasana pada cerita tersebut adalah ....", options: ["A. Malam hari yang sunyi", "B. Siang hari yang terik", "C. Sore hari yang berangin", "D. Pagi hari ketika hujan deras"], key: 3 },
+                { type: 'pg', text: "Konflik batin yang dialami Dani adalah ....", options: ["A. Takut kepada Pak Satpam", "B. Ragu membantu Nenek karena takut terlambat", "C. Marah kepada Nenek Ina", "D. Malu memakai jas hujan sobek"], key: 1 },
+                { type: 'pg', text: "Amanat cerita tersebut adalah ....", options: ["A. Kita hendaknya menolong sesama walaupun ada kepentingan pribadi", "B. Kita harus selalu datang paling awal", "C. Jas hujan harus selalu baru", "D. Jangan berjalan saat hujan"], key: 0 },
+                { type: 'pg', text: "Kejadian yang terjadi tepat setelah Dani membantu Nenek Ina adalah ....", options: ["A. Dani melihat Nenek kesulitan", "B. Dani merasa ragu", "C. Dani tiba di sekolah dan pagar sudah tertutup", "D. Pak Satpam tersenyum"], key: 2 },
+                { type: 'pg', text: "Kalimat yang efektif adalah ....", options: ["A. Para siswa-siswa sedang membersihkan halaman sekolah.", "B. Mereka semua para siswa itu sedang bersih-bersih.", "C. Halaman dibersihkan oleh itu para siswa kelas.", "D. Para siswa sedang membersihkan halaman sekolah."], key: 3 },
+                { type: 'pg', text: "Kalimat dengan ejaan yang tepat adalah ....", options: ["A. Ayah membeli buku, pensil, dan penggaris di Pasar Mamuju.", "B. Ayah membeli buku pensil dan penggaris di Pasar Mamuju.", "C. Ayah membeli buku, pensil, dan penggaris di pasar mamuju.", "D. ayah Membeli buku, pensil, dan penggaris di Pasar Mamuju."], key: 0 },
+                { type: 'pg', text: "'Kakiku mau patah karena berjalan seharian.' Kalimat ini mengandung majas ....", options: ["A. Metafora", "B. Hiperbola", "C. Personifikasi", "D. Simile"], key: 1 },
+                { type: 'pg', text: "Kata baku yang tepat adalah ....", options: ["A. Apotik", "B. Resiko", "C. Praktik", "D. Nasehat"], key: 2 },
+                { type: 'pg', text: "Kalimat pembuka pidato yang paling sesuai adalah ....", options: ["A. 'Woi, dengarkan aku bicara!'", "B. 'Bapak dan Ibu guru serta teman-teman yang saya hormati, ....'", "C. 'Halo, aku mau cerita nih.'", "D. 'Pokoknya hari ini aku mau bicara.'"], key: 1 },
+                { type: 'essay', text: "Ringkaslah bacaan 'Hutan Mangrove Penjaga Pantai' menjadi dua kalimat!", keywords: ["mangrove", "pantai", "ombak", "ikatan", "tanam"] },
+                { type: 'essay', text: "Dari bacaan mangrove, tuliskan dua penyebab dan dua akibat dari penebangan mangrove!", keywords: ["tambak", "permukiman", "terkikis", "ikan", "menurun"] },
+                { type: 'essay', text: "Sebutkan watak Dani pada cerita beserta bukti dari cerita!", keywords: ["penolong", "peduli", "membantu", "nenek", "seberang"] },
+                { type: 'essay', text: "Buatlah pidato singkat (4-5 kalimat) bertema 'Menjaga Kebersihan Sekolah'!", keywords: ["kebersihan", "sekolah", "sampah", "menjaga", "bersama"] },
+                { type: 'essay', text: "Kembangkan gagasan utama 'Membaca bermanfaat bagi kita' menjadi satu paragraf!", keywords: ["membaca", "ilmu", "pengetahuan", "wawasan", "buku"] }
+            ],
+            B: [
+                // Matematika (15 PG, 5 Uraian)
+                { type: 'pg', text: "Suhu di puncak gunung -3°C, sedangkan di kaki gunung 25°C. Selisih suhunya adalah ....", options: ["A. 22°C", "B. 25°C", "C. 28°C", "D. 30°C"], key: 2 },
+                { type: 'pg', text: "Sebuah kapal selam berada 40 m di bawah permukaan laut. Kapal naik 15 m, lalu turun lagi 30 m. Posisi akhir kapal selam adalah ....", options: ["A. 55 m di bawah permukaan laut", "B. 25 m di bawah permukaan laut", "C. 55 m di atas permukaan laut", "D. 85 m di bawah permukaan laut"], key: 0 },
+                { type: 'pg', text: "Hasil dari (-12) + 8 - (-5) adalah ....", options: ["A. -9", "B. -1", "C. 1", "D. 9"], key: 2 },
+                { type: 'pg', text: "Bu Sari memiliki 2 1/2 liter minyak. Hari pertama dipakai 3/4 liter, hari kedua 1 1/4 liter. Sisa minyak Bu Sari adalah ....", options: ["A. 1/4 liter", "B. 3/4 liter", "C. 1/2 liter", "D. 1 liter"], key: 2 },
+                { type: 'pg', text: "Sebuah pita sepanjang 3,6 m dipotong-potong, tiap potong 0,45 m. Banyak potongan pita adalah ....", options: ["A. 8", "B. 7", "C. 9", "D. 6"], key: 0 },
+                { type: 'pg', text: "Harga sebuah tas Rp150.000 mendapat diskon 20%. Uang yang harus dibayar adalah ....", options: ["A. Rp130.000", "B. Rp120.000", "C. Rp30.000", "D. Rp110.000"], key: 1 },
+                { type: 'pg', text: "Dari 40 siswa, 35% menyukai sepak bola. Banyak siswa yang menyukai sepak bola adalah ....", options: ["A. 14 siswa", "B. 12 siswa", "C. 16 siswa", "D. 35 siswa"], key: 0 },
+                { type: 'pg', text: "Perbandingan kelereng Budi dan Citra adalah 3 : 5. Jika jumlah kelereng mereka 48, maka kelereng Citra berjumlah ....", options: ["A. 18", "B. 24", "C. 30", "D. 36"], key: 2 },
+                { type: 'pg', text: "Pada peta berskala 1 : 2.000.000, jarak dua kota pada peta adalah 4 cm. Jarak sebenarnya adalah ....", options: ["A. 8 km", "B. 40 km", "C. 800 km", "D. 80 km"], key: 3 },
+                { type: 'pg', text: "Pak Dani memagari taman berbentuk persegi panjang berukuran 20 m x 15 m. Biaya pemagaran Rp25.000 per meter. Biaya seluruhnya adalah ....", options: ["A. Rp1.500.000", "B. Rp7.500.000", "C. Rp3.500.000", "D. Rp1.750.000"], key: 3 },
+                { type: 'pg', text: "Sebuah bangun terdiri dari persegi bersisi 10 cm dan segitiga di atasnya dengan alas 10 cm dan tinggi 6 cm. Luas bangun tersebut adalah ....", options: ["A. 110 cm²", "B. 130 cm²", "C. 160 cm²", "D. 100 cm²"], key: 1 },
+                { type: 'pg', text: "Luas lingkaran berdiameter 14 cm (π = 22/7) adalah ....", options: ["A. 154 cm²", "B. 44 cm²", "C. 88 cm²", "D. 616 cm²"], key: 0 },
+                { type: 'pg', text: "Bak mandi berbentuk kubus dengan sisi 80 cm terisi penuh air. Volume air tersebut adalah ....", options: ["A. 64 liter", "B. 512 liter", "C. 5.120 liter", "D. 640 liter"], key: 1 },
+                { type: 'pg', text: "Akuarium berbentuk balok berukuran 60 cm x 40 cm x 30 cm diisi air setinggi 3/4 tinggi akuarium. Volume air adalah ....", options: ["A. 54 liter", "B. 72 liter", "C. 18 liter", "D. 54.000 liter"], key: 0 },
+                { type: 'pg', text: "Rata-rata tiga nilai ulangan Dika adalah 80. Agar rata-rata empat ulangan menjadi 82, nilai ulangan keempat harus ....", options: ["A. 84", "B. 86", "C. 88", "D. 90"], key: 2 },
+                { type: 'essay', text: "Rina naik lift dari basement 3 ke lantai 5, lalu turun 2 lantai. Di lantai berapa Rina sekarang? Tuliskan model operasi bilangan bulatnya!", keywords: ["-3", "5", "2", "lantai 3", "3"] },
+                { type: 'essay', text: "Dina membawa uang Rp500.000. Sepatu Rp350.000 dan tas Rp250.000 (keduanya diskon 20%). Cukupkah uang Dina dan berapa sisanya?", keywords: ["cukup", "480000", "20000", "sisa"] },
+                { type: 'essay', text: "Resep kue untuk 4 orang memerlukan 300g tepung, 100g gula, 2 telur. Berapa bahan untuk 10 orang?", keywords: ["750", "250", "5", "tepung", "gula", "telur"] },
+                { type: 'essay', text: "Kolam balok 12m x 6m x 1,5m. Pompa mengalirkan 9 m³/jam. Berapa jam sampai penuh?", keywords: ["108", "12", "jam"] },
+                { type: 'essay', text: "Dari 40 siswa: 16 olahraga, 12 membaca, 8 menggambar, sisa hobi lain. Tentukan persentase dan hobi paling diminati!", keywords: ["40%", "30%", "20%", "10%", "olahraga"] },
+
+                // IPAS (15 PG, 5 Uraian)
+                { type: 'pg', text: "Organ tubuh yang berfungsi memompa darah ke seluruh tubuh adalah ....", options: ["A. Paru-paru", "B. Jantung", "C. Lambung", "D. Ginjal"], key: 1 },
+                { type: 'pg', text: "Rafi berlari 10 menit, napas dan detak jantungnya meningkat karena ....", options: ["A. Sakit", "B. Paru-paru rusak", "C. Jantung lelah", "D. Otot butuh lebih banyak oksigen"], key: 3 },
+                { type: 'pg', text: "Fungsi utama usus halus adalah ....", options: ["A. Menyerap sari-sari makanan", "B. Menyimpan sisa makanan", "C. Menyaring darah", "D. Memompa darah"], key: 0 },
+                { type: 'pg', text: "Urutan jalannya makanan dalam sistem pencernaan yang benar adalah ....", options: ["A. Mulut, lambung, kerongkongan, usus halus", "B. Kerongkongan, mulut, lambung, usus halus", "C. Mulut, kerongkongan, lambung, usus halus", "D. Mulut, usus halus, lambung, kerongkongan"], key: 2 },
+                { type: 'pg', text: "Zat gizi yang menjadi sumber tenaga utama bagi tubuh adalah ....", options: ["A. Vitamin", "B. Karbohidrat", "C. Mineral", "D. Serat"], key: 1 },
+                { type: 'pg', text: "Ani cepat lemas karena hanya sarapan minuman manis. Saran yang tepat adalah ....", options: ["A. Tidak perlu sarapan", "B. Minum minuman manis lagi", "C. Tidur di kelas", "D. Sarapan bergizi seimbang (karbohidrat, protein, sayur, buah)"], key: 3 },
+                { type: 'pg', text: "Perubahan energi listrik menjadi energi cahaya terjadi pada ....", options: ["A. Lampu yang menyala", "B. Kompor gas", "C. Kipas angin", "D. Radio"], key: 0 },
+                { type: 'pg', text: "Ketika setrika listrik dinyalakan, energi listrik berubah menjadi energi ....", options: ["A. Gerak", "B. Bunyi", "C. Panas", "D. Kimia"], key: 2 },
+                { type: 'pg', text: "Sumber energi listrik ramah lingkungan dan tidak pernah habis untuk desa pesisir adalah ....", options: ["A. Batu bara", "B. Panel surya", "C. Genset solar", "D. Membakar kayu"], key: 1 },
+                { type: 'pg', text: "Sampah yang paling mudah terurai oleh alam adalah ....", options: ["A. Botol plastik", "B. Pecahan kaca", "C. Kaleng bekas", "D. Daun kering"], key: 3 },
+                { type: 'pg', text: "Banyak ikan mati setelah warga membuang limbah ke sungai disebabkan oleh ....", options: ["A. Pencemaran air", "B. Musim hujan", "C. Ikan terlalu banyak", "D. Sungai dalam"], key: 0 },
+                { type: 'pg', text: "Rantai makanan: padi -> tikus -> ular -> elang. Jika ular berkurang drastis, jumlah tikus akan ....", options: ["A. Berkurang", "B. Tetap", "C. Bertambah banyak", "D. Hilang"], key: 2 },
+                { type: 'pg', text: "Orang yang menggunakan atau membeli barang kebutuhan disebut ....", options: ["A. Produsen", "B. Konsumen", "C. Distributor", "D. Pedagang"], key: 1 },
+                { type: 'pg', text: "Menjelang hari raya harga cabai naik karena ....", options: ["A. Permintaan meningkat persediaan terbatas", "B. Persediaan banyak", "C. Tidak ada yang beli", "D. Cabai tidak laku"], key: 0 },
+                { type: 'pg', text: "Teks Proklamasi Kemerdekaan Indonesia dibacakan oleh ....", options: ["A. Jenderal Sudirman", "B. Ki Hajar Dewantara", "C. Moh. Yamin", "D. Ir. Soekarno dan Drs. Moh. Hatta"], key: 3 },
+                { type: 'essay', text: "Jelaskan perjalanan makanan dari mulut hingga menjadi sisa pembuangan!", keywords: ["mulut", "kerongkongan", "lambung", "usus", "anus"] },
+                { type: 'essay', text: "Analisislah dampak sarapan manis saja dan susun contoh menu gizi seimbang!", keywords: ["lemas", "nasi", "telur", "sayur", "buah"] },
+                { type: 'essay', text: "Elang diburu hingga habis, jelaskan dampaknya terhadap rantai makanan!", keywords: ["ular", "tikus", "seimbang", "populasi"] },
+                { type: 'essay', text: "Sebutkan 3 contoh perubahan energi di rumah!", keywords: ["lampu", "cahaya", "setrika", "panas", "kipas", "gerak"] },
+                { type: 'essay', text: "Berikan 3 solusi penanganan sungai yang keruh dan berbau!", keywords: ["sampah", "kerja bakti", "limbah", "dilarang"] },
+
+                // PJOK (15 PG, 5 Uraian)
+                { type: 'pg', text: "Berikut yang termasuk permainan bola besar adalah ....", options: ["A. Kasti", "B. Bulu tangkis", "C. Sepak bola", "D. Tenis meja"], key: 2 },
+                { type: 'pg', text: "Teknik dasar mengoper bola pendek dalam sepak bola menggunakan ....", options: ["A. Kaki bagian dalam", "B. Ujung jari kaki", "C. Tumit", "D. Lutut"], key: 0 },
+                { type: 'pg', text: "Pemain kasti yang bertugas melambungkan bola disebut ....", options: ["A. Penjaga", "B. Pemukul", "C. Penangkap", "D. Pelambung"], key: 3 },
+                { type: 'pg', text: "Urutan gerakan lompat jauh yang benar adalah ....", options: ["A. Awalan, melayang, tumpuan, mendarat", "B. Awalan, tumpuan, melayang, mendarat", "C. Tumpuan, awalan, melayang, mendarat", "D. Mendarat, tumpuan, melayang, awalan"], key: 1 },
+                { type: 'pg', text: "Start yang digunakan pada lari jarak pendek adalah start ....", options: ["A. Berdiri", "B. Melayang", "C. Jongkok", "D. Duduk"], key: 2 },
+                { type: 'pg', text: "Sebelum melakukan guling depan, hal yang harus dilakukan adalah ....", options: ["A. Pemanasan", "B. Langsung berguling", "C. Makan banyak", "D. Tidur"], key: 0 },
+                { type: 'pg', text: "Pada guling depan, posisi kepala yang benar adalah ....", options: ["A. Kepala tegak", "B. Ubun-ubun menyentuh matras", "C. Menoleh", "D. Dagu menempel ke dada dan tengkuk menyentuh matras"], key: 3 },
+                { type: 'pg', text: "Lari 12 menit (tes Cooper) mengukur ....", options: ["A. Kekuatan lengan", "B. Daya tahan jantung dan paru-paru", "C. Kelincahan", "D. Keseimbangan"], key: 1 },
+                { type: 'pg', text: "Pendinginan setelah berolahraga bertujuan untuk ....", options: ["A. Menurunkan denyut jantung dan napas bertahap", "B. Menambah lelah", "C. Naikkan suhu", "D. Hentikan mendadak"], key: 0 },
+                { type: 'pg', text: "Lama tidur yang dianjurkan bagi anak usia SD adalah ....", options: ["A. 4-5 jam", "B. 6 jam", "C. 9-11 jam", "D. 14 jam"], key: 2 },
+                { type: 'pg', text: "Pertolongan pertama pada lutut lecet adalah ....", options: ["A. Biarkan terbuka", "B. Tabur tanah", "C. Tetap main", "D. Bersihkan air bersih dan tutup plester"], key: 3 },
+                { type: 'pg', text: "Sikap sportif saat kalah pertandingan adalah ....", options: ["A. Tuduh wasit", "B. Menerima kekalahan dan selamatkan pemenang", "C. Marah", "D. Ejek lawan"], key: 1 },
+                { type: 'pg', text: "Cara menjaga kebersihan diri adalah ....", options: ["A. Mandi dan gosok gigi teratur", "B. Baju sama berhari-hari", "C. Jarang cuci tangan", "D. Kuku setahun sekali"], key: 0 },
+                { type: 'pg', text: "Jumlah pemain inti dalam satu regu bola voli adalah ....", options: ["A. 5", "B. 7", "C. 6", "D. 11"], key: 2 },
+                { type: 'pg', text: "Pilihan tepat meningkatkan kebugaran tanpa alat adalah ....", options: ["A. Nonton TV", "B. Tidur siang", "C. Makan manis", "D. Berlari pagi dan lompat tali rutin"], key: 3 },
+                { type: 'essay', text: "Tuliskan urutan gerakan lompat jauh!", keywords: ["awalan", "tumpuan", "melayang", "mendarat"] },
+                { type: 'essay', text: "Jelaskan manfaat pemanasan dan pendinginan!", keywords: ["otot", "cedera", "denyut", "jantung"] },
+                { type: 'essay', text: "Tuliskan pertolongan pertama pada luka goresan!", keywords: ["air", "bersih", "tekan", "plester", "kasa"] },
+                { type: 'essay', text: "Bagaimana sikap sportif yang benar saat bermain kasti?", keywords: ["jujur", "sportif", "akui", "wasit"] },
+                { type: 'essay', text: "Susun jadwal sederhana harian pola hidup sehat!", keywords: ["makan", "tidur", "olahraga", "belajar"] }
+            ],
+            C: [
+                // Seni Budaya (15 PG, 5 Uraian)
+                { type: 'pg', text: "Unsur seni rupa yang terbentuk dari titik yang bergerak adalah ....", options: ["A. Bidang", "B. Garis", "C. Warna", "D. Tekstur"], key: 1 },
+                { type: 'pg', text: "Warna primer terdiri atas ....", options: ["A. Hijau, jingga, ungu", "B. Hitam, putih, abu", "C. Merah, hijau, biru", "D. Merah, kuning, biru"], key: 3 },
+                { type: 'pg', text: "Campuran warna merah dan kuning menghasilkan warna ....", options: ["A. Jingga", "B. Hijau", "C. Ungu", "D. Cokelat"], key: 0 },
+                { type: 'pg', text: "Kelompok warna hangat adalah ....", options: ["A. Biru, hijau, ungu", "B. Biru, putih, hitam", "C. Merah, jingga, kuning", "D. Ungu, biru, hijau"], key: 2 },
+                { type: 'pg', text: "Karya seni rupa dua dimensi adalah ....", options: ["A. Patung", "B. Lukisan", "C. Keramik", "D. Ukiran kayu"], key: 1 },
+                { type: 'pg', text: "Fungsi utama poster adalah ....", options: ["A. Menghias ruangan", "B. Menyimpan benda", "C. Alat tulis", "D. Menyampaikan pesan/ajakan secara visual"], key: 3 },
+                { type: 'pg', text: "Teknik arsir dalam menggambar adalah ....", options: ["A. Garis sejajar rapat untuk kesan gelap terang", "B. Menempel kertas", "C. Menekan lilin", "D. Memahat"], key: 0 },
+                { type: 'pg', text: "Berikut yang termasuk karya seni rupa tiga dimensi adalah ....", options: ["A. Kolase", "B. Batik", "C. Patung", "D. Lukisan"], key: 2 },
+                { type: 'pg', text: "Membuat pot bunga dari botol plastik bekas termasuk kerajinan ....", options: ["A. Lukis", "B. Daur ulang", "C. Cetak", "D. Anyaman"], key: 1 },
+                { type: 'pg', text: "Kolase adalah karya seni yang dibuat dengan cara ....", options: ["A. Menempelkan berbagai bahan pada bidang gambar", "B. Memahat", "C. Mencetak", "D. Mewarnai cat air"], key: 0 },
+                { type: 'pg', text: "Teknik membuat batik adalah menutup bagian kain dengan .... lalu dicelup.", options: ["A. Cat", "B. Lem", "C. Lilin (malam)", "D. Minyak"], key: 2 },
+                { type: 'pg', text: "Kain tradisional khas Sulawesi Barat adalah ....", options: ["A. Ulos", "B. Songket", "C. Sutra Mandar", "D. Sumba"], key: 2 },
+                { type: 'pg', text: "Prinsip keseimbangan dalam karya seni rupa adalah ....", options: ["A. Penataan unsur agar serasi dan stabil", "B. Satu warna", "C. Gambar besar", "D. Kosongkan bidang"], key: 0 },
+                { type: 'pg', text: "Tujuan pameran karya seni di sekolah adalah ....", options: ["A. Cari kesalahan", "B. Menghargai dan menunjukkan hasil karya", "C. Mengejek", "D. Membandingkan nilai"], key: 1 },
+                { type: 'pg', text: "Teknik menampilkan kesan jarak jauh dalam gambar adalah ....", options: ["A. Objek jauh lebih besar", "B. Semua sama besar", "C. Satu warna tebal", "D. Objek jauh lebih kecil dan pudar"], key: 3 },
+                { type: 'essay', text: "Jelaskan perbedaan warna primer dan sekunder beserta contohnya!", keywords: ["primer", "dasar", "sekunder", "campuran", "merah", "jingga"] },
+                { type: 'essay', text: "Tuliskan langkah-langkah membuat kolase dari bahan bekas!", keywords: ["rancang", "gunting", "tempel", "lem", "rapi"] },
+                { type: 'essay', text: "Jelaskan unsur-unsur yang harus ada pada poster 'Cintai Lingkungan'!", keywords: ["gambar", "tulisan", "pesan", "warna", "menarik"] },
+                { type: 'essay', text: "Analisislah manfaat tempat pensil dari kaleng bekas!", keywords: ["sampah", "kreatif", "hemat", "lingkungan"] },
+                { type: 'essay', text: "Mengapa kain Sutra Mandar perlu dilestarikan dan bagaimana caranya?", keywords: ["warisan", "budaya", "ekonomi", "pakai", "belajar"] },
+
+                // Bahasa Inggris (15 PG, 5 Uraian)
+                { type: 'pg', text: "How old is Sinta? (Based on text: Sinta is 12 years old)", options: ["A. Eleven", "B. Twelve", "C. Thirteen", "D. Ten"], key: 1 },
+                { type: 'pg', text: "What time does Sinta wake up? (Text: 5.30)", options: ["A. 5.00", "B. 6.00", "C. 6.30", "D. 5.30"], key: 3 },
+                { type: 'pg', text: "How does Sinta go to school?", options: ["A. By bicycle", "B. By bus", "C. On foot", "D. By motorbike"], key: 0 },
+                { type: 'pg', text: "What does Sinta do after school?", options: ["A. Play football", "B. Watch TV", "C. Help mother & do homework", "D. Visit grandmother"], key: 2 },
+                { type: 'pg', text: "The word 'near' in the text has the same meaning as ....", options: ["A. Far", "B. Close", "C. Behind", "D. Under"], key: 1 },
+                { type: 'pg', text: "Who do Sinta and her family visit on Sunday?", options: ["A. Grandmother", "B. Teacher", "C. Friend", "D. Uncle"], key: 0 },
+                { type: 'pg', text: "I ___ breakfast every morning.", options: ["A. eats", "B. eating", "C. is eat", "D. eat"], key: 3 },
+                { type: 'pg', text: "She ___ to school at 6.30.", options: ["A. go", "B. going", "C. goes", "D. gone"], key: 2 },
+                { type: 'pg', text: "My little brother ___ playing football now.", options: ["A. is", "B. are", "C. am", "D. be"], key: 0 },
+                { type: 'pg', text: "Where ___ you live?", options: ["A. does", "B. do", "C. is", "D. are"], key: 1 },
+                { type: 'pg', text: "The elephant is ___ than the cat.", options: ["A. small", "B. smallest", "C. more big", "D. bigger"], key: 3 },
+                { type: 'pg', text: "The bank is ___ the post office and the market.", options: ["A. on", "B. at", "C. between", "D. under"], key: 2 },
+                { type: 'pg', text: "A place where we borrow books is a ....", options: ["A. library", "B. canteen", "C. market", "D. hospital"], key: 0 },
+                { type: 'pg', text: "What do you say to ask someone's name?", options: ["A. How old are you?", "B. What is your name?", "C. Where do you live?", "D. What time is it?"], key: 1 },
+                { type: 'pg', text: "Rina: 'Thank you for helping me.' Dani: '....'", options: ["A. Good bye", "B. I'm sorry", "C. Nice to meet you", "D. You're welcome"], key: 3 },
+                { type: 'essay', text: "Answer based on text: (a) Where does Sinta live? (b) Who with?", keywords: ["mamuju", "parents", "brother"] },
+                { type: 'essay', text: "Write four sentences about your daily activities!", keywords: ["wake", "school", "study", "sleep", "eat"] },
+                { type: 'essay', text: "Arrange: 'school / goes / to / she / every day'", keywords: ["she", "goes", "to", "school", "every", "day"] },
+                { type: 'essay', text: "Describe your best friend in 4 sentences!", keywords: ["name", "years", "tall", "hobby", "like"] },
+                { type: 'essay', text: "Complete dialogue: Dani: 'How are you?' Rina: '....'", keywords: ["fine", "thank", "going", "good"] }
+            ]
+        };
+
+        // ==========================================
+        // 3. STATE APLIKASI
+        // ==========================================
+        let currentUser = null; // { nisn, name, isAdmin }
+        let currentPacket = null;
+        let activeQuestions = [];
+        let currentQuestionIndex = 0;
+        let studentAnswers = {}; // { questionIndex: answer }
+
+        // LocalStorage Data Management
+        let appData = JSON.parse(localStorage.getItem('cbt_app_data')) || {
+            isLocked: false,
+            results: {} // { nisn: { name, scores: { A: score, B: score, C: score } } }
+        };
+
+        function saveData() {
+            localStorage.setItem('cbt_app_data', JSON.stringify(appData));
+        }
+
+        // ==========================================
+        // 4. KUNCI LAYAR & KEAMANAN
+        // ==========================================
+        function enterFullscreen() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => {});
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
             }
         }
 
-        const form = document.getElementById("formLogin");
-        const btnLogin = document.getElementById("submitBtn");
-
-        form.addEventListener("submit", function(event) {
-            event.preventDefault();
-            
-            const nisn = document.getElementById("username").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const paket = document.getElementById("pilihPaket").value;
-
-            btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i> Memeriksa...';
-            btnLogin.disabled = true;
-
-            const formData = new FormData();
-            formData.append('nisn', nisn);
-            formData.append('password', password);
-
-            fetch(scriptURL, { method: 'POST', body: formData })
-                .then(response => response.json())
-                .then(data => {
-                    btnLogin.innerHTML = 'Login & Mulai Ujian';
-                    btnLogin.disabled = false;
-
-                    if (data.status === 'success') {
-                        localStorage.setItem('isLoggedIn', 'true');
-                        localStorage.setItem('nisnSiswa', nisn);      
-                        localStorage.setItem('namaSiswa', data.nama);
-                        localStorage.setItem('kelasSiswa', data.kelas);
-                        localStorage.setItem('role', data.role);
-                        localStorage.setItem('selectedPaket', paket);
-
-                        if (data.role === 'admin') {
-                            window.location.href = 'admin.html';
-                        } else {
-                            window.location.href = 'ujian.html';
-                        }
-                    } else {
-                        alert("Login Gagal: " + data.message);
-                    }
-                })
-                .catch(error => {
-                    btnLogin.innerHTML = 'Login & Mulai Ujian';
-                    btnLogin.disabled = false;
-                    alert("Gagal terhubung ke database. Pastikan koneksi internet Anda stabil.");
-                });
+        // Deteksi Pindah Tab / Layar
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden && currentUser && !currentUser.isAdmin && currentPacket) {
+                alert("PERINGATAN MANDIRI: Anda kedapatan membuka tab/aplikasi lain! Tetap fokus pada ujian.");
+            }
         });
+
+        // Block Right Click
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // ==========================================
+        // 5. SISTEM LOGIN & NAVIGASI SCREEN
+        // ==========================================
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function handleLogin() {
+            const nisn = document.getElementById('login-nisn').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            if (nisn === 'admin' && pass === 'admin2026') {
+                currentUser = { nisn: 'admin', name: 'Panitia Admin', isAdmin: true };
+                showScreen('screen-admin');
+                initAdminDashboard();
+                return;
+            }
+
+            const student = studentsList.find(s => s.nisn === nisn);
+            if (student && pass === '2026') {
+                currentUser = { nisn: student.nisn, name: student.name, isAdmin: false };
+                document.getElementById('student-name').innerText = student.name;
+                
+                // Minta Fullscreen saat Login Siswa
+                enterFullscreen();
+                
+                checkLockStatus();
+                showScreen('screen-packets');
+            } else {
+                alert("NISN atau Password Salah!");
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            currentPacket = null;
+            document.getElementById('login-nisn').value = '';
+            document.getElementById('login-pass').value = '';
+            showScreen('screen-login');
+        }
+
+        function checkLockStatus() {
+            const lockWarning = document.getElementById('lock-warning');
+            if (appData.isLocked) {
+                lockWarning.style.display = 'block';
+            } else {
+                lockWarning.style.display = 'none';
+            }
+        }
+
+        // Shuffle Array (Acak Soal & Pilihan)
+        function shuffle(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // ==========================================
+        // 6. MODUL UJIAN SISWA
+        // ==========================================
+        function selectPacket(packet) {
+            if (appData.isLocked) {
+                alert("Soal saat ini dikunci oleh Panitia Admin. Hubungi panitia!");
+                return;
+            }
+
+            currentPacket = packet;
+            studentAnswers = {};
+            currentQuestionIndex = 0;
+
+            // Acak Soal
+            activeQuestions = shuffle(rawQuestions[packet]);
+
+            document.getElementById('exam-title').innerText = `Ujian Paket ${packet}`;
+            document.getElementById('exam-student-info').innerText = `${currentUser.name} (${currentUser.nisn})`;
+
+            renderNavGrid();
+            loadQuestion(0);
+            showScreen('screen-exam');
+        }
+
+        function renderNavGrid() {
+            const navGrid = document.getElementById('nav-grid');
+            navGrid.innerHTML = '';
+            activeQuestions.forEach((_, idx) => {
+                const btn = document.createElement('div');
+                btn.className = `nav-btn ${idx === 0 ? 'active' : ''}`;
+                btn.id = `nav-btn-${idx}`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => loadQuestion(idx);
+                navGrid.appendChild(btn);
+            });
+        }
+
+        function loadQuestion(index) {
+            currentQuestionIndex = index;
+            const q = activeQuestions[index];
+
+            // Update Active Nav Button
+            document.querySelectorAll('.nav-btn').forEach((b, i) => {
+                b.classList.remove('active');
+                if (i === index) b.classList.add('active');
+            });
+
+            document.getElementById('question-number').innerText = `Soal Nomor ${index + 1} (${q.type === 'pg' ? 'Pilihan Ganda' : 'Uraian'})`;
+            document.getElementById('question-text').innerText = q.text;
+
+            const optionsContainer = document.getElementById('options-container');
+            const essayContainer = document.getElementById('essay-container');
+
+            if (q.type === 'pg') {
+                optionsContainer.style.display = 'block';
+                essayContainer.style.display = 'none';
+                optionsContainer.innerHTML = '';
+
+                q.options.forEach((opt, oIdx) => {
+                    const li = document.createElement('li');
+                    const isChecked = studentAnswers[index] === oIdx ? 'checked' : '';
+                    li.innerHTML = `
+                        <label>
+                            <input type="radio" name="option" value="${oIdx}" ${isChecked} onchange="savePgAnswer(${oIdx})">
+                            ${opt}
+                        </label>
+                    `;
+                    optionsContainer.appendChild(li);
+                });
+            } else {
+                optionsContainer.style.display = 'none';
+                essayContainer.style.display = 'block';
+                document.getElementById('essay-answer').value = studentAnswers[index] || '';
+            }
+        }
+
+        function savePgAnswer(val) {
+            studentAnswers[currentQuestionIndex] = val;
+            markNavAnswered(currentQuestionIndex);
+        }
+
+        function saveEssayAnswer() {
+            const val = document.getElementById('essay-answer').value;
+            studentAnswers[currentQuestionIndex] = val;
+            if (val.trim() !== '') {
+                markNavAnswered(currentQuestionIndex);
+            } else {
+                document.getElementById(`nav-btn-${currentQuestionIndex}`).classList.remove('answered');
+            }
+        }
+
+        function markNavAnswered(idx) {
+            document.getElementById(`nav-btn-${idx}`).classList.add('answered');
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < activeQuestions.length - 1) {
+                loadQuestion(currentQuestionIndex + 1);
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                loadQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        // Penilaian Otomatis (PG & Kata Kunci Uraian)
+        function calculateScore() {
+            let totalPgScore = 0;
+            let totalEssayScore = 0;
+
+            // Hitung Jumlah Soal berdasarkan Tipe
+            let pgCount = activeQuestions.filter(q => q.type === 'pg').length;
+            let essayCount = activeQuestions.filter(q => q.type === 'essay').length;
+
+            let pgWeight = 30 / (pgCount || 1); // Maksimal Nilai PG = 30
+            let essayWeight = 70 / (essayCount || 1); // Maksimal Nilai Uraian = 70
+
+            activeQuestions.forEach((q, idx) => {
+                const ans = studentAnswers[idx];
+                if (q.type === 'pg') {
+                    if (ans === q.key) {
+                        totalPgScore += pgWeight;
+                    }
+                } else if (q.type === 'essay') {
+                    if (ans && ans.trim() !== '') {
+                        let matchedKeywords = 0;
+                        const userAnsLower = ans.toLowerCase();
+
+                        q.keywords.forEach(kw => {
+                            if (userAnsLower.includes(kw.toLowerCase())) {
+                                matchedKeywords++;
+                            }
+                        });
+
+                        if (matchedKeywords > 0) {
+                            // Menghitung Proporsi Kata Kunci yang Cocok
+                            let ratio = matchedKeywords / q.keywords.length;
+                            if (ratio > 1) ratio = 1;
+                            totalEssayScore += (essayWeight * ratio);
+                        } else {
+                            // Tetap Ada Nilai Sedikit jika Terisi (Sesuai Aturan Kebutuhan)
+                            totalEssayScore += (essayWeight * 0.15); 
+                        }
+                    }
+                }
+            });
+
+            let finalScore = Math.round(totalPgScore + totalEssayScore);
+            return finalScore > 100 ? 100 : finalScore; // Maksimal 100
+        }
+
+        function finishExam() {
+            if (confirm("Apakah Anda yakin ingin menyelesaikan ujian paket ini?")) {
+                const score = calculateScore();
+
+                // Simpan Nilai Siswa
+                if (!appData.results[currentUser.nisn]) {
+                    appData.results[currentUser.nisn] = {
+                        name: currentUser.name,
+                        scores: {}
+                    };
+                }
+                appData.results[currentUser.nisn].scores[currentPacket] = score;
+                saveData();
+
+                alert(`Ujian Selesai!\nNilai Anda untuk Paket ${currentPacket} adalah: ${score}`);
+                showScreen('screen-packets');
+            }
+        }
+
+        // ==========================================
+        // 7. MODUL ADMIN DASHBOARD & LIVE MONITORING
+        // ==========================================
+        let chartInstance = null;
+
+        function initAdminDashboard() {
+            updateAdminView();
+        }
+
+        function toggleExamLock() {
+            appData.isLocked = !appData.isLocked;
+            saveData();
+            updateAdminView();
+        }
+
+        function resetAllActivity() {
+            if (confirm("Apakah Anda YAKIN ingin menghapus/reset SEMUA data aktivitas dan nilai siswa?")) {
+                appData.results = {};
+                saveData();
+                updateAdminView();
+                alert("Semua data aktivitas dan nilai berhasil di-reset!");
+            }
+        }
+
+        function getPassingGradeBadge(score) {
+            if (score === undefined || score === null) return `<span style="color:#aaa;">Belum Ikut</span>`;
+            
+            let category = "";
+            let badgeClass = "";
+
+            if (score >= 85) {
+                category = "Sangat Baik";
+                badgeClass = "bg-sangat-baik";
+            } else if (score >= 70) {
+                category = "Baik";
+                badgeClass = "bg-baik";
+            } else if (score >= 50) {
+                category = "Cukup Baik";
+                badgeClass = "bg-cukup";
+            } else {
+                category = "Kurang Baik";
+                badgeClass = "bg-kurang";
+            }
+
+            return `${score} - <span class="status-badge ${badgeClass}">${category}</span>`;
+        }
+
+        function updateAdminView() {
+            // Lock Status UI
+            const lockBtn = document.getElementById('btn-toggle-lock');
+            const lockStatus = document.getElementById('admin-lock-status');
+
+            if (appData.isLocked) {
+                lockBtn.innerText = "Buka Soal";
+                lockBtn.className = "btn btn-warning";
+                lockStatus.className = "status-lock status-locked";
+                lockStatus.innerText = "🔒 Status Akses Ujian: TERKUNCI (Siswa tidak bisa mengakses soal)";
+            } else {
+                lockBtn.innerText = "Kunci Soal";
+                lockBtn.className = "btn btn-danger";
+                lockStatus.className = "status-lock status-unlocked";
+                lockStatus.innerText = "🔓 Status Akses Ujian: TERBUKA (Siswa dapat mengakses soal)";
+            }
+
+            // Update Tabel Passing Grade
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+
+            let highScoresCount = 0; // Biru (>=75)
+            let lowScoresCount = 0;  // Merah (<75)
+
+            studentsList.forEach(student => {
+                const studentResult = appData.results[student.nisn] || { scores: {} };
+                const scoreA = studentResult.scores['A'];
+                const scoreB = studentResult.scores['B'];
+                const scoreC = studentResult.scores['C'];
+
+                // Count for chart
+                [scoreA, scoreB, scoreC].forEach(s => {
+                    if (s !== undefined && s !== null) {
+                        if (s >= 75) highScoresCount++;
+                        else lowScoresCount++;
+                    }
+                });
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${student.nisn}</td>
+                    <td><b>${student.name}</b></td>
+                    <td>${getPassingGradeBadge(scoreA)}</td>
+                    <td>${getPassingGradeBadge(scoreB)}</td>
+                    <td>${getPassingGradeBadge(scoreC)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update Chart Pie
+            renderChart(highScoresCount, lowScoresCount);
+        }
+
+        function renderChart(high, low) {
+            const ctx = document.getElementById('gradeChart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Nilai Tinggi (≥75)', 'Nilai Rendah (<75)'],
+                    datasets: [{
+                        data: [high, low],
+                        backgroundColor: ['#007bff', '#dc3545'], // Biru & Merah
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+
+        // Auto Refresh Data Admin Setiap Detik
+        setInterval(() => {
+            if (currentUser && currentUser.isAdmin) {
+                // Fetch fresh data from LocalStorage
+                appData = JSON.parse(localStorage.getItem('cbt_app_data')) || { isLocked: false, results: {} };
+                updateAdminView();
+            }
+        }, 1000);
     </script>
 </body>
 </html>
