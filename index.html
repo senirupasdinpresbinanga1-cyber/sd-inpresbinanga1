@@ -148,7 +148,7 @@
             position: relative;
         }
 
-        .input-icon-wrap span {
+        .input-icon-wrap span.icon-left {
             position: absolute;
             left: 12px;
             top: 50%;
@@ -157,9 +157,23 @@
             font-size: 15px;
         }
 
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #5f6368;
+            font-size: 16px;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .form-group input {
             width: 100%;
-            padding: 12px 12px 12px 38px;
+            padding: 12px 38px 12px 38px;
             border: 1px solid #dadce0;
             border-radius: 6px;
             font-size: 14px;
@@ -475,15 +489,16 @@
                 <div class="form-group">
                     <label>Username (NISN)</label>
                     <div class="input-icon-wrap">
-                        <span>👤</span>
+                        <span class="icon-left">👤</span>
                         <input type="text" id="login-nisn" placeholder="Username (NISN)">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
                     <div class="input-icon-wrap">
-                        <span>🔒</span>
+                        <span class="icon-left">🔒</span>
                         <input type="password" id="login-pass" placeholder="Password (Gunakan '2026')">
+                        <span class="toggle-password" onclick="togglePasswordVisibility()" title="Tampilkan/Sembunyikan Password">👁️</span>
                     </div>
                 </div>
                 <button class="btn" onclick="handleLogin()">Login</button>
@@ -639,6 +654,18 @@
     </div>
 
     <script>
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('login-pass');
+            const toggleIcon = document.querySelector('.toggle-password');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                toggleIcon.textContent = '🙈';
+            } else {
+                passInput.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+
         const studentsList = [
             { nisn: "3156000315", name: "ABID AQILAH WAHYUDI" },
             { nisn: "3147561743", name: "AINUN HAKIMAH" },
