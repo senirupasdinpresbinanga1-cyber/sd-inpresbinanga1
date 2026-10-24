@@ -6,20 +6,46 @@
     <title>Sistem Ujian Online CBT Kelas VI</title>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Font Awesome CDN untuk Icon Mata, Lock, dan User -->
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css untuk Animasi Modern -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #06b6d4;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --text-main: #1f2937;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            background-color: #f0f2f5;
-            color: #333;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-main);
             user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* Modern Glassmorphism Card */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 30px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -36,132 +62,56 @@
             display: block;
         }
 
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        /* Styling Login */
+        /* 1. Login Screen Styling */
         .login-wrapper {
             min-height: 100vh;
-            background: #f0f2f5;
             display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
-            position: relative;
-            overflow-x: hidden;
-            padding-bottom: 40px;
-        }
-
-        .login-header-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 280px;
-            background-color: #1a73e8;
-            border-bottom-left-radius: 50% 40px;
-            border-bottom-right-radius: 50% 40px;
-            z-index: 1;
+            padding: 20px;
         }
 
         .login-box {
-            position: relative;
-            z-index: 2;
-            max-width: 440px;
+            max-width: 420px;
             width: 100%;
-            margin: 80px auto 20px auto;
             text-align: center;
-            background: white;
-            padding: 35px 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
 
-        .logo-img {
-            max-width: 70px;
-            height: auto;
-            margin-bottom: 10px;
-            object-fit: contain;
-        }
-
-        .school-title {
-            color: white;
-            position: relative;
-            z-index: 2;
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 25px;
-            letter-spacing: 0.5px;
-        }
-
-        .school-subtitle {
-            color: rgba(255,255,255,0.9);
-            position: relative;
-            z-index: 2;
-            font-size: 13px;
-            margin-top: 5px;
-            letter-spacing: 0.5px;
-        }
-
-        .login-help-text {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 20px;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-        }
-
-        .login-help-text b {
-            color: #1a73e8;
-        }
-
-        .login-box h2 {
-            color: #202124;
-            margin-bottom: 8px;
-            font-size: 24px;
-        }
-
-        .login-desc {
-            font-size: 13px;
-            color: #5f6368;
-            margin-bottom: 25px;
-            line-height: 1.4;
+        .logo-box {
+            width: 80px;
+            height: 80px;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            color: var(--primary);
+            font-size: 36px;
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             text-align: left;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: 600;
             font-size: 13px;
-            color: #3c4043;
         }
 
         .input-icon-wrap {
             position: relative;
-            display: flex;
-            align-items: center;
-            width: 100%;
         }
 
-        .input-icon-wrap .icon-left {
+        .input-icon-wrap i.icon-left {
             position: absolute;
             left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: #80868b;
-            font-size: 16px;
-            pointer-events: none;
-            z-index: 5;
+            color: #9ca3af;
         }
 
         .input-icon-wrap .toggle-password {
@@ -170,73 +120,53 @@
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #80868b;
-            font-size: 16px;
-            z-index: 5;
-            transition: color 0.2s;
+            color: #9ca3af;
         }
 
-        .input-icon-wrap .toggle-password:hover {
-            color: #1a73e8;
-        }
-
-        .form-group input {
+        .input-icon-wrap input {
             width: 100%;
-            padding: 12px 42px 12px 40px !important;
-            border: 1px solid #dadce0;
-            border-radius: 6px;
+            padding: 12px 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
             font-size: 14px;
+            transition: all 0.2s;
             outline: none;
-            transition: 0.2s;
-            background-color: #fff;
         }
 
-        .form-group input:focus {
-            border-color: #1a73e8;
-            box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+        .input-icon-wrap input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
         }
 
         .btn {
-            background-color: #1a73e8;
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
             font-weight: 600;
             width: 100%;
-            transition: 0.2s;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
 
         .btn:hover {
-            background-color: #1557b0;
+            background: var(--primary-hover);
+            transform: translateY(-2px);
         }
 
-        .btn-danger {
-            background-color: #dc3545;
-        }
+        .btn-danger { background: #ef4444; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { background: #dc2626; }
 
-        .btn-danger:hover {
-            background-color: #bd2130;
-        }
+        .btn-success { background: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn-success:hover { background: #059669; }
 
-        /* Tombol Hijau Pengganti Kuning */
-        .btn-warning {
-            background-color: #28a745;
-            color: #fff;
-        }
-
-        .btn-warning:hover {
-            background-color: #218838;
-        }
-
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 12px;
-            width: auto;
-        }
-
+        /* 2. Packet Grid */
         .packet-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -245,35 +175,33 @@
         }
 
         .packet-card {
-            background: #fff;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-            cursor: pointer;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
             text-align: center;
-            transition: 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         .packet-card:hover {
-            border-color: #1a73e8;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+            transform: translateY(-50px);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
         }
 
-        .packet-card h3 {
-            color: #1a73e8;
-            margin-bottom: 10px;
-        }
-
+        /* 3. Exam View */
         .exam-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #1a73e8;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         .exam-body {
@@ -282,1271 +210,602 @@
             gap: 20px;
         }
 
-        .question-box {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
         .options-list {
             list-style: none;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         .options-list li {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .options-list label {
             display: flex;
             align-items: center;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 14px 18px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
         }
 
         .options-list label:hover {
-            background-color: #f8f9fa;
+            background: #e0e7ff;
+            border-color: var(--primary);
         }
 
         .options-list input {
-            margin-right: 10px;
-        }
-
-        textarea.essay-input {
-            width: 100%;
-            height: 120px;
-            padding: 10px;
-            margin-top: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            resize: vertical;
-        }
-
-        .nav-grid-container {
-            max-height: 400px;
-            overflow-y: auto;
+            margin-right: 12px;
+            accent-color: var(--primary);
         }
 
         .nav-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
 
         .nav-btn {
             padding: 10px;
-            border: 1px solid #ccc;
-            background: #fff;
-            border-radius: 5px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             text-align: center;
+            transition: all 0.2s;
         }
 
         .nav-btn.active {
-            border-color: #1a73e8;
-            background-color: #e8f0fe;
+            border-color: var(--primary);
+            background: #e0e7ff;
+            color: var(--primary);
         }
 
         .nav-btn.answered {
-            background-color: #28a745;
+            background: #10b981;
             color: white;
-            border-color: #28a745;
+            border-color: #10b981;
         }
 
-        .exam-footer {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .admin-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 15px;
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
-        }
-
-        .bg-sangat-baik { background-color: #28a745; }
-        .bg-baik { background-color: #ffc107; color: #000; }
-        .bg-cukup { background-color: #fd7e14; }
-        .bg-kurang { background-color: #dc3545; }
-
+        /* Tables & Admin */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            margin-bottom: 25px;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
+            margin-top: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         th, td {
-            padding: 10px;
+            padding: 12px 15px;
             text-align: left;
+            border-bottom: 1px solid #e5e7eb;
             font-size: 14px;
         }
 
         th {
-            background-color: #f8f9fa;
+            background: #f3f4f6;
+            font-weight: 600;
         }
 
-        .chart-box-wrapper {
-            width: 100%;
-            background: #fdfdfd;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 15px;
-            text-align: center;
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
         }
 
-        .status-lock {
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
+        .bg-sangat-baik { background: #10b981; }
+        .bg-baik { background: #3b82f6; }
+        .bg-cukup { background: #f59e0b; }
+        .bg-kurang { background: #ef4444; }
 
-        .status-unlocked { background-color: #d4edda; color: #155724; }
-        .status-locked { background-color: #f8d7da; color: #721c24; }
-
-        .review-item {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-        }
-        .review-correct { background-color: #d4edda; border-color: #c3e6cb; }
-        .review-incorrect { background-color: #f8d7da; border-color: #f5c6cb; }
-
-        /* Modal Overlay Pengunci Ujian Fullscreen */
+        /* Fullscreen Overlay Modal */
         #fullscreen-warning-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
+            top:0; left:0; width:100vw; height:100vh;
+            background: rgba(0,0,0,0.85);
             z-index: 99999;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            color: white;
-            padding: 20px;
+            justify-content: center;
         }
 
-        .modal-content-box {
-            background: #fff;
-            color: #333;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 480px;
-            width: 90%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
         }
 
-        .modal-content-box h3 {
-            color: #dc3545;
-            margin-bottom: 10px;
-            font-size: 20px;
-        }
-
-        .modal-content-box p {
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 20px;
-            line-height: 1.5;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
-    <!-- MODAL WARNING FULLSCREEN -->
+    <!-- OVERLAY MODAL FULLSCREEN -->
     <div id="fullscreen-warning-modal">
-        <div class="modal-content-box">
-            <h3>⚠️ PERINGATAN UJIAN</h3>
-            <p>Anda terdeteksi mengecilkan layar atau keluar dari mode Ujian! Silakan klik tombol di bawah untuk kembali melanjutkan ujian secara <b>Fullscreen</b>.</p>
-            <button class="btn" style="background-color: #1a73e8; font-size: 16px; padding: 12px;" onclick="restoreFullscreenAndCloseModal()">
-                Kembali ke Mode Ujian (Fullscreen)
-            </button>
+        <div class="glass-card animate__animated animate__zoomIn" style="max-width: 450px; text-align: center; background: white;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 48px; color: #ef4444; margin-bottom: 15px;"></i>
+            <h3>PERINGATAN UJIAN</h3>
+            <p style="margin: 15px 0; color: #6b7280; font-size: 14px;">Layar Anda keluar dari mode ujian! Klik tombol di bawah ini untuk melanjutkan.</p>
+            <button class="btn" onclick="restoreFullscreen()">Kembali Fullscreen</button>
         </div>
     </div>
 
     <!-- 1. LOGIN SCREEN -->
     <div id="screen-login" class="screen active">
         <div class="login-wrapper">
-            <div class="login-header-bg"></div>
-            <div class="school-title">SD INPRES BINANGA 1</div>
-            <div class="school-subtitle">TES KEMAMPUAN AKADEMIK TAHUN 2026</div>
+            <div class="glass-card login-box animate__animated animate__fadeInDown">
+                <div class="logo-box">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h2 style="margin-bottom: 5px;">CBT SD INPRES BINANGA 1</h2>
+                <p style="color: #6b7280; font-size: 13px; margin-bottom: 25px;">Masukkan NISN dan Password untuk masuk</p>
 
-            <div class="card login-box">
-                <img src="logo.png" alt="Logo Sekolah" class="logo-img" onerror="this.style.display='none'">
-                <div class="login-help-text">LUPA USERNAME / PASSWORD ? : HUBUNGI <b>ADMIN SEKOLAH</b></div>
-                <h2>Selamat Datang</h2>
-                <div class="login-desc">Silakan login menggunakan username dan password yang anda miliki</div>
-                
                 <div class="form-group">
+                    <label>Username / NISN</label>
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-user icon-left"></i>
-                        <input type="text" id="login-nisn" placeholder="Username (NISN)">
+                        <input type="text" id="login-username" placeholder="Masukkan NISN Anda">
                     </div>
                 </div>
+
                 <div class="form-group">
+                    <label>Password</label>
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-lock icon-left"></i>
-                        <input type="password" id="login-pass" placeholder="Password (Gunakan '2026')">
-                        <i class="fa-solid fa-eye toggle-password" id="toggle-pass-icon" onclick="togglePasswordVisibility()" title="Tampilkan/Sembunyikan Password"></i>
+                        <input type="password" id="login-password" placeholder="Masukkan Password">
+                        <i class="fa-solid fa-eye toggle-password" onclick="togglePass()"></i>
                     </div>
                 </div>
-                <button class="btn" onclick="handleLogin()">Login</button>
-            </div>
-            <div style="position: relative; z-index: 2; margin-top: 20px; font-size: 12px; color: #666; text-align: center;">
-                © Copyright 2026, TKA SD Inpres Binanga 1 Mamuju<br>Aplikasi Ujian: v1.0.0
+
+                <button class="btn" id="btn-login" onclick="execLogin()">
+                    <span>Masuk Ujian</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <!-- 2. STUDENT PACKET SELECTION SCREEN -->
+        <!-- 2. SCREEN PAKET SISWA -->
         <div id="screen-packets" class="screen">
-            <div class="card">
-                <h2>Selamat Datang, <span id="student-name"></span>!</h2>
-                <div class="sub-title" style="margin-bottom:10px;">TES KEMAMPUAN AKADEMIK 2026</div>
-                <p>Silahkan pilih paket ujian yang tersedia:</p>
-                <div id="lock-warning" class="status-lock status-locked" style="display:none; margin-top:15px;">
-                    🔒 Ujian saat ini SEDANG DIKUNCI oleh Panitia. Anda tidak dapat memilih paket ujian.
+            <div class="glass-card animate__animated animate__fadeIn">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2>Selamat Datang, <span id="student-nama-txt">Siswa</span>!</h2>
+                        <p style="color: #6b7280; font-size: 14px;">Pilih Paket Ujian yang tersedia di bawah ini:</p>
+                    </div>
+                    <button class="btn btn-danger" style="width: auto;" onclick="execLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
                 </div>
+
                 <div class="packet-grid">
-                    <div class="packet-card" onclick="selectPacket('A')">
+                    <div class="packet-card" onclick="startExam('A')">
+                        <i class="fa-solid fa-book-open" style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"></i>
                         <h3>Paket A</h3>
-                        <p>Agama Islam, Pancasila, B. Indonesia</p>
-                        <div id="status-lock-A" style="margin-top:10px; font-weight:bold; font-size:12px;"></div>
+                        <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Agama, Pancasila, B. Indonesia</p>
+                        <div id="lock-status-A" style="margin-top: 12px; font-weight: 700; font-size: 12px;"></div>
                     </div>
-                    <div class="packet-card" onclick="selectPacket('B')">
+                    <div class="packet-card" onclick="startExam('B')">
+                        <i class="fa-solid fa-calculator" style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"></i>
                         <h3>Paket B</h3>
-                        <p>Matematika, IPAS, PJOK</p>
-                        <div id="status-lock-B" style="margin-top:10px; font-weight:bold; font-size:12px;"></div>
+                        <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Matematika, IPAS, PJOK</p>
+                        <div id="lock-status-B" style="margin-top: 12px; font-weight: 700; font-size: 12px;"></div>
                     </div>
-                    <div class="packet-card" onclick="selectPacket('C')">
+                    <div class="packet-card" onclick="startExam('C')">
+                        <i class="fa-solid fa-palette" style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"></i>
                         <h3>Paket C</h3>
-                        <p>Seni Budaya, B. Inggris</p>
-                        <div id="status-lock-C" style="margin-top:10px; font-weight:bold; font-size:12px;"></div>
+                        <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Seni Budaya, B. Inggris</p>
+                        <div id="lock-status-C" style="margin-top: 12px; font-weight: 700; font-size: 12px;"></div>
                     </div>
                 </div>
-                <button class="btn btn-danger" style="margin-top: 20px; width: auto;" onclick="logout()">Logout</button>
             </div>
         </div>
 
-        <!-- 3. EXAM SCREEN -->
+        <!-- 3. SCREEN UJIAN AKTIFF -->
         <div id="screen-exam" class="screen">
             <div class="exam-header">
                 <div>
-                    <h3 id="exam-title">Ujian Paket A</h3>
-                    <span id="exam-student-info"></span>
+                    <h3 id="exam-title-txt">Ujian Paket A</h3>
+                    <span id="exam-student-info" style="font-size: 12px; color: #6b7280;"></span>
                 </div>
-                <button class="btn btn-warning" style="width: auto;" onclick="finishExam()">Selesaikan Ujian</button>
+                <button class="btn btn-success" style="width: auto;" onclick="finishExam()"><i class="fa-solid fa-check-double"></i> Selesaikan Ujian</button>
             </div>
 
             <div class="exam-body">
-                <div class="question-box">
-                    <h4 id="question-number">Soal Nomor 1</h4>
-                    <p id="question-text" style="margin-top: 15px; font-size: 16px; line-height: 1.5;"></p>
-                    
+                <div class="glass-card" style="margin-bottom:0;">
+                    <h4 id="q-number-txt">Soal Nomor 1</h4>
+                    <p id="q-text-txt" style="margin-top: 15px; font-size: 16px; line-height: 1.6;"></p>
+
                     <ul id="options-container" class="options-list"></ul>
-                    
-                    <div id="essay-container" style="display: none;">
-                        <textarea id="essay-answer" class="essay-input" placeholder="Tuliskan jawaban Anda di sini..." oninput="saveEssayAnswer()"></textarea>
+
+                    <div id="essay-container" style="display: none; margin-top: 15px;">
+                        <textarea id="essay-ans" style="width: 100%; height: 120px; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db;" placeholder="Tuliskan jawaban Anda..." oninput="saveEssayAns()"></textarea>
                     </div>
 
-                    <div class="exam-footer">
-                        <button class="btn" style="width: auto;" onclick="prevQuestion()">Sebelumnya</button>
-                        <button class="btn" style="width: auto;" onclick="nextQuestion()">Selanjutnya</button>
+                    <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+                        <button class="btn" style="width: auto;" onclick="prevQ()"><i class="fa-solid fa-chevron-left"></i> Sebelumnya</button>
+                        <button class="btn" style="width: auto;" onclick="nextQ()">Selanjutnya <i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="glass-card" style="margin-bottom:0;">
                     <h4>Navigasi Soal</h4>
-                    <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Grid 3 Baris Ke Samping</p>
-                    <div class="nav-grid-container">
-                        <div id="nav-grid" class="nav-grid"></div>
-                    </div>
+                    <hr style="margin: 10px 0; border: none; border-top: 1px solid #e5e7eb;">
+                    <div id="nav-grid" class="nav-grid"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 3B. STUDENT RESULT & REVIEW SCREEN -->
+        <!-- 4. SCREEN HASIL & HASIL DETAIL -->
         <div id="screen-result" class="screen">
-            <div class="card" style="max-width: 900px; margin: 20px auto;">
-                <h2>Hasil Ujian Paket <span id="res-packet-name"></span></h2>
-                <div style="font-size: 24px; font-weight: bold; margin: 15px 0; color: #1a73e8;">
-                    Nilai Anda: <span id="res-score"></span> / 100
-                </div>
-                
-                <p><b>Kategori Passing Grade:</b> <span id="res-badge"></span></p>
+            <div class="glass-card animate__animated animate__fadeInUp" style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <h2>Hasil Ujian Paket <span id="res-pkt-txt"></span></h2>
+                <div style="font-size: 48px; font-weight: 800; color: var(--primary); margin: 15px 0;" id="res-score-txt">0</div>
+                <p>Status Nilai: <span id="res-badge-txt"></span></p>
 
-                <!-- MODEL GRAFIK AKUMULASI BERTUMPUK -->
-                <div class="chart-box-wrapper">
-                    <h3 style="font-size:16px; font-weight:bold; color:#202124;">Grafik Analisis Jawaban Ujian</h3>
-                    <p style="font-size:12px; color:#666; margin-bottom:15px;">Grafik akumulasi bertumpuk: Merah (Salah/Kosong) & Biru (Benar).</p>
-                    <div style="height: 320px; width: 100%;">
-                        <canvas id="studentResultChart"></canvas>
-                    </div>
+                <div style="height: 280px; margin-top: 25px;">
+                    <canvas id="studentResultChart"></canvas>
                 </div>
 
-                <hr style="margin: 20px 0;">
-                <h3>Review Kunci Jawaban (Benar & Salah)</h3>
-                <div id="review-container" style="max-height: 400px; overflow-y: auto; margin-top: 15px;"></div>
-
-                <button class="btn btn-danger" style="margin-top: 20px;" onclick="logout()">Logout dan Kembali ke Halaman Login</button>
+                <button class="btn btn-danger" style="margin-top: 25px;" onclick="execLogout()">Kembali ke Halaman Utama</button>
             </div>
         </div>
 
-        <!-- 4. ADMIN DASHBOARD SCREEN -->
+        <!-- 5. SCREEN ADMIN DASHBOARD -->
         <div id="screen-admin" class="screen">
-            <div class="card">
-                <h2>Dashboard Admin Panitia Ujian</h2>
-                <div class="sub-title">TES KEMAMPUAN AKADEMIK 2026</div>
-                <hr style="margin: 15px 0;">
-                
-                <div class="admin-controls">
-                    <button id="btn-lock-A" class="btn btn-warning" style="width: auto;" onclick="togglePacketLock('A')">Kunci Soal Paket A</button>
-                    <button id="btn-lock-B" class="btn btn-warning" style="width: auto;" onclick="togglePacketLock('B')">Kunci Soal Paket B</button>
-                    <button id="btn-lock-C" class="btn btn-warning" style="width: auto;" onclick="togglePacketLock('C')">Kunci Soal Paket C</button>
-                    <button class="btn btn-warning" style="width: auto; background-color: #17a2b8; color: white;" onclick="forceFinishAllStudents()">Selesaikan Semua Ujian</button>
-                    <button class="btn btn-danger" style="width: auto;" onclick="resetAllActivity()">Reset / Hapus Semua Aktivitas</button>
-                    <button class="btn" style="width: auto; background-color: #6c757d;" onclick="logout()">Logout Admin</button>
+            <div class="glass-card animate__animated animate__fadeIn">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Panel Admin Panitia Ujian</h2>
+                    <button class="btn btn-danger" style="width: auto;" onclick="execLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar Admin</button>
                 </div>
 
-                <div id="admin-lock-status" class="status-lock status-unlocked">
-                    🔓 Status Akses Ujian: TERBUKA (Siswa dapat mengakses soal)
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <button class="btn" id="btn-lock-A" style="width: auto;" onclick="toggleLock('A')">Kunci Paket A</button>
+                    <button class="btn" id="btn-lock-B" style="width: auto;" onclick="toggleLock('B')">Kunci Paket B</button>
+                    <button class="btn" id="btn-lock-C" style="width: auto;" onclick="toggleLock('C')">Kunci Paket C</button>
+                    <button class="btn btn-danger" style="width: auto;" onclick="resetAll()"><i class="fa-solid fa-trash"></i> Reset Semua Data</button>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 20px;">
-                    <div>
-                        <h3 style="color: #1a73e8; margin-bottom: 5px;">Data Passing Grade Live - KELAS 6A (Update Real-Time)</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width: 50px;">No</th>
-                                    <th>NISN</th>
-                                    <th>Nama Siswa</th>
-                                    <th>Paket A</th>
-                                    <th>Paket B</th>
-                                    <th>Paket C</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-table-6a"></tbody>
-                        </table>
-                    </div>
-
-                    <div>
-                        <h3 style="color: #1a73e8; margin-bottom: 5px;">Data Passing Grade Live - KELAS 6B (Update Real-Time)</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width: 50px;">No</th>
-                                    <th>NISN</th>
-                                    <th>Nama Siswa</th>
-                                    <th>Paket A</th>
-                                    <th>Paket B</th>
-                                    <th>Paket C</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-table-6b"></tbody>
-                        </table>
-                    </div>
-
-                    <div class="chart-box-wrapper" style="max-width: 500px; margin: 0 auto;">
-                        <h3 style="font-size:16px; font-weight:bold; color:#202124;">Persentase Partisipasi / Kelulusan Siswa</h3>
-                        <p style="font-size:12px; color:#666; margin-bottom:15px;">Merah (Belum Selesai / Belum Ujian) & Biru (Sudah Selesai Ujian).</p>
-                        <div style="height: 300px; width: 100%; position: relative;">
-                            <canvas id="gradeChart"></canvas>
-                        </div>
-                    </div>
+                <h3>Monitoring Data Siswa & Passing Grade</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NISN</th>
+                                <th>Nama Siswa</th>
+                                <th>Kelas</th>
+                                <th>Paket A</th>
+                                <th>Paket B</th>
+                                <th>Paket C</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        function togglePasswordVisibility() {
-            const passInput = document.getElementById('login-pass');
-            const toggleIcon = document.getElementById('toggle-pass-icon');
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
+        let currentUser = null;
+        let examQuestions = [];
+        let currentPacket = null;
+        let currentQIndex = 0;
+        let studentAnswers = {};
+        let lockedPacketsState = { A: false, B: false, C: false };
+        let studentChartInstance = null;
+
+        function togglePass() {
+            const p = document.getElementById('login-password');
+            p.type = p.type === 'password' ? 'text' : 'password';
         }
 
-        const class6A = [
-            { nisn: "3156000315", name: "ABID AQILAH WAHYUDI" },
-            { nisn: "3147561743", name: "AINUN HAKIMAH" },
-            { nisn: "0142128968", name: "AINUN NUR AZIZAH A" },
-            { nisn: "3145705181", name: "AMELIA AHMAD" },
-            { nisn: "0141377777", name: "ANDI FAISYA SYAHIRA" },
-            { nisn: "3140573690", name: "ANDI MUHAMMAD FAQIH AIRY H" },
-            { nisn: "3147604091", name: "CAHYA AINUN" },
-            { nisn: "0148954249", name: "DZAKY" },
-            { nisn: "0158527938", name: "FARDHAN ZAKI JASMAR" },
-            { nisn: "3154882039", name: "FEBY KHAIRUNNISA" },
-            { nisn: "0158898393", name: "KHAIRA NAJWA BAZIMA" },
-            { nisn: "3141393725", name: "LISNA YANTI" },
-            { nisn: "0134551900", name: "MUH ARDIANSYAH" },
-            { nisn: "3151725727", name: "MUH REVAN APRILIAN" },
-            { nisn: "0151615246", name: "MUH RIFKI AL FAHREZA Z" },
-            { nisn: "3139286099", name: "MUH. ARIFKI" },
-            { nisn: "3141628787", name: "MUH. MIFTAHUL YAFI ASIS" },
-            { nisn: "0143085041", name: "MUH. RAFLI" },
-            { nisn: "3144207806", name: "MUHAMMAD ARAS QURUSYA" },
-            { nisn: "3159066266", name: "MUHAMMAD SYAWAL" },
-            { nisn: "0148124368", name: "NAYLA SALSABILLAH" },
-            { nisn: "3157945789", name: "NURUL ADIVA AMRAN" },
-            { nisn: "0149106374", name: "ST ASSYURAH JUHARBI" },
-            { nisn: "0141999506", name: "SYAFWAAN SABQI" },
-            { nisn: "3158929490", name: "YUSUF GIBRAN Y" },
-            { nisn: "0141239341", name: "ZAM ZAMMY KHAIRIL MALIKI ABHAL" }
-        ];
-
-        const class6B = [
-            { nisn: "3140466270", name: "AIRIN RAHMI ANDINI" },
-            { nisn: "3144872142", name: "ALKAUSAR" },
-            { nisn: "3145816553", name: "ANINDYA JINAN RISQI" },
-            { nisn: "3155916287", name: "ANNISA RAMADANI" },
-            { nisn: "3153814142", name: "ANNISA SALSABILA" },
-            { nisn: "3153207429", name: "Asykar Alfatih" },
-            { nisn: "0157237608", name: "CAHAYA AURA NAZHIFA" },
-            { nisn: "0144017685", name: "DEWA AYU RESTTI GAURI" },
-            { nisn: "3140013762", name: "DIAN AFIKA" },
-            { nisn: "3143677322", name: "FACHRU RAFAY" },
-            { nisn: "3146161150", name: "FITRAH RAMADHAN ABDILLA" },
-            { nisn: "3155806770", name: "JANUAR MUSA P" },
-            { nisn: "3158220865", name: "KHARMAWAN" },
-            { nisn: "3157251088", name: "M HILAL FIQRI AUTHAR R" },
-            { nisn: "3158928704", name: "MIRZA SIDDIQIYAH RUSADY" },
-            { nisn: "3143756321", name: "MUH FARIS GHAIZAN" },
-            { nisn: "3159351673", name: "MUH IQWAL" },
-            { nisn: "3144800157", name: "MUH MUHAIMIN FAIZAL. M" },
-            { nisn: "0131400871", name: "MUH NAUFAL HAFIDZ" },
-            { nisn: "0158917600", name: "MUH. AL HAFIDZ NASWAR" },
-            { nisn: "0149770417", name: "MUH. AL QADRI" },
-            { nisn: "3146513265", name: "MUH. MIRZA UKAIL" },
-            { nisn: "3142351906", name: "MUHAMMAD ALGHAZHALY" },
-            { nisn: "3157774636", name: "MUHAMMAD NUR" },
-            { nisn: "0127036921", name: "Siti Almirah" },
-            { nisn: "0157732812", name: "UTARI MAHYA SANJAYA" }
-        ];
-
-        const rawQuestions = {
-            A: [
-                { type: 'pg', text: "Rukun iman yang keenam adalah iman kepada ....", options: ["A. Rasul", "B. Hari akhir", "C. Qada dan Qadar", "D. Malaikat"], key: 2 },
-                { type: 'pg', text: "Rudi sudah belajar dengan giat, tetapi nilai ulangannya belum sesuai harapan. Sikap yang sesuai dengan iman kepada Qada dan Qadar adalah ....", options: ["A. Menyalahkan gurunya", "B. Berhenti belajar", "C. Mencontek agar nilai naik", "D. Bersabar, mengevaluasi diri, dan tetap berusaha"], key: 3 },
-                { type: 'pg', text: "Asmaul Husna Ar-Rahman berarti ....", options: ["A. Maha Pengasih", "B. Maha Melihat", "C. Maha Mendengar", "D. Maha Kuasa"], key: 0 },
-                { type: 'pg', text: "Siti menemukan dompet berisi uang di jalan dekat sekolah. Sikap amanah yang tepat adalah ....", options: ["A. Mengambil uangnya lalu membuang dompetnya", "B. Mencari pemiliknya atau menyerahkannya kepada guru atau pihak berwenang", "C. Membiarkan dompet itu di jalan", "D. Membagikan uangnya kepada teman"], key: 1 },
-                { type: 'pg', text: "Sebelum diangkat menjadi rasul, Nabi Muhammad saw. dijuluki Al-Amin karena beliau ....", options: ["A. Sangat kaya", "B. Sangat kuat", "C. Dapat dipercaya", "D. Pandai berdagang"], key: 2 },
-                { type: 'pg', text: "Sifat wajib rasul yang berarti jujur adalah ....", options: ["A. Siddiq", "B. Amanah", "C. Tabligh", "D. Fathanah"], key: 0 },
-                { type: 'pg', text: "Berikut ini yang membatalkan puasa adalah ....", options: ["A. Berkumur tanpa menelan air", "B. Menggosok gigi", "C. Mandi", "D. Makan dan minum dengan sengaja"], key: 3 },
-                { type: 'pg', text: "Zakat fitrah dikeluarkan pada ....", options: ["A. Awal bulan Rajab", "B. Bulan Ramadan sampai sebelum salat Idulfitri", "C. Hari raya Iduladha", "D. Bulan Muharam"], key: 1 },
-                { type: 'pg', text: "Orang yang berhak menerima zakat disebut ....", options: ["A. Muzaki", "B. Munfik", "C. Mustahik", "D. Mujtahid"], key: 2 },
-                { type: 'pg', text: "Salat berjemaah lebih utama daripada salat sendirian, yaitu dengan pahala sebanyak ... derajat.", options: ["A. 27", "B. 25", "C. 10", "D. 7"], key: 0 },
-                { type: 'pg', text: "Nabi Yusuf a.s. tetap sabar ketika dibuang oleh saudara-saudaranya dan kemudian memaafkan mereka. Teladan yang dapat kita ambil adalah ....", options: ["A. Membalas dendam", "B. Mudah putus asa", "C. Berbohong demi selamat", "D. Sabar dan pemaaf"], key: 3 },
-                { type: 'pg', text: "Nabi Ayyub a.s. menjadi teladan dalam hal ....", options: ["A. Kekayaan", "B. Kesabaran menghadapi penyakit dan cobaan", "C. Keberanian di medan perang", "D. Kepandaian berdagang"], key: 1 },
-                { type: 'pg', text: "Rina melihat temannya membuang sampah sembarangan. Ia mengingatkannya karena kebersihan adalah ....", options: ["A. Sebagian dari iman", "B. Syarat naik kelas", "C. Tugas petugas kebersihan saja", "D. Aturan yang boleh dilanggar"], key: 0 },
-                { type: 'pg', text: "Husnuzan artinya ....", options: ["A. Prasangka buruk", "B. Iri hati", "C. Berprasangka baik", "D. Marah"], key: 2 },
-                { type: 'pg', text: "Dua orang teman bertengkar. Andi lalu meminta maaf lebih dulu dan memaafkan temannya. Akhlak yang ditunjukkan Andi adalah ....", options: ["A. Tamak", "B. Hasad", "C. Takabur", "D. Pemaaf"], key: 3 },
-                { type: 'essay', text: "Jelaskan arti beriman kepada Qada dan Qadar, lalu berikan satu contoh penerapannya di sekolah!", keywords: ["percaya", "ketentuan", "takdir", "allah", "usaha", "belajar", "tawakal"] },
-                { type: 'essay', text: "Dimas sudah berlatih keras, tetapi gagal menjuarai lomba. Ia kecewa dan ingin berhenti mengikuti lomba. Berikan nasihat kepada Dimas berdasarkan sikap sabar dan tawakal!", keywords: ["sabar", "tawakal", "pelajaran", "evaluasi", "berusaha", "berdoa"] },
-                { type: 'essay', text: "Sebutkan empat sifat wajib rasul beserta artinya!", keywords: ["siddiq", "jujur", "amanah", "percaya", "tabligh", "fathanah", "cerdas"] },
-                { type: 'essay', text: "Sebutkan tiga hal yang dapat membatalkan puasa!", keywords: ["makan", "minum", "muntah", "haid", "sengaja"] },
-                { type: 'essay', text: "Saat ujian, Hana melihat temannya menyontek. Apa yang sebaiknya dilakukan Hana menurut akhlak terpuji? Jelaskan alasannya!", keywords: ["mengingatkan", "melapor", "guru", "jujur", "akhlak"] },
-                { type: 'pg', text: "Sila ketiga Pancasila berbunyi ....", options: ["A. Kemanusiaan yang adil dan beradab", "B. Persatuan Indonesia", "C. Kerakyatan yang dipimpin...", "D. Keadilan sosial..."], key: 1 },
-                { type: 'pg', text: "Pak RT mengajak seluruh warga membersihkan selokan bersama-sama tanpa membedakan suku dan agama. Nilai yang tampak dari kegiatan tersebut adalah ....", options: ["A. Ketuhanan semata", "B. Kekuasaan", "C. Persaingan", "D. Persatuan dan gotong royong"], key: 3 },
-                { type: 'pg', text: "Berikut yang termasuk hak warga negara adalah ....", options: ["A. Mendapatkan pendidikan", "B. Membayar pajak", "C. Menaati hukum", "D. Membela negara"], key: 0 },
-                { type: 'pg', text: "Contoh kewajiban warga negara adalah ....", options: ["A. Memilih agama", "B. Mendapat pekerjaan", "C. Membayar pajak", "D. Mengeluarkan pendapat"], key: 2 },
-                { type: 'pg', text: "Andi dan Budi berbeda pendapat tentang tema kegiatan kelas. Cara penyelesaian yang sesuai dengan sila keempat adalah ....", options: ["A. Memaksakan kehendak", "B. Musyawarah untuk mufakat", "C. Bertaruh dengan undian", "D. Diputuskan sepihak"], key: 1 },
-                { type: 'pg', text: "Di kelas VI terdapat murid dari berbagai suku dengan logat yang berbeda. Sikap yang tepat adalah ....", options: ["A. Saling menghargai perbedaan", "B. Hanya berteman dengan yang sesuku", "C. Menirukan logat teman untuk mengejek", "D. Menjauhi teman yang berbeda"], key: 0 },
-                { type: 'pg', text: "Semboyan Bhinneka Tunggal Ika berarti ....", options: ["A. Bersatu kita teguh", "B. Satu nusa satu bangsa", "C. Maju terus pantang mundur", "D. Berbeda-beda tetapi tetap satu"], key: 3 },
-                { type: 'pg', text: "Norma yang aturannya dibuat oleh negara dan memiliki sanksi tegas adalah norma ....", options: ["A. Kesusilaan", "B. Kesopanan", "C. Hukum", "D. Kebiasaan"], key: 2 },
-                { type: 'pg', text: "Berbicara kasar kepada guru termasuk pelanggaran norma ....", options: ["A. Hukum", "B. Kesopanan", "C. Lalu lintas", "D. Pajak"], key: 1 },
-                { type: 'pg', text: "Sikap yang mencerminkan sila kelima adalah ....", options: ["A. Menyontek saat ulangan", "B. Memilih-milih teman", "C. Menang sendiri", "D. Bersikap adil dalam membagi tugas kelompok"], key: 3 },
-                { type: 'pg', text: "Pancasila sebagai dasar negara tercantum dalam ....", options: ["A. Pembukaan UUD 1945", "B. Sumpah Pemuda", "C. Teks Proklamasi", "D. Pasal 33 UUD 1945"], key: 0 },
-                { type: 'pg', text: "Sumpah Pemuda diikrarkan pada tanggal ....", options: ["A. 17 Agustus 1945", "B. 20 Mei 1908", "C. 28 Oktober 1928", "D. 1 Juni 1945"], key: 2 },
-                { type: 'pg', text: "Di sekolah diadakan pemilihan ketua OSIS. Setiap siswa memilih sesuai hati nurani tanpa paksaan. Hal ini mencerminkan prinsip ....", options: ["A. Otoriter", "B. Demokrasi", "C. Monarki", "D. Anarki"], key: 1 },
-                { type: 'pg', text: "Di desa Sari, warga berbeda agama hidup rukun. Saat ada hari raya, mereka tidak mengganggu ibadah satu sama lain dan saling membantu. Sikap ini disebut ....", options: ["A. Toleransi", "B. Egoisme", "C. Diskriminasi", "D. Fanatisme"], key: 0 },
-                { type: 'pg', text: "Beni menuntut haknya memakai fasilitas sekolah tetapi tidak mau ikut menjaga kebersihan. Sikap yang benar adalah ....", options: ["A. Menuntut hak saja", "B. Menjalankan kewajiban saja", "C. Tidak peduli", "D. Menjalankan kewajiban menjaga sarana bersamaan dengan menggunakan haknya"], key: 3 },
-                { type: 'essay', text: "Tuliskan bunyi kelima sila Pancasila secara berurutan!", keywords: ["ketuhanan", "kemanusiaan", "persatuan", "kerakyatan", "keadilan"] },
-                { type: 'essay', text: "Dua kelompok murid berselisih karena sama-sama ingin memakai lapangan. Bagaimana cara menyelesaikannya melalui musyawarah?", keywords: ["musyawarah", "pendapat", "jalan tengah", "bergantian", "sepakat"] },
-                { type: 'essay', text: "Jelaskan perbedaan hak dan kewajiban, lalu berikan masing-masing dua contoh di lingkungan sekolah!", keywords: ["hak", "terima", "kewajiban", "lakukan", "belajar", "tertib"] },
-                { type: 'essay', text: "Seorang siswa baru berbeda suku dan logat bicaranya sering diejek. Analisislah tindakan tersebut dan berikan solusinya!", keywords: ["perundungan", "sila", "menghargai", "minta maaf", "berteman"] },
-                { type: 'essay', text: "Jelaskan pentingnya gotong royong dan berikan dua contoh penerapannya di lingkungan tempat tinggalmu!", keywords: ["ringan", "persatuan", "kerja bakti", "membantu", "tetangga"] },
-                { type: 'pg', text: "Gagasan utama bacaan 'Hutan Mangrove Penjaga Pantai' adalah ....", options: ["A. Mangrove banyak ditebang", "B. Nelayan kesulitan mencari ikan", "C. Pentingnya hutan mangrove bagi pesisir", "D. Warga Desa Bahari menanam bibit"], key: 2 },
-                { type: 'pg', text: "Manfaat akar mangrove menurut bacaan adalah ....", options: ["A. Menahan ombak sehingga abrasi berkurang", "B. Menyuburkan tambak", "C. Memperluas permukiman", "D. Menarik wisatawan"], key: 0 },
-                { type: 'pg', text: "Hasil tangkapan nelayan menurun karena ....", options: ["A. Ombak semakin tenang", "B. Warga menanam bibit mangrove", "C. Jumlah nelayan bertambah", "D. Mangrove ditebang sehingga tempat berkembang biak ikan hilang"], key: 3 },
-                { type: 'pg', text: "Arti kata 'abrasi' pada bacaan adalah ....", options: ["A. Banjir di daratan", "B. Pengikisan tepi pantai oleh ombak", "C. Kekeringan di pesisir", "D. Naiknya suhu udara"], key: 1 },
-                { type: 'pg', text: "Sikap yang dapat diteladani dari warga Desa Bahari adalah ....", options: ["A. Peduli menjaga lingkungan dengan menanam mangrove", "B. Menebang pohon untuk tambak", "C. Menunggu bantuan", "D. Memindahkan permukiman"], key: 0 },
-                { type: 'pg', text: "Watak Dani dalam cerita membantu Nenek Ina adalah ....", options: ["A. Pemalas", "B. Pemarah", "C. Penolong", "D. Sombong"], key: 2 },
-                { type: 'pg', text: "Latar waktu dan suasana pada cerita tersebut adalah ....", options: ["A. Malam hari yang sunyi", "B. Siang hari yang terik", "C. Sore hari yang berangin", "D. Pagi hari ketika hujan deras"], key: 3 },
-                { type: 'pg', text: "Konflik batin yang dialami Dani adalah ....", options: ["A. Takut kepada Pak Satpam", "B. Ragu membantu Nenek karena takut terlambat", "C. Marah kepada Nenek Ina", "D. Malu memakai jas hujan sobek"], key: 1 },
-                { type: 'pg', text: "Amanat cerita tersebut adalah ....", options: ["A. Kita hendaknya menolong sesama walaupun ada kepentingan pribadi", "B. Kita harus selalu datang paling awal", "C. Jas hujan harus selalu baru", "D. Jangan berjalan saat hujan"], key: 0 },
-                { type: 'pg', text: "Kejadian yang terjadi tepat setelah Dani membantu Nenek Ina adalah ....", options: ["A. Dani melihat Nenek kesulitan", "B. Dani merasa ragu", "C. Dani tiba di sekolah dan pagar sudah tertutup", "D. Pak Satpam tersenyum"], key: 2 },
-                { type: 'pg', text: "Kalimat yang efektif adalah ....", options: ["A. Para siswa-siswa sedang membersihkan halaman sekolah.", "B. Mereka semua para siswa itu sedang bersih-bersih.", "C. Halaman dibersihkan oleh itu para siswa kelas.", "D. Para siswa sedang membersihkan halaman sekolah."], key: 3 },
-                { type: 'pg', text: "Kalimat dengan ejaan yang tepat adalah ....", options: ["A. Ayah membeli buku, pensil, dan penggaris di Pasar Mamuju.", "B. Ayah membeli buku pensil dan penggaris di Pasar Mamuju.", "C. Ayah membeli buku, pensil, dan penggaris di pasar mamuju.", "D. ayah Membeli buku, pensil, dan penggaris di Pasar Mamuju."], key: 0 },
-                { type: 'pg', text: "'Kakiku mau patah karena berjalan seharian.' Kalimat ini mengandung majas ....", options: ["A. Metafora", "B. Hiperbola", "C. Personifikasi", "D. Simile"], key: 1 },
-                { type: 'pg', text: "Kata baku yang tepat adalah ....", options: ["A. Apotik", "B. Resiko", "C. Praktik", "D. Nasehat"], key: 2 },
-                { type: 'pg', text: "Kalimat pembuka pidato yang paling sesuai adalah ....", options: ["A. 'Woi, dengarkan aku bicara!'", "B. 'Bapak dan Ibu guru serta teman-teman yang saya hormati, ....'", "C. 'Halo, aku mau cerita nih.'", "D. 'Pokoknya hari ini aku mau bicara.'"], key: 1 },
-                { type: 'essay', text: "Ringkaslah bacaan 'Hutan Mangrove Penjaga Pantai' menjadi dua kalimat!", keywords: ["mangrove", "pantai", "ombak", "ikatan", "tanam"] },
-                { type: 'essay', text: "Dari bacaan mangrove, tuliskan dua penyebab dan dua akibat dari penebangan mangrove!", keywords: ["tambak", "permukiman", "terkikis", "ikan", "menurun"] },
-                { type: 'essay', text: "Sebutkan watak Dani pada cerita beserta bukti dari cerita!", keywords: ["penolong", "peduli", "membantu", "nenek", "seberang"] },
-                { type: 'essay', text: "Buatlah pidato singkat (4-5 kalimat) bertema 'Menjaga Kebersihan Sekolah'!", keywords: ["kebersihan", "sekolah", "sampah", "menjaga", "bersama"] },
-                { type: 'essay', text: "Kembangkan gagasan utama 'Membaca bermanfaat bagi kita' menjadi satu paragraf!", keywords: ["membaca", "ilmu", "pengetahuan", "wawasan", "buku"] }
-            ],
-            B: [
-                { type: 'pg', text: "Suhu di puncak gunung -3°C, sedangkan di kaki gunung 25°C. Selisih suhunya adalah ....", options: ["A. 22°C", "B. 25°C", "C. 28°C", "D. 30°C"], key: 2 },
-                { type: 'pg', text: "Sebuah kapal selam berada 40 m di bawah permukaan laut. Kapal naik 15 m, lalu turun lagi 30 m. Posisi akhir kapal selam adalah ....", options: ["A. 55 m di bawah permukaan laut", "B. 25 m di bawah permukaan laut", "C. 55 m di atas permukaan laut", "D. 85 m di bawah permukaan laut"], key: 0 },
-                { type: 'pg', text: "Hasil dari (-12) + 8 - (-5) adalah ....", options: ["A. -9", "B. -1", "C. 1", "D. 9"], key: 2 },
-                { type: 'pg', text: "Bu Sari memiliki 2 1/2 liter minyak. Hari pertama dipakai 3/4 liter, hari kedua 1 1/4 liter. Sisa minyak Bu Sari adalah ....", options: ["A. 1/4 liter", "B. 3/4 liter", "C. 1/2 liter", "D. 1 liter"], key: 2 },
-                { type: 'pg', text: "Sebuah pita sepanjang 3,6 m dipotong-potong, tiap potong 0,45 m. Banyak potongan pita adalah ....", options: ["A. 8", "B. 7", "C. 9", "D. 6"], key: 0 },
-                { type: 'pg', text: "Harga sebuah tas Rp150.000 mendapat diskon 20%. Uang yang harus dibayar adalah ....", options: ["A. Rp130.000", "B. Rp120.000", "C. Rp30.000", "D. Rp110.000"], key: 1 },
-                { type: 'pg', text: "Dari 40 siswa, 35% menyukai sepak bola. Banyak siswa yang menyukai sepak bola adalah ....", options: ["A. 14 siswa", "B. 12 siswa", "C. 16 siswa", "D. 35 siswa"], key: 0 },
-                { type: 'pg', text: "Perbandingan kelereng Budi dan Citra adalah 3 : 5. Jika jumlah kelereng mereka 48, maka kelereng Citra berjumlah ....", options: ["A. 18", "B. 24", "C. 30", "D. 36"], key: 2 },
-                { type: 'pg', text: "Pada peta berskala 1 : 2.000.000, jarak dua kota pada peta adalah 4 cm. Jarak sebenarnya adalah ....", options: ["A. 8 km", "B. 40 km", "C. 800 km", "D. 80 km"], key: 3 },
-                { type: 'pg', text: "Pak Dani memagari taman berbentuk persegi panjang berukuran 20 m x 15 m. Biaya pemagaran Rp25.000 per meter. Biaya seluruhnya adalah ....", options: ["A. Rp1.500.000", "B. Rp7.500.000", "C. Rp3.500.000", "D. Rp1.750.000"], key: 3 },
-                { type: 'pg', text: "Sebuah bangun terdiri dari persegi bersisi 10 cm dan segitiga di atasnya dengan alas 10 cm dan tinggi 6 cm. Luas bangun tersebut adalah ....", options: ["A. 110 cm²", "B. 130 cm²", "C. 160 cm²", "D. 100 cm²"], key: 1 },
-                { type: 'pg', text: "Luas lingkaran berdiameter 14 cm (π = 22/7) adalah ....", options: ["A. 154 cm²", "B. 44 cm²", "C. 88 cm²", "D. 616 cm²"], key: 0 },
-                { type: 'pg', text: "Bak mandi berbentuk kubus dengan sisi 80 cm terisi penuh air. Volume air tersebut adalah ....", options: ["A. 64 liter", "B. 512 liter", "C. 5.120 liter", "D. 640 liter"], key: 1 },
-                { type: 'pg', text: "Akuarium berbentuk balok berukuran 60 cm x 40 cm x 30 cm diisi air setinggi 3/4 tinggi akuarium. Volume air adalah ....", options: ["A. 54 liter", "B. 72 liter", "C. 18 liter", "D. 54.000 liter"], key: 0 },
-                { type: 'pg', text: "Rata-rata tiga nilai ulangan Dika adalah 80. Agar rata-rata empat ulangan menjadi 82, nilai ulangan keempat harus ....", options: ["A. 84", "B. 86", "C. 88", "D. 90"], key: 2 },
-                { type: 'essay', text: "Rina naik lift dari basement 3 ke lantai 5, lalu turun 2 lantai. Di lantai berapa Rina sekarang? Tuliskan model operasi bilangan bulatnya!", keywords: ["-3", "5", "2", "lantai 3", "3"] },
-                { type: 'essay', text: "Dina membawa uang Rp500.000. Sepatu Rp350.000 dan tas Rp250.000 (keduanya diskon 20%). Cukupkah uang Dina dan berapa sisanya?", keywords: ["cukup", "480000", "20000", "sisa"] },
-                { type: 'essay', text: "Resep kue untuk 4 orang memerlukan 300g tepung, 100g gula, 2 telur. Berapa bahan untuk 10 orang?", keywords: ["750", "250", "5", "tepung", "gula", "telur"] },
-                { type: 'essay', text: "Kolam balok 12m x 6m x 1,5m. Pompa mengalirkan 9 m³/jam. Berapa jam sampai penuh?", keywords: ["108", "12", "jam"] },
-                { type: 'essay', text: "Dari 40 siswa: 16 olahraga, 12 membaca, 8 menggambar, sisa hobi lain. Tentukan persentase dan hobi paling diminati!", keywords: ["40%", "30%", "20%", "10%", "olahraga"] },
-                { type: 'pg', text: "Organ tubuh yang berfungsi memompa darah ke seluruh tubuh adalah ....", options: ["A. Paru-paru", "B. Jantung", "C. Lambung", "D. Ginjal"], key: 1 },
-                { type: 'pg', text: "Rafi berlari 10 menit, napas dan detak jantungnya meningkat karena ....", options: ["A. Sakit", "B. Paru-paru rusak", "C. Jantung lelah", "D. Otot butuh lebih banyak oksigen"], key: 3 },
-                { type: 'pg', text: "Fungsi utama usus halus adalah ....", options: ["A. Menyerap sari-sari makanan", "B. Menyimpan sisa makanan", "C. Menyaring darah", "D. Memompa darah"], key: 0 },
-                { type: 'pg', text: "Urutan jalannya makanan dalam sistem pencernaan yang benar adalah ....", options: ["A. Mulut, lambung, kerongkongan, usus halus", "B. Kerongkongan, mulut, lambung, usus halus", "C. Mulut, kerongkongan, lambung, usus halus", "D. Mulut, usus halus, lambung, kerongkongan"], key: 2 },
-                { type: 'pg', text: "Zat gizi yang menjadi sumber tenaga utama bagi tubuh adalah ....", options: ["A. Vitamin", "B. Karbohidrat", "C. Mineral", "D. Serat"], key: 1 },
-                { type: 'pg', text: "Ani cepat lemas karena hanya sarapan minuman manis. Saran yang tepat adalah ....", options: ["A. Tidak perlu sarapan", "B. Minum minuman manis lagi", "C. Tidur di kelas", "D. Sarapan bergizi seimbang (karbohidrat, protein, sayur, buah)"], key: 3 },
-                { type: 'pg', text: "Perubahan energi listrik menjadi energi cahaya terjadi pada ....", options: ["A. Lampu yang menyala", "B. Kompor gas", "C. Kipas angin", "D. Radio"], key: 0 },
-                { type: 'pg', text: "Ketika setrika listrik dinyalakan, energi listrik berubah menjadi energi ....", options: ["A. Gerak", "B. Bunyi", "C. Panas", "D. Kimia"], key: 2 },
-                { type: 'pg', text: "Sumber energi listrik ramah lingkungan dan tidak pernah habis untuk desa pesisir adalah ....", options: ["A. Batu bara", "B. Panel surya", "C. Genset solar", "D. Membakar kayu"], key: 1 },
-                { type: 'pg', text: "Sampah yang paling mudah terurai oleh alam adalah ....", options: ["A. Botol plastik", "B. Pecahan kaca", "C. Kaleng bekas", "D. Daun kering"], key: 3 },
-                { type: 'pg', text: "Banyak ikan mati setelah warga membuang limbah ke sungai disebabkan oleh ....", options: ["A. Pencemaran air", "B. Musim hujan", "C. Ikan terlalu banyak", "D. Sungai dalam"], key: 0 },
-                { type: 'pg', text: "Rantai makanan: padi -> tikus -> ular -> elang. Jika ular berkurang drastis, jumlah tikus akan ....", options: ["A. Berkurang", "B. Tetap", "C. Bertambah banyak", "D. Hilang"], key: 2 },
-                { type: 'pg', text: "Orang yang menggunakan atau membeli barang kebutuhan disebut ....", options: ["A. Produsen", "B. Konsumen", "C. Distributor", "D. Pedagang"], key: 1 },
-                { type: 'pg', text: "Menjelang hari raya harga cabai naik karena ....", options: ["A. Permintaan meningkat persediaan terbatas", "B. Persediaan banyak", "C. Tidak ada yang beli", "D. Cabai tidak laku"], key: 0 },
-                { type: 'pg', text: "Teks Proklamasi Kemerdekaan Indonesia dibacakan oleh ....", options: ["A. Jenderal Sudirman", "B. Ki Hajar Dewantara", "C. Moh. Yamin", "D. Ir. Soekarno dan Drs. Moh. Hatta"], key: 3 },
-                { type: 'essay', text: "Jelaskan perjalanan makanan dari mulut hingga menjadi sisa pembuangan!", keywords: ["mulut", "kerongkongan", "lambung", "usus", "anus"] },
-                { type: 'essay', text: "Analisislah dampak sarapan manis saja dan susun contoh menu gizi seimbang!", keywords: ["lemas", "nasi", "telur", "sayur", "buah"] },
-                { type: 'essay', text: "Elang diburu hingga habis, jelaskan dampaknya terhadap rantai makanan!", keywords: ["ular", "tikus", "seimbang", "populasi"] },
-                { type: 'essay', text: "Sebutkan 3 contoh perubahan energi di rumah!", keywords: ["lampu", "cahaya", "setrika", "panas", "kipas", "gerak"] },
-                { type: 'essay', text: "Berikan 3 solusi penanganan sungai yang keruh dan berbau!", keywords: ["sampah", "kerja bakti", "limbah", "dilarang"] },
-                { type: 'pg', text: "Berikut yang termasuk permainan bola besar adalah ....", options: ["A. Kasti", "B. Bulu tangkis", "C. Sepak bola", "D. Tenis meja"], key: 2 },
-                { type: 'pg', text: "Teknik dasar mengoper bola pendek dalam sepak bola menggunakan ....", options: ["A. Kaki bagian dalam", "B. Ujung jari kaki", "C. Tumit", "D. Lutut"], key: 0 },
-                { type: 'pg', text: "Pemain kasti yang bertugas melambungkan bola disebut ....", options: ["A. Penjaga", "B. Pemukul", "C. Penangkap", "D. Pelambung"], key: 3 },
-                { type: 'pg', text: "Urutan gerakan lompat jauh yang benar adalah ....", options: ["A. Awalan, melayang, tumpuan, mendarat", "B. Awalan, tumpuan, melayang, mendarat", "C. Tumpuan, awalan, melayang, mendarat", "D. Mendarat, tumpuan, melayang, awalan"], key: 1 },
-                { type: 'pg', text: "Start yang digunakan pada lari jarak pendek adalah start ....", options: ["A. Berdiri", "B. Melayang", "C. Jongkok", "D. Duduk"], key: 2 },
-                { type: 'pg', text: "Sebelum melakukan guling depan, hal yang harus dilakukan adalah ....", options: ["A. Pemanasan", "B. Langsung berguling", "C. Makan banyak", "D. Tidur"], key: 0 },
-                { type: 'pg', text: "Pada guling depan, posisi kepala yang benar adalah ....", options: ["A. Kepala tegak", "B. Ubun-ubun menyentuh matras", "C. Menoleh", "D. Dagu menempel ke dada dan tengkuk menyentuh matras"], key: 3 },
-                { type: 'pg', text: "Lari 12 menit (tes Cooper) mengukur ....", options: ["A. Kekuatan lengan", "B. Daya tahan jantung dan paru-paru", "C. Kelincahan", "D. Keseimbangan"], key: 1 },
-                { type: 'pg', text: "Pendinginan setelah berolahraga bertujuan untuk ....", options: ["A. Menurunkan denyut jantung dan napas bertahap", "B. Menambah lelah", "C. Naikkan suhu", "D. Hentikan mendadak"], key: 0 },
-                { type: 'pg', text: "Lama tidur yang dianjurkan bagi anak usia SD adalah ....", options: ["A. 4-5 jam", "B. 6 jam", "C. 9-11 jam", "D. 14 jam"], key: 2 },
-                { type: 'pg', text: "Pertolongan pertama pada lutut lecet adalah ....", options: ["A. Biarkan terbuka", "B. Tabur tanah", "C. Tetap main", "D. Bersihkan air bersih dan tutup plester"], key: 3 },
-                { type: 'pg', text: "Sikap sportif saat kalah pertandingan adalah ....", options: ["A. Tuduh wasit", "B. Menerima kekalahan dan selamatkan pemenang", "C. Marah", "D. Ejek lawan"], key: 1 },
-                { type: 'pg', text: "Cara menjaga kebersihan diri adalah ....", options: ["A. Mandi dan gosok gigi teratur", "B. Baju sama berhari-hari", "C. Jarang cuci tangan", "D. Kuku setahun sekali"], key: 0 },
-                { type: 'pg', text: "Jumlah pemain inti dalam satu regu bola voli adalah ....", options: ["A. 5", "B. 7", "C. 6", "D. 11"], key: 2 },
-                { type: 'pg', text: "Pilihan tepat meningkatkan kebugaran tanpa alat adalah ....", options: ["A. Nonton TV", "B. Tidur siang", "C. Makan manis", "D. Berlari pagi dan lompat tali rutin"], key: 3 },
-                { type: 'essay', text: "Tuliskan urutan gerakan lompat jauh!", keywords: ["awalan", "tumpuan", "melayang", "mendarat"] },
-                { type: 'essay', text: "Jelaskan manfaat pemanasan dan pendinginan!", keywords: ["otot", "cedera", "denyut", "jantung"] },
-                { type: 'essay', text: "Tuliskan pertolongan pertama pada luka goresan!", keywords: ["air", "bersih", "tekan", "plester", "kasa"] },
-                { type: 'essay', text: "Bagaimana sikap sportif yang benar saat bermain kasti?", keywords: ["jujur", "sportif", "akui", "wasit"] },
-                { type: 'essay', text: "Susun jadwal sederhana harian pola hidup sehat!", keywords: ["makan", "tidur", "olahraga", "belajar"] }
-            ],
-            C: [
-                { type: 'pg', text: "Unsur seni rupa yang terbentuk dari titik yang bergerak adalah ....", options: ["A. Bidang", "B. Garis", "C. Warna", "D. Tekstur"], key: 1 },
-                { type: 'pg', text: "Warna primer terdiri atas ....", options: ["A. Hijau, jingga, ungu", "B. Hitam, putih, abu", "C. Merah, hijau, biru", "D. Merah, kuning, biru"], key: 3 },
-                { type: 'pg', text: "Campuran warna merah dan kuning menghasilkan warna ....", options: ["A. Jingga", "B. Hijau", "C. Ungu", "D. Cokelat"], key: 0 },
-                { type: 'pg', text: "Kelompok warna hangat adalah ....", options: ["A. Biru, hijau, ungu", "B. Biru, putih, hitam", "C. Merah, jingga, kuning", "D. Ungu, biru, hijau"], key: 2 },
-                { type: 'pg', text: "Karya seni rupa dua dimensi adalah ....", options: ["A. Patung", "B. Lukisan", "C. Keramik", "D. Ukiran kayu"], key: 1 },
-                { type: 'pg', text: "Fungsi utama poster adalah ....", options: ["A. Menghias ruangan", "B. Menyimpan benda", "C. Alat tulis", "D. Menyampaikan pesan/ajakan secara visual"], key: 3 },
-                { type: 'pg', text: "Teknik arsir dalam menggambar adalah ....", options: ["A. Garis sejajar rapat untuk kesan gelap terang", "B. Menempel kertas", "C. Menekan lilin", "D. Memahat"], key: 0 },
-                { type: 'pg', text: "Berikut yang termasuk karya seni rupa tiga dimensi adalah ....", options: ["A. Kolase", "B. Batik", "C. Patung", "D. Lukisan"], key: 2 },
-                { type: 'pg', text: "Membuat pot bunga dari botol plastik bekas termasuk kerajinan ....", options: ["A. Lukis", "B. Daur ulang", "C. Cetak", "D. Anyaman"], key: 1 },
-                { type: 'pg', text: "Kolase adalah karya seni yang dibuat dengan cara ....", options: ["A. Menempelkan berbagai bahan pada bidang gambar", "B. Memahat", "C. Mencetak", "D. Mewarnai cat air"], key: 0 },
-                { type: 'pg', text: "Teknik membuat batik adalah menutup bagian kain dengan .... lalu dicelup.", options: ["A. Cat", "B. Lem", "C. Lilin (malam)", "D. Minyak"], key: 2 },
-                { type: 'pg', text: "Kain tradisional khas Sulawesi Barat adalah ....", options: ["A. Ulos", "B. Songket", "C. Sutra Mandar", "D. Sumba"], key: 2 },
-                { type: 'pg', text: "Prinsip keseimbangan dalam karya seni rupa adalah ....", options: ["A. Penataan unsur agar serasi dan stabil", "B. Satu warna", "C. Gambar besar", "D. Kosongkan bidang"], key: 0 },
-                { type: 'pg', text: "Tujuan pameran karya seni di sekolah adalah ....", options: ["A. Cari kesalahan", "B. Menghargai dan menunjukkan hasil karya", "C. Mengejek", "D. Membandingkan nilai"], key: 1 },
-                { type: 'pg', text: "Teknik menampilkan kesan jarak jauh dalam gambar adalah ....", options: ["A. Objek jauh lebih besar", "B. Semua sama besar", "C. Satu warna tebal", "D. Objek jauh lebih kecil dan pudar"], key: 3 },
-                { type: 'essay', text: "Jelaskan perbedaan warna primer dan sekunder beserta contohnya!", keywords: ["primer", "dasar", "sekunder", "campuran", "merah", "jingga"] },
-                { type: 'essay', text: "Tuliskan langkah-langkah membuat kolase dari bahan bekas!", keywords: ["rancang", "gunting", "tempel", "lem", "rapi"] },
-                { type: 'essay', text: "Jelaskan unsur-unsur yang harus ada pada poster 'Cintai Lingkungan'!", keywords: ["gambar", "tulisan", "pesan", "warna", "menarik"] },
-                { type: 'essay', text: "Analisislah manfaat tempat pensil dari kaleng bekas!", keywords: ["sampah", "kreatif", "hemat", "lingkungan"] },
-                { type: 'essay', text: "Mengapa kain Sutra Mandar perlu dilestarikan dan bagaimana caranya?", keywords: ["warisan", "budaya", "ekonomi", "pakai", "belajar"] },
-                { type: 'pg', text: "How old is Sinta? (Based on text: Sinta is 12 years old)", options: ["A. Eleven", "B. Twelve", "C. Thirteen", "D. Ten"], key: 1 },
-                { type: 'pg', text: "What time does Sinta wake up? (Text: 5.30)", options: ["A. 5.00", "B. 6.00", "C. 6.30", "D. 5.30"], key: 3 },
-                { type: 'pg', text: "How does Sinta go to school?", options: ["A. By bicycle", "B. By bus", "C. On foot", "D. By motorbike"], key: 0 },
-                { type: 'pg', text: "What does Sinta do after school?", options: ["A. Play football", "B. Watch TV", "C. Help mother & do homework", "D. Visit grandmother"], key: 2 },
-                { type: 'pg', text: "The word 'near' in the text has the same meaning as ....", options: ["A. Far", "B. Close", "C. Behind", "D. Under"], key: 1 },
-                { type: 'pg', text: "Who do Sinta and her family visit on Sunday?", options: ["A. Grandmother", "B. Teacher", "C. Friend", "D. Uncle"], key: 0 },
-                { type: 'pg', text: "I ___ breakfast every morning.", options: ["A. eats", "B. eating", "C. is eat", "D. eat"], key: 3 },
-                { type: 'pg', text: "She ___ to school at 6.30.", options: ["A. go", "B. going", "C. goes", "D. gone"], key: 2 },
-                { type: 'pg', text: "My little brother ___ playing football now.", options: ["A. is", "B. are", "C. am", "D. be"], key: 0 },
-                { type: 'pg', text: "Where ___ you live?", options: ["A. does", "B. do", "C. is", "D. are"], key: 1 },
-                { type: 'pg', text: "The elephant is ___ than the cat.", options: ["A. small", "B. smallest", "C. more big", "D. bigger"], key: 3 },
-                { type: 'pg', text: "The bank is ___ the post office and the market.", options: ["A. on", "B. at", "C. between", "D. under"], key: 2 },
-                { type: 'pg', text: "A place where we borrow books is a ....", options: ["A. library", "B. canteen", "C. market", "D. hospital"], key: 0 },
-                { type: 'pg', text: "What do you say to ask someone's name?", options: ["A. How old are you?", "B. What is your name?", "C. Where do you live?", "D. What time is it?"], key: 1 },
-                { type: 'pg', text: "Rina: 'Thank you for helping me.' Dani: '....'", options: ["A. Good bye", "B. I'm sorry", "C. Nice to meet you", "D. You're welcome"], key: 3 },
-                { type: 'essay', text: "Answer based on text: (a) Where does Sinta live? (b) Who with?", keywords: ["mamuju", "parents", "brother"] },
-                { type: 'essay', text: "Write four sentences about your daily activities!", keywords: ["wake", "school", "study", "sleep", "eat"] },
-                { type: 'essay', text: "Arrange: 'school / goes / to / she / every day'", keywords: ["she", "goes", "to", "school", "every", "day"] },
-                { type: 'essay', text: "Describe your best friend in 4 sentences!", keywords: ["name", "years", "tall", "hobby", "like"] },
-                { type: 'essay', text: "Complete dialogue: Dani: 'How are you?' Rina: '....'", keywords: ["fine", "thank", "going", "good"] }
-            ]
-        };
-
-        let currentUser = null;
-        let currentPacket = null;
-        let activeQuestions = [];
-        let currentQuestionIndex = 0;
-        let studentAnswers = {};
-
-        let appData = JSON.parse(localStorage.getItem('cbt_app_data')) || {
-            lockedPackets: { A: false, B: false, C: false },
-            forceFinishTrigger: 0,
-            results: {},
-            activeSessions: {}
-        };
-
-        function saveData() {
-            localStorage.setItem('cbt_app_data', JSON.stringify(appData));
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
         function enterFullscreen() {
-            let elem = document.documentElement;
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen().catch(err => {});
-            } else if (elem.webkitRequestFullscreen) {
-                elem.webkitRequestFullscreen();
-            }
+            let el = document.documentElement;
+            if (el.requestFullscreen) el.requestFullscreen();
         }
 
-        function exitFullscreen() {
-            if (document.exitFullscreen) {
-                document.exitFullscreen().catch(err => {});
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            }
-        }
-
-        function restoreFullscreenAndCloseModal() {
+        function restoreFullscreen() {
             document.getElementById('fullscreen-warning-modal').style.display = 'none';
             enterFullscreen();
         }
 
-        document.addEventListener("fullscreenchange", function() {
-            if (!document.fullscreenElement && currentUser && !currentUser.isAdmin && currentPacket) {
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && currentUser && currentUser.role === 'Siswa' && currentPacket) {
                 document.getElementById('fullscreen-warning-modal').style.display = 'flex';
             }
         });
 
-        document.addEventListener("visibilitychange", function() {
-            if (document.hidden && currentUser && !currentUser.isAdmin && currentPacket) {
-                document.getElementById('fullscreen-warning-modal').style.display = 'flex';
-            }
-        });
+        // -----------------------------------------------------------
+        // PROCESS LOGIN VIA GOOGLE APPS SCRIPT
+        // -----------------------------------------------------------
+        function execLogin() {
+            const u = document.getElementById('login-username').value;
+            const p = document.getElementById('login-password').value;
+            const btn = document.getElementById('btn-login');
 
-        document.addEventListener('contextmenu', event => event.preventDefault());
+            if (!u || !p) return alert('Silakan isi Username dan Password!');
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+            btn.innerHTML = `<div class="loader"></div> Memproses...`;
+
+            google.script.run.withSuccessHandler(res => {
+                btn.innerHTML = `<span>Masuk Ujian</span> <i class="fa-solid fa-arrow-right"></i>`;
+                if (res.success) {
+                    currentUser = res;
+                    if (res.role === 'Admin') {
+                        showScreen('screen-admin');
+                        loadAdminData();
+                    } else {
+                        document.getElementById('student-nama-txt').innerText = res.name;
+                        loadStudentData();
+                    }
+                } else {
+                    alert(res.message);
+                }
+            }).userLogin(u, p);
         }
 
-        const allStudentsFlat = [...class6A, ...class6B];
-
-        function handleLogin() {
-            const nisn = document.getElementById('login-nisn').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-
-            if (nisn === 'admin' && pass === 'admin2026') {
-                currentUser = { nisn: 'admin', name: 'Panitia Admin', isAdmin: true };
-                showScreen('screen-admin');
-                initAdminDashboard();
-                return;
-            }
-
-            const student = allStudentsFlat.find(s => s.nisn === nisn);
-            if (student && pass === '2026') {
-                const studentData = appData.results[student.nisn];
-                if (studentData && Object.keys(studentData.scores || {}).length >= 3) {
-                    alert("Akun ini sudah menyelesaikan seluruh paket ujian!");
-                    return;
-                }
-
-                currentUser = { nisn: student.nisn, name: student.name, isAdmin: false };
-                if (!appData.activeSessions) appData.activeSessions = {};
-                appData.activeSessions[student.nisn] = true;
-                saveData();
-
-                document.getElementById('student-name').innerText = student.name;
-                enterFullscreen();
-                checkLockStatus();
-                showScreen('screen-packets');
-            } else {
-                alert("NISN atau Password Salah!");
-            }
-        }
-
-        function logout() {
-            if (currentUser && !currentUser.isAdmin) {
-                if (appData.activeSessions && appData.activeSessions[currentUser.nisn]) {
-                    delete appData.activeSessions[currentUser.nisn];
-                    saveData();
-                }
-            }
-            exitFullscreen();
+        function execLogout() {
             currentUser = null;
             currentPacket = null;
-            document.getElementById('fullscreen-warning-modal').style.display = 'none';
-            document.getElementById('login-nisn').value = '';
-            document.getElementById('login-pass').value = '';
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
             showScreen('screen-login');
         }
 
-        function checkLockStatus() {
-            ['A', 'B', 'C'].forEach(pkt => {
-                const lockDiv = document.getElementById(`status-lock-${pkt}`);
-                if (lockDiv) {
-                    if (appData.lockedPackets && appData.lockedPackets[pkt]) {
-                        lockDiv.innerText = "🔒 TERKUNCI";
-                        lockDiv.style.color = "#dc3545";
-                    } else {
-                        lockDiv.innerText = "🔓 TERBUKA";
-                        lockDiv.style.color = "#28a745";
-                    }
+        // -----------------------------------------------------------
+        // STUDENT EXAM FLOW
+        // -----------------------------------------------------------
+        function loadStudentData() {
+            google.script.run.withSuccessHandler(res => {
+                if (res.success) {
+                    examQuestions = res.questions;
+                    lockedPacketsState = res.lockedPackets;
+                    
+                    ['A', 'B', 'C'].forEach(p => {
+                        const el = document.getElementById(`lock-status-${p}`);
+                        if (lockedPacketsState[p]) {
+                            el.innerText = '🔒 TERKUNCI';
+                            el.style.color = '#ef4444';
+                        } else if (res.existingScores[p] !== undefined) {
+                            el.innerText = `✔ Selesai (Nilai: ${res.existingScores[p]})`;
+                            el.style.color = '#10b981';
+                        } else {
+                            el.innerText = '🔓 TERBUKA';
+                            el.style.color = '#10b981';
+                        }
+                    });
+
+                    showScreen('screen-packets');
                 }
-            });
+            }).getInitialData(currentUser.username);
         }
 
-        function shuffle(array) {
-            let arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
-        function selectPacket(packet) {
-            if (appData.lockedPackets && appData.lockedPackets[packet]) {
-                alert(`Soal Paket ${packet} saat ini SEDANG DIKUNCI oleh Panitia Admin.`);
-                return;
+        function startExam(packet) {
+            if (lockedPacketsState[packet]) {
+                return alert(`Paket ${packet} sedang dikunci oleh admin!`);
             }
 
             currentPacket = packet;
             studentAnswers = {};
-            currentQuestionIndex = 0;
-            activeQuestions = shuffle(rawQuestions[packet]);
+            currentQIndex = 0;
 
-            document.getElementById('exam-title').innerText = `Ujian Paket ${packet}`;
-            document.getElementById('exam-student-info').innerText = `${currentUser.name} (${currentUser.nisn})`;
+            document.getElementById('exam-title-txt').innerText = `Ujian Paket ${packet}`;
+            document.getElementById('exam-student-info').innerText = `${currentUser.name} (${currentUser.username})`;
 
-            renderNavGrid();
-            loadQuestion(0);
-            showScreen('screen-exam');
             enterFullscreen();
+            renderNav();
+            loadQ(0);
+            showScreen('screen-exam');
         }
 
-        function renderNavGrid() {
-            const navGrid = document.getElementById('nav-grid');
-            navGrid.innerHTML = '';
-            activeQuestions.forEach((_, idx) => {
+        function renderNav() {
+            const nav = document.getElementById('nav-grid');
+            nav.innerHTML = '';
+            examQuestions.forEach((_, i) => {
                 const btn = document.createElement('div');
-                btn.className = `nav-btn ${idx === 0 ? 'active' : ''}`;
-                btn.id = `nav-btn-${idx}`;
-                btn.innerText = idx + 1;
-                btn.onclick = () => loadQuestion(idx);
-                navGrid.appendChild(btn);
+                btn.className = `nav-btn ${i === 0 ? 'active' : ''}`;
+                btn.id = `nav-${i}`;
+                btn.innerText = i + 1;
+                btn.onclick = () => loadQ(i);
+                nav.appendChild(btn);
             });
         }
 
-        function loadQuestion(index) {
-            currentQuestionIndex = index;
-            const q = activeQuestions[index];
+        function loadQ(idx) {
+            currentQIndex = idx;
+            const q = examQuestions[idx];
 
             document.querySelectorAll('.nav-btn').forEach((b, i) => {
                 b.classList.remove('active');
-                if (i === index) b.classList.add('active');
+                if (i === idx) b.classList.add('active');
             });
 
-            document.getElementById('question-number').innerText = `Soal Nomor ${index + 1} (${q.type === 'pg' ? 'Pilihan Ganda' : 'Uraian'})`;
-            document.getElementById('question-text').innerText = q.text;
+            document.getElementById('q-number-txt').innerText = `Soal Nomor ${idx + 1}`;
+            document.getElementById('q-text-txt').innerText = q.text;
 
-            const optionsContainer = document.getElementById('options-container');
-            const essayContainer = document.getElementById('essay-container');
+            const optBox = document.getElementById('options-container');
+            const essayBox = document.getElementById('essay-container');
 
             if (q.type === 'pg') {
-                optionsContainer.style.display = 'block';
-                essayContainer.style.display = 'none';
-                optionsContainer.innerHTML = '';
+                optBox.style.display = 'block';
+                essayBox.style.display = 'none';
+                optBox.innerHTML = '';
 
                 q.options.forEach((opt, oIdx) => {
-                    const isChecked = studentAnswers[index] === oIdx ? 'checked' : '';
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <label>
-                            <input type="radio" name="option" value="${oIdx}" ${isChecked} onchange="savePgAnswer(${oIdx})">
-                            ${opt}
-                        </label>
+                    const checked = studentAnswers[idx] === oIdx ? 'checked' : '';
+                    optBox.innerHTML += `
+                        <li>
+                            <label>
+                                <input type="radio" name="opt" value="${oIdx}" ${checked} onchange="savePgAns(${oIdx})">
+                                ${opt}
+                            </label>
+                        </li>
                     `;
-                    optionsContainer.appendChild(li);
                 });
             } else {
-                optionsContainer.style.display = 'none';
-                essayContainer.style.display = 'block';
-                document.getElementById('essay-answer').value = studentAnswers[index] || '';
+                optBox.style.display = 'none';
+                essayBox.style.display = 'block';
+                document.getElementById('essay-ans').value = studentAnswers[idx] || '';
             }
         }
 
-        function savePgAnswer(val) {
-            studentAnswers[currentQuestionIndex] = val;
-            markNavAnswered(currentQuestionIndex);
+        function savePgAns(val) {
+            studentAnswers[currentQIndex] = val;
+            document.getElementById(`nav-${currentQIndex}`).classList.add('answered');
         }
 
-        function saveEssayAnswer() {
-            const val = document.getElementById('essay-answer').value;
-            studentAnswers[currentQuestionIndex] = val;
-            if (val.trim() !== '') {
-                markNavAnswered(currentQuestionIndex);
+        function saveEssayAns() {
+            const val = document.getElementById('essay-ans').value;
+            studentAnswers[currentQIndex] = val;
+            if (val.trim()) {
+                document.getElementById(`nav-${currentQIndex}`).classList.add('answered');
             } else {
-                document.getElementById(`nav-btn-${currentQuestionIndex}`).classList.remove('answered');
+                document.getElementById(`nav-${currentQIndex}`).classList.remove('answered');
             }
         }
 
-        function markNavAnswered(idx) {
-            document.getElementById(`nav-btn-${idx}`).classList.add('answered');
+        function nextQ() {
+            if (currentQIndex < examQuestions.length - 1) loadQ(currentQIndex + 1);
         }
 
-        function nextQuestion() {
-            if (currentQuestionIndex < activeQuestions.length - 1) {
-                loadQuestion(currentQuestionIndex + 1);
-            }
+        function prevQ() {
+            if (currentQIndex > 0) loadQ(currentQIndex - 1);
         }
 
-        function prevQuestion() {
-            if (currentQuestionIndex > 0) {
-                loadQuestion(currentQuestionIndex - 1);
-            }
-        }
+        function finishExam() {
+            if (!confirm("Apakah Anda yakin ingin menyelesaikannya sekarang?")) return;
 
-        function calculateDetailedScore() {
-            let totalPgScore = 0;
-            let totalEssayScore = 0;
+            let score = 0;
             let correctCount = 0;
-            let incorrectCount = 0;
+            let total = examQuestions.length;
 
-            let pgCount = activeQuestions.filter(q => q.type === 'pg').length;
-            let essayCount = activeQuestions.filter(q => q.type === 'essay').length;
-
-            let pgWeight = 30 / (pgCount || 1);
-            let essayWeight = 70 / (essayCount || 1);
-
-            let reviewDetails = [];
-            let questionResults = [];
-
-            activeQuestions.forEach((q, idx) => {
-                const ans = studentAnswers[idx];
-                let isCorrect = false;
-                let detailNote = "";
-
-                if (q.type === 'pg') {
-                    if (ans === q.key) {
-                        totalPgScore += pgWeight;
-                        isCorrect = true;
-                        correctCount++;
-                    } else {
-                        incorrectCount++;
-                    }
-                    detailNote = `Jawaban Anda: ${ans !== undefined ? q.options[ans] : 'Tidak dijawab'} | Kunci: ${q.options[q.key]}`;
-                } else if (q.type === 'essay') {
-                    if (ans && ans.trim() !== '') {
-                        let matchedKeywords = 0;
-                        const userAnsLower = ans.toLowerCase();
-
-                        q.keywords.forEach(kw => {
-                            if (userAnsLower.includes(kw.toLowerCase())) {
-                                matchedKeywords++;
-                            }
-                        });
-
-                        if (matchedKeywords > 0) {
-                            let ratio = matchedKeywords / q.keywords.length;
-                            if (ratio > 1) ratio = 1;
-                            totalEssayScore += (essayWeight * ratio);
-                            if (ratio >= 0.5) { isCorrect = true; correctCount++; } else { incorrectCount++; }
-                        } else {
-                            totalEssayScore += (essayWeight * 0.15); 
-                            incorrectCount++;
-                        }
-                        detailNote = `Jawaban Uraian Anda: "${ans}"`;
-                    } else {
-                        incorrectCount++;
-                        detailNote = `Tidak dijawab`;
-                    }
+            examQuestions.forEach((q, i) => {
+                if (q.type === 'pg' && studentAnswers[i] == q.key) {
+                    correctCount++;
                 }
-
-                questionResults.push(isCorrect);
-                reviewDetails.push({
-                    question: q.text,
-                    isCorrect: isCorrect,
-                    note: detailNote
-                });
             });
 
-            let finalScore = Math.round(totalPgScore + totalEssayScore);
-            if (finalScore > 100) finalScore = 100;
+            score = Math.round((correctCount / total) * 100);
 
-            return { 
-                score: finalScore, 
-                correct: correctCount, 
-                incorrect: incorrectCount, 
-                review: reviewDetails,
-                questionResults: questionResults 
+            const payload = {
+                nisn: currentUser.username,
+                nama: currentUser.name,
+                kelas: currentUser.kelas,
+                paket: currentPacket,
+                score: score,
+                answers: studentAnswers
             };
+
+            google.script.run.withSuccessHandler(res => {
+                if (res.success) {
+                    document.getElementById('res-pkt-txt').innerText = currentPacket;
+                    document.getElementById('res-score-txt').innerText = score;
+                    renderResultChart(correctCount, total - correctCount);
+                    showScreen('screen-result');
+                }
+            }).submitExamResult(payload);
         }
 
-        let studentResultChartInstance = null;
+        function renderResultChart(correct, incorrect) {
+            const ctx = document.getElementById('studentResultChart').getContext('2d');
+            if (studentChartInstance) studentChartInstance.destroy();
 
-        function renderStackedBarChart(canvasId, questionResults, isStudentChart = true) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            
-            if (isStudentChart && studentResultChartInstance) {
-                studentResultChartInstance.destroy();
-            } else if (!isStudentChart && chartInstance) {
-                chartInstance.destroy();
-            }
-
-            let labels = [];
-            let redData = [];
-            let blueData = [];
-
-            let accumRed = 0;
-            let accumBlue = 0;
-
-            questionResults.forEach((isCorrect, index) => {
-                labels.push(`S${index + 1}`);
-                if (isCorrect) {
-                    accumBlue += 1;
-                } else {
-                    accumRed += 1;
-                }
-                redData.push(accumRed);
-                blueData.push(accumBlue);
-            });
-
-            const newChart = new Chart(ctx, {
-                type: 'bar',
+            studentChartInstance = new Chart(ctx, {
+                type: 'doughnut',
                 data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Jawaban Salah / Kosong (Merah)',
-                            data: redData,
-                            backgroundColor: '#dc3545',
-                            barPercentage: 1.0,
-                            categoryPercentage: 1.0
-                        },
-                        {
-                            label: 'Jawaban Benar (Biru)',
-                            data: blueData,
-                            backgroundColor: '#3b82f6',
-                            barPercentage: 1.0,
-                            categoryPercentage: 1.0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', labels: { boxWidth: 20 } },
-                        tooltip: { mode: 'index', intersect: false }
-                    },
-                    scales: {
-                        x: { stacked: true, grid: { display: false }, ticks: { autoSkip: true, maxTicksLimit: 20, font: { size: 10 } } },
-                        y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Jumlah Soal' } }
-                    }
-                }
-            });
-
-            if (isStudentChart) {
-                studentResultChartInstance = newChart;
-            } else {
-                chartInstance = newChart;
-            }
-        }
-
-        let chartInstance = null;
-        function renderAdminPieChart(completedCount, uncompletedCount) {
-            const ctx = document.getElementById('gradeChart').getContext('2d');
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
-            chartInstance = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Belum Selesai / Belum Ujian', 'Sudah Selesai Ujian'],
+                    labels: ['Jawaban Benar', 'Salah / Kosong'],
                     datasets: [{
-                        data: [uncompletedCount, completedCount],
-                        backgroundColor: ['#dc3545', '#17a2b8'],
-                        borderWidth: 1
+                        data: [correct, incorrect],
+                        backgroundColor: ['#10b981', '#ef4444']
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    animation: false,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
+                    maintainAspectRatio: false
                 }
             });
         }
 
-        function finishExam() {
-            if (confirm("Apakah Anda yakin ingin menyelesaikan ujian paket ini?")) {
-                const resData = calculateDetailedScore();
+        // -----------------------------------------------------------
+        // ADMIN FLOW
+        // -----------------------------------------------------------
+        function loadAdminData() {
+            google.script.run.withSuccessHandler(res => {
+                if (res.success) {
+                    const tbody = document.getElementById('admin-table-body');
+                    tbody.innerHTML = '';
 
-                if (!appData.results[currentUser.nisn]) {
-                    appData.results[currentUser.nisn] = {
-                        name: currentUser.name,
-                        scores: {}
-                    };
+                    res.students.forEach((s, idx) => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${idx + 1}</td>
+                                <td>${s.nisn}</td>
+                                <td><b>${s.nama}</b></td>
+                                <td>${s.kelas}</td>
+                                <td>${s.scores['A'] !== undefined ? s.scores['A'] : '-'}</td>
+                                <td>${s.scores['B'] !== undefined ? s.scores['B'] : '-'}</td>
+                                <td>${s.scores['C'] !== undefined ? s.scores['C'] : '-'}</td>
+                                <td>
+                                    <button class="btn btn-danger" style="padding: 4px 8px; font-size:11px;" onclick="resetStudent('${s.nisn}')">Reset</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    ['A', 'B', 'C'].forEach(p => {
+                        const btn = document.getElementById(`btn-lock-${p}`);
+                        if (res.lockedPackets[p]) {
+                            btn.innerText = `Buka Paket ${p}`;
+                            btn.className = "btn btn-success";
+                        } else {
+                            btn.innerText = `Kunci Paket ${p}`;
+                            btn.className = "btn btn-danger";
+                        }
+                    });
                 }
-                appData.results[currentUser.nisn].scores[currentPacket] = resData.score;
-                
-                if (appData.activeSessions && appData.activeSessions[currentUser.nisn]) {
-                    delete appData.activeSessions[currentUser.nisn];
-                }
-                saveData();
+            }).getAdminDashboardData();
+        }
 
-                exitFullscreen();
-                currentPacket = null;
+        function toggleLock(packet) {
+            google.script.run.withSuccessHandler(res => {
+                if (res.success) loadAdminData();
+            }).togglePacketLock(packet);
+        }
 
-                document.getElementById('res-packet-name').innerText = currentPacket || '-';
-                document.getElementById('res-score').innerText = resData.score;
-                
-                let badgeHTML = "";
-                if (resData.score >= 85) badgeHTML = `<span class="status-badge bg-sangat-baik">Sangat Baik</span>`;
-                else if (resData.score >= 70) badgeHTML = `<span class="status-badge bg-baik">Baik</span>`;
-                else if (resData.score >= 50) badgeHTML = `<span class="status-badge bg-cukup">Cukup Baik</span>`;
-                else badgeHTML = `<span class="status-badge bg-kurang">Kurang Baik</span>`;
-                document.getElementById('res-badge').innerHTML = badgeHTML;
-
-                renderStackedBarChart('studentResultChart', resData.questionResults, true);
-
-                const reviewContainer = document.getElementById('review-container');
-                reviewContainer.innerHTML = '';
-                resData.review.forEach((item, i) => {
-                    const div = document.createElement('div');
-                    div.className = `review-item ${item.isCorrect ? 'review-correct' : 'review-incorrect'}`;
-                    div.innerHTML = `
-                        <p><b>Soal ${i+1}:</b> ${item.question}</p>
-                        <p style="font-size:13px; margin-top:4px;">${item.note} - <b>${item.isCorrect ? '✔ Benar / Sesuai' : '✖ Kurang / Salah'}</b></p>
-                    `;
-                    reviewContainer.appendChild(div);
-                });
-
-                showScreen('screen-result');
+        function resetStudent(nisn) {
+            if (confirm(`Reset data siswa NISN: ${nisn}?`)) {
+                google.script.run.withSuccessHandler(res => {
+                    if (res.success) loadAdminData();
+                }).resetStudentData(nisn);
             }
         }
 
-        function initAdminDashboard() {
-            updateAdminView();
-        }
-
-        function togglePacketLock(packet) {
-            if (!appData.lockedPackets) appData.lockedPackets = { A: false, B: false, C: false };
-            appData.lockedPackets[packet] = !appData.lockedPackets[packet];
-            saveData();
-            updateAdminView();
-        }
-
-        function forceFinishAllStudents() {
-            if (confirm("PERHATIAN: Apakah Anda yakin ingin memaksa SEMUA siswa menyelesaikan ujian serentak sekarang?")) {
-                appData.forceFinishTrigger = Date.now();
-                appData.activeSessions = {};
-                saveData();
-                updateAdminView();
-                alert("Perintah selesai serentak telah dikirim ke semua sesi siswa aktif.");
+        function resetAll() {
+            if (confirm("Yakin ingin mereset SELURUH data nilai dan aktivitas?")) {
+                google.script.run.withSuccessHandler(res => {
+                    if (res.success) loadAdminData();
+                }).resetAllData();
             }
         }
-
-        function resetAllActivity() {
-            if (confirm("Apakah Anda YAKIN ingin menghapus/reset SEMUA data aktivitas dan nilai siswa?")) {
-                appData.results = {};
-                appData.activeSessions = {};
-                saveData();
-                updateAdminView();
-                alert("Semua data aktivitas dan nilai berhasil di-reset!");
-            }
-        }
-
-        function resetSingleStudent(nisn) {
-            if (confirm(`Apakah Anda yakin ingin mereset data siswa dengan NISN ${nisn} agar bisa login kembali?`)) {
-                if (appData.results && appData.results[nisn]) {
-                    delete appData.results[nisn];
-                }
-                if (appData.activeSessions && appData.activeSessions[nisn]) {
-                    delete appData.activeSessions[nisn];
-                }
-                saveData();
-                updateAdminView();
-                alert("Data siswa berhasil di-reset!");
-            }
-        }
-
-        function getPassingGradeBadge(score) {
-            if (score === undefined || score === null) return `<span style="color:#aaa;">Belum Ikut</span>`;
-            
-            let category = "";
-            let badgeClass = "";
-
-            if (score >= 85) { category = "Sangat Baik"; badgeClass = "bg-sangat-baik"; }
-            else if (score >= 70) { category = "Baik"; badgeClass = "bg-baik"; }
-            else if (score >= 50) { category = "Cukup Baik"; badgeClass = "bg-cukup"; }
-            else { category = "Kurang Baik"; badgeClass = "bg-kurang"; }
-
-            return `${score} - <span class="status-badge ${badgeClass}">${category}</span>`;
-        }
-
-        function buildClassTable(classList, tbodyId) {
-            const tbody = document.getElementById(tbodyId);
-            tbody.innerHTML = '';
-
-            let completedCount = 0;
-            let uncompletedCount = 0;
-
-            classList.forEach((student, index) => {
-                const studentResult = appData.results[student.nisn] || { scores: {} };
-                const scoreA = studentResult.scores['A'];
-                const scoreB = studentResult.scores['B'];
-                const scoreC = studentResult.scores['C'];
-                
-                let countActive = (scoreA !== undefined ? 1 : 0) + (scoreB !== undefined ? 1 : 0) + (scoreC !== undefined ? 1 : 0);
-                let hasData = countActive > 0;
-                let isOnline = appData.activeSessions && appData.activeSessions[student.nisn];
-
-                if (hasData) {
-                    completedCount++;
-                } else {
-                    uncompletedCount++;
-                }
-
-                let statusActionHTML = "";
-                if (hasData) {
-                    statusActionHTML = `<button class="btn btn-danger btn-sm" onclick="resetSingleStudent('${student.nisn}')">Reset</button>`;
-                } else if (isOnline) {
-                    statusActionHTML = `<span style="color:#1a73e8; font-weight:bold; font-size:12px;"><i class="fa-solid fa-spinner fa-spin"></i> Sedang Mengerjakan</span>`;
-                } else {
-                    statusActionHTML = `<span style="color:#888; font-size:12px;">Belum Login</span>`;
-                }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="text-align:center;">${index + 1}</td>
-                    <td>${student.nisn}</td>
-                    <td><b>${student.name}</b></td>
-                    <td>${getPassingGradeBadge(scoreA)}</td>
-                    <td>${getPassingGradeBadge(scoreB)}</td>
-                    <td>${getPassingGradeBadge(scoreC)}</td>
-                    <td>${statusActionHTML}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            return { completedCount, uncompletedCount };
-        }
-
-        function updateAdminView() {
-            ['A', 'B', 'C'].forEach(pkt => {
-                const btn = document.getElementById(`btn-lock-${pkt}`);
-                if (btn) {
-                    if (appData.lockedPackets && appData.lockedPackets[pkt]) {
-                        btn.innerText = `Buka Soal Paket ${pkt}`;
-                        btn.className = "btn btn-warning";
-                    } else {
-                        btn.innerText = `Kunci Soal Paket ${pkt}`;
-                        btn.className = "btn btn-warning";
-                    }
-                }
-            });
-
-            const lockStatus = document.getElementById('admin-lock-status');
-            const allLocked = appData.lockedPackets && appData.lockedPackets.A && appData.lockedPackets.B && appData.lockedPackets.C;
-            if (allLocked) {
-                lockStatus.className = "status-lock status-locked";
-                lockStatus.innerText = "🔒 Status Akses Ujian: SEMUA PAKET TERKUNCI";
-            } else {
-                lockStatus.className = "status-lock status-unlocked";
-                lockStatus.innerText = "🔓 Status Akses Ujian: SEBAGIAN/SELURUHNYA TERBUKA";
-            }
-
-            const res6A = buildClassTable(class6A, 'admin-table-6a');
-            const res6B = buildClassTable(class6B, 'admin-table-6b');
-
-            let totalCompleted = res6A.completedCount + res6B.completedCount;
-            let totalUncompleted = res6A.uncompletedCount + res6B.uncompletedCount;
-
-            renderAdminPieChart(totalCompleted, totalUncompleted);
-        }
-
-        let lastTriggerCheck = appData.forceFinishTrigger;
-        setInterval(() => {
-            appData = JSON.parse(localStorage.getItem('cbt_app_data')) || { lockedPackets: { A: false, B: false, C: false }, forceFinishTrigger: 0, results: {}, activeSessions: {} };
-            
-            if (currentUser && currentUser.isAdmin) {
-                updateAdminView();
-            } else if (currentUser && !currentUser.isAdmin) {
-                checkLockStatus();
-                if (appData.forceFinishTrigger > lastTriggerCheck) {
-                    lastTriggerCheck = appData.forceFinishTrigger;
-                    if (currentPacket) {
-                        alert("Ujian dihentikan serentak oleh Panitia Admin!");
-                        exitFullscreen();
-                        showScreen('screen-packets');
-                        currentPacket = null;
-                    }
-                }
-            }
-        }, 1000);
     </script>
 </body>
 </html>
