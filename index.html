@@ -4,341 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Ujian Online CBT Kelas VI</title>
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Animate.css untuk Animasi Modern -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
         :root {
             --primary: #4f46e5;
             --primary-hover: #4338ca;
-            --secondary: #06b6d4;
             --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --card-bg: rgba(255, 255, 255, 0.92);
+            --card-bg: rgba(255, 255, 255, 0.95);
             --text-main: #1f2937;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-
-        body {
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            color: var(--text-main);
-            user-select: none;
-            overflow-x: hidden;
-        }
-
-        /* Modern Glassmorphism Card */
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 30px;
-            margin-bottom: 25px;
-            transition: all 0.3s ease;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* 1. Login Screen Styling */
-        .login-wrapper {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .login-box {
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .logo-box {
-            width: 80px;
-            height: 80px;
-            background: rgba(79, 70, 229, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px auto;
-            color: var(--primary);
-            font-size: 36px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .input-icon-wrap {
-            position: relative;
-        }
-
-        .input-icon-wrap i.icon-left {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
-        }
-
-        .input-icon-wrap .toggle-password {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #9ca3af;
-        }
-
-        .input-icon-wrap input {
-            width: 100%;
-            padding: 12px 42px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.2s;
-            outline: none;
-        }
-
-        .input-icon-wrap input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        }
-
-        .btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-        }
-
-        .btn-danger { background: #ef4444; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
-        .btn-danger:hover { background: #dc2626; }
-
-        .btn-success { background: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-        .btn-success:hover { background: #059669; }
-
-        /* 2. Packet Grid */
-        .packet-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .packet-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        .packet-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-50px);
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
-        }
-
-        /* 3. Exam View */
-        .exam-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        .exam-body {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
-        }
-
-        .options-list {
-            list-style: none;
-            margin-top: 20px;
-        }
-
-        .options-list li {
-            margin-bottom: 12px;
-        }
-
-        .options-list label {
-            display: flex;
-            align-items: center;
-            padding: 14px 18px;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .options-list label:hover {
-            background: #e0e7ff;
-            border-color: var(--primary);
-        }
-
-        .options-list input {
-            margin-right: 12px;
-            accent-color: var(--primary);
-        }
-
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .nav-btn {
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.2s;
-        }
-
-        .nav-btn.active {
-            border-color: var(--primary);
-            background: #e0e7ff;
-            color: var(--primary);
-        }
-
-        .nav-btn.answered {
-            background: #10b981;
-            color: white;
-            border-color: #10b981;
-        }
-
-        /* Tables & Admin */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 14px;
-        }
-
-        th {
-            background: #f3f4f6;
-            font-weight: 600;
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            color: white;
-        }
-
-        .bg-sangat-baik { background: #10b981; }
-        .bg-baik { background: #3b82f6; }
-        .bg-cukup { background: #f59e0b; }
-        .bg-kurang { background: #ef4444; }
-
-        /* Fullscreen Overlay Modal */
-        #fullscreen-warning-modal {
-            display: none;
-            position: fixed;
-            top:0; left:0; width:100vw; height:100vh;
-            background: rgba(0,0,0,0.85);
-            z-index: 99999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg-gradient); min-height: 100vh; color: var(--text-main); user-select: none; }
+        .glass-card { background: var(--card-bg); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 30px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.4); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .login-wrapper { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .login-box { max-width: 420px; width: 100%; text-align: center; }
+        .logo-box { width: 80px; height: 80px; background: rgba(79,70,229,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; color: var(--primary); font-size: 36px; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px; }
+        .input-icon-wrap { position: relative; }
+        .input-icon-wrap i.icon-left { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+        .input-icon-wrap .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; }
+        .input-icon-wrap input { width: 100%; padding: 12px 42px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; outline: none; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-danger { background: #ef4444; }
+        .btn-success { background: #10b981; }
+        .packet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+        .packet-card { background: white; border-radius: 12px; padding: 25px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .packet-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .exam-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; }
+        .exam-body { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+        .options-list { list-style: none; margin-top: 20px; }
+        .options-list li { margin-bottom: 12px; }
+        .options-list label { display: flex; align-items: center; padding: 14px 18px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; }
+        .options-list input { margin-right: 12px; accent-color: var(--primary); }
+        .nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .nav-btn { padding: 10px; border: 1px solid #d1d5db; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; text-align: center; }
+        .nav-btn.active { border-color: var(--primary); background: #e0e7ff; color: var(--primary); }
+        .nav-btn.answered { background: #10b981; color: white; border-color: #10b981; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+        th { background: #f3f4f6; font-weight: 600; }
+        #fullscreen-warning-modal { display: none; position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <!-- OVERLAY MODAL FULLSCREEN -->
+    <!-- Masukkan URL Web App Code.gs Anda di sini -->
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwtcnbXHYI5Jr5z1qn6SD4YzlwSWpZlbSYzLFCLeaV7tHlD5uZVc_OvHByJd7hm0XfD/exec";
+    </script>
+
     <div id="fullscreen-warning-modal">
         <div class="glass-card animate__animated animate__zoomIn" style="max-width: 450px; text-align: center; background: white;">
             <i class="fa-solid fa-triangle-exclamation" style="font-size: 48px; color: #ef4444; margin-bottom: 15px;"></i>
             <h3>PERINGATAN UJIAN</h3>
-            <p style="margin: 15px 0; color: #6b7280; font-size: 14px;">Layar Anda keluar dari mode ujian! Klik tombol di bawah ini untuk melanjutkan.</p>
+            <p style="margin: 15px 0; color: #6b7280; font-size: 14px;">Anda keluar dari mode ujian! Klik tombol di bawah untuk melanjutkan.</p>
             <button class="btn" onclick="restoreFullscreen()">Kembali Fullscreen</button>
         </div>
     </div>
@@ -347,29 +76,24 @@
     <div id="screen-login" class="screen active">
         <div class="login-wrapper">
             <div class="glass-card login-box animate__animated animate__fadeInDown">
-                <div class="logo-box">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
+                <div class="logo-box"><i class="fa-solid fa-graduation-cap"></i></div>
                 <h2 style="margin-bottom: 5px;">CBT SD INPRES BINANGA 1</h2>
                 <p style="color: #6b7280; font-size: 13px; margin-bottom: 25px;">Masukkan NISN dan Password untuk masuk</p>
-
                 <div class="form-group">
                     <label>Username / NISN</label>
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-user icon-left"></i>
-                        <input type="text" id="login-username" placeholder="Masukkan NISN Anda">
+                        <input type="text" id="login-username" placeholder="Contoh: qwe">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Password</label>
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-lock icon-left"></i>
-                        <input type="password" id="login-password" placeholder="Masukkan Password">
+                        <input type="password" id="login-password" placeholder="Contoh: 123">
                         <i class="fa-solid fa-eye toggle-password" onclick="togglePass()"></i>
                     </div>
                 </div>
-
                 <button class="btn" id="btn-login" onclick="execLogin()">
                     <span>Masuk Ujian</span> <i class="fa-solid fa-arrow-right"></i>
                 </button>
@@ -380,65 +104,53 @@
     <div class="container">
         <!-- 2. SCREEN PAKET SISWA -->
         <div id="screen-packets" class="screen">
-            <div class="glass-card animate__animated animate__fadeIn">
+            <div class="glass-card">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <h2>Selamat Datang, <span id="student-nama-txt">Siswa</span>!</h2>
-                        <p style="color: #6b7280; font-size: 14px;">Pilih Paket Ujian yang tersedia di bawah ini:</p>
+                        <p style="color: #6b7280; font-size: 14px;">Pilih Paket Ujian di bawah ini:</p>
                     </div>
-                    <button class="btn btn-danger" style="width: auto;" onclick="execLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+                    <button class="btn btn-danger" style="width: auto;" onclick="execLogout()">Keluar</button>
                 </div>
-
                 <div class="packet-grid">
                     <div class="packet-card" onclick="startExam('A')">
-                        <i class="fa-solid fa-book-open" style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"></i>
                         <h3>Paket A</h3>
-                        <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Agama, Pancasila, B. Indonesia</p>
-                        <div id="lock-status-A" style="margin-top: 12px; font-weight: 700; font-size: 12px;"></div>
+                        <div id="lock-status-A" style="margin-top: 10px; font-weight: 700; font-size: 12px;"></div>
                     </div>
                     <div class="packet-card" onclick="startExam('B')">
-                        <i class="fa-solid fa-calculator" style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"></i>
                         <h3>Paket B</h3>
-                        <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Matematika, IPAS, PJOK</p>
-                        <div id="lock-status-B" style="margin-top: 12px; font-weight: 700; font-size: 12px;"></div>
+                        <div id="lock-status-B" style="margin-top: 10px; font-weight: 700; font-size: 12px;"></div>
                     </div>
                     <div class="packet-card" onclick="startExam('C')">
-                        <i class="fa-solid fa-palette" style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"></i>
                         <h3>Paket C</h3>
-                        <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Seni Budaya, B. Inggris</p>
-                        <div id="lock-status-C" style="margin-top: 12px; font-weight: 700; font-size: 12px;"></div>
+                        <div id="lock-status-C" style="margin-top: 10px; font-weight: 700; font-size: 12px;"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. SCREEN UJIAN AKTIFF -->
+        <!-- 3. SCREEN UJIAN -->
         <div id="screen-exam" class="screen">
             <div class="exam-header">
                 <div>
                     <h3 id="exam-title-txt">Ujian Paket A</h3>
                     <span id="exam-student-info" style="font-size: 12px; color: #6b7280;"></span>
                 </div>
-                <button class="btn btn-success" style="width: auto;" onclick="finishExam()"><i class="fa-solid fa-check-double"></i> Selesaikan Ujian</button>
+                <button class="btn btn-success" style="width: auto;" onclick="finishExam()">Selesaikan Ujian</button>
             </div>
-
             <div class="exam-body">
                 <div class="glass-card" style="margin-bottom:0;">
                     <h4 id="q-number-txt">Soal Nomor 1</h4>
                     <p id="q-text-txt" style="margin-top: 15px; font-size: 16px; line-height: 1.6;"></p>
-
                     <ul id="options-container" class="options-list"></ul>
-
                     <div id="essay-container" style="display: none; margin-top: 15px;">
                         <textarea id="essay-ans" style="width: 100%; height: 120px; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db;" placeholder="Tuliskan jawaban Anda..." oninput="saveEssayAns()"></textarea>
                     </div>
-
                     <div style="display: flex; justify-content: space-between; margin-top: 25px;">
-                        <button class="btn" style="width: auto;" onclick="prevQ()"><i class="fa-solid fa-chevron-left"></i> Sebelumnya</button>
-                        <button class="btn" style="width: auto;" onclick="nextQ()">Selanjutnya <i class="fa-solid fa-chevron-right"></i></button>
+                        <button class="btn" style="width: auto;" onclick="prevQ()">Sebelumnya</button>
+                        <button class="btn" style="width: auto;" onclick="nextQ()">Selanjutnya</button>
                     </div>
                 </div>
-
                 <div class="glass-card" style="margin-bottom:0;">
                     <h4>Navigasi Soal</h4>
                     <hr style="margin: 10px 0; border: none; border-top: 1px solid #e5e7eb;">
@@ -447,54 +159,41 @@
             </div>
         </div>
 
-        <!-- 4. SCREEN HASIL & HASIL DETAIL -->
+        <!-- 4. SCREEN HASIL -->
         <div id="screen-result" class="screen">
-            <div class="glass-card animate__animated animate__fadeInUp" style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <div class="glass-card" style="max-width: 600px; margin: 0 auto; text-align: center;">
                 <h2>Hasil Ujian Paket <span id="res-pkt-txt"></span></h2>
                 <div style="font-size: 48px; font-weight: 800; color: var(--primary); margin: 15px 0;" id="res-score-txt">0</div>
-                <p>Status Nilai: <span id="res-badge-txt"></span></p>
-
-                <div style="height: 280px; margin-top: 25px;">
-                    <canvas id="studentResultChart"></canvas>
-                </div>
-
-                <button class="btn btn-danger" style="margin-top: 25px;" onclick="execLogout()">Kembali ke Halaman Utama</button>
+                <button class="btn btn-danger" style="margin-top: 25px;" onclick="execLogout()">Keluar / Selesai</button>
             </div>
         </div>
 
-        <!-- 5. SCREEN ADMIN DASHBOARD -->
+        <!-- 5. SCREEN ADMIN -->
         <div id="screen-admin" class="screen">
-            <div class="glass-card animate__animated animate__fadeIn">
+            <div class="glass-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>Panel Admin Panitia Ujian</h2>
-                    <button class="btn btn-danger" style="width: auto;" onclick="execLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar Admin</button>
+                    <button class="btn btn-danger" style="width: auto;" onclick="execLogout()">Keluar Admin</button>
                 </div>
-
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-                    <button class="btn" id="btn-lock-A" style="width: auto;" onclick="toggleLock('A')">Kunci Paket A</button>
-                    <button class="btn" id="btn-lock-B" style="width: auto;" onclick="toggleLock('B')">Kunci Paket B</button>
-                    <button class="btn" id="btn-lock-C" style="width: auto;" onclick="toggleLock('C')">Kunci Paket C</button>
-                    <button class="btn btn-danger" style="width: auto;" onclick="resetAll()"><i class="fa-solid fa-trash"></i> Reset Semua Data</button>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn btn-danger" style="width: auto;" onclick="resetAll()">Reset Semua Data</button>
                 </div>
-
-                <h3>Monitoring Data Siswa & Passing Grade</h3>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>NISN</th>
-                                <th>Nama Siswa</th>
-                                <th>Kelas</th>
-                                <th>Paket A</th>
-                                <th>Paket B</th>
-                                <th>Paket C</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-table-body"></tbody>
-                    </table>
-                </div>
+                <h3>Monitoring Data Siswa</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NISN</th>
+                            <th>Nama Siswa</th>
+                            <th>Kelas</th>
+                            <th>Paket A</th>
+                            <th>Paket B</th>
+                            <th>Paket C</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -506,7 +205,6 @@
         let currentQIndex = 0;
         let studentAnswers = {};
         let lockedPacketsState = { A: false, B: false, C: false };
-        let studentChartInstance = null;
 
         function togglePass() {
             const p = document.getElementById('login-password');
@@ -520,7 +218,7 @@
 
         function enterFullscreen() {
             let el = document.documentElement;
-            if (el.requestFullscreen) el.requestFullscreen();
+            if (el.requestFullscreen) el.requestFullscreen().catch(err => {});
         }
 
         function restoreFullscreen() {
@@ -534,83 +232,76 @@
             }
         });
 
-        // -----------------------------------------------------------
-        // PROCESS LOGIN VIA GOOGLE APPS SCRIPT
-        // -----------------------------------------------------------
-        function execLogin() {
-            const u = document.getElementById('login-username').value;
-            const p = document.getElementById('login-password').value;
+        async function callApi(action, data = {}) {
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action, ...data })
+                });
+                return await response.json();
+            } catch (err) {
+                alert('Koneksi Gagal: ' + err.message);
+                return { success: false };
+            }
+        }
+
+        async function execLogin() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
             const btn = document.getElementById('btn-login');
 
-            if (!u || !p) return alert('Silakan isi Username dan Password!');
+            if (!username || !password) return alert('Isi Username dan Password!');
 
             btn.innerHTML = `<div class="loader"></div> Memproses...`;
 
-            google.script.run.withSuccessHandler(res => {
-                btn.innerHTML = `<span>Masuk Ujian</span> <i class="fa-solid fa-arrow-right"></i>`;
-                if (res.success) {
-                    currentUser = res;
-                    if (res.role === 'Admin') {
-                        showScreen('screen-admin');
-                        loadAdminData();
-                    } else {
-                        document.getElementById('student-nama-txt').innerText = res.name;
-                        loadStudentData();
-                    }
+            const res = await callApi('login', { username, password });
+            btn.innerHTML = `<span>Masuk Ujian</span> <i class="fa-solid fa-arrow-right"></i>`;
+
+            if (res.success) {
+                currentUser = res;
+                if (res.role === 'Admin') {
+                    showScreen('screen-admin');
+                    loadAdminData();
                 } else {
-                    alert(res.message);
+                    document.getElementById('student-nama-txt').innerText = res.name;
+                    loadStudentData();
                 }
-            }).userLogin(u, p);
+            } else {
+                alert(res.message);
+            }
         }
 
         function execLogout() {
             currentUser = null;
             currentPacket = null;
-            document.getElementById('login-username').value = '';
-            document.getElementById('login-password').value = '';
             showScreen('screen-login');
         }
 
-        // -----------------------------------------------------------
-        // STUDENT EXAM FLOW
-        // -----------------------------------------------------------
-        function loadStudentData() {
-            google.script.run.withSuccessHandler(res => {
-                if (res.success) {
-                    examQuestions = res.questions;
-                    lockedPacketsState = res.lockedPackets;
-                    
-                    ['A', 'B', 'C'].forEach(p => {
-                        const el = document.getElementById(`lock-status-${p}`);
-                        if (lockedPacketsState[p]) {
-                            el.innerText = '🔒 TERKUNCI';
-                            el.style.color = '#ef4444';
-                        } else if (res.existingScores[p] !== undefined) {
-                            el.innerText = `✔ Selesai (Nilai: ${res.existingScores[p]})`;
-                            el.style.color = '#10b981';
-                        } else {
-                            el.innerText = '🔓 TERBUKA';
-                            el.style.color = '#10b981';
-                        }
-                    });
-
-                    showScreen('screen-packets');
-                }
-            }).getInitialData(currentUser.username);
+        async function loadStudentData() {
+            const res = await callApi('getInitialData', { nisn: currentUser.username });
+            if (res.success) {
+                examQuestions = res.questions;
+                lockedPacketsState = res.lockedPackets;
+                ['A', 'B', 'C'].forEach(p => {
+                    const el = document.getElementById(`lock-status-${p}`);
+                    if (res.existingScores[p] !== undefined) {
+                        el.innerText = `✔ Selesai (Nilai: ${res.existingScores[p]})`;
+                        el.style.color = '#10b981';
+                    } else {
+                        el.innerText = '🔓 TERBUKA';
+                        el.style.color = '#10b981';
+                    }
+                });
+                showScreen('screen-packets');
+            }
         }
 
         function startExam(packet) {
-            if (lockedPacketsState[packet]) {
-                return alert(`Paket ${packet} sedang dikunci oleh admin!`);
-            }
-
             currentPacket = packet;
             studentAnswers = {};
             currentQIndex = 0;
-
             document.getElementById('exam-title-txt').innerText = `Ujian Paket ${packet}`;
             document.getElementById('exam-student-info').innerText = `${currentUser.name} (${currentUser.username})`;
-
             enterFullscreen();
             renderNav();
             loadQ(0);
@@ -633,12 +324,10 @@
         function loadQ(idx) {
             currentQIndex = idx;
             const q = examQuestions[idx];
-
             document.querySelectorAll('.nav-btn').forEach((b, i) => {
                 b.classList.remove('active');
                 if (i === idx) b.classList.add('active');
             });
-
             document.getElementById('q-number-txt').innerText = `Soal Nomor ${idx + 1}`;
             document.getElementById('q-text-txt').innerText = q.text;
 
@@ -649,17 +338,9 @@
                 optBox.style.display = 'block';
                 essayBox.style.display = 'none';
                 optBox.innerHTML = '';
-
                 q.options.forEach((opt, oIdx) => {
                     const checked = studentAnswers[idx] === oIdx ? 'checked' : '';
-                    optBox.innerHTML += `
-                        <li>
-                            <label>
-                                <input type="radio" name="opt" value="${oIdx}" ${checked} onchange="savePgAns(${oIdx})">
-                                ${opt}
-                            </label>
-                        </li>
-                    `;
+                    optBox.innerHTML += `<li><label><input type="radio" name="opt" value="${oIdx}" ${checked} onchange="savePgAns(${oIdx})">${opt}</label></li>`;
                 });
             } else {
                 optBox.style.display = 'none';
@@ -676,134 +357,70 @@
         function saveEssayAns() {
             const val = document.getElementById('essay-ans').value;
             studentAnswers[currentQIndex] = val;
-            if (val.trim()) {
-                document.getElementById(`nav-${currentQIndex}`).classList.add('answered');
-            } else {
-                document.getElementById(`nav-${currentQIndex}`).classList.remove('answered');
-            }
+            if (val.trim()) document.getElementById(`nav-${currentQIndex}`).classList.add('answered');
+            else document.getElementById(`nav-${currentQIndex}`).classList.remove('answered');
         }
 
-        function nextQ() {
-            if (currentQIndex < examQuestions.length - 1) loadQ(currentQIndex + 1);
-        }
+        function nextQ() { if (currentQIndex < examQuestions.length - 1) loadQ(currentQIndex + 1); }
+        function prevQ() { if (currentQIndex > 0) loadQ(currentQIndex - 1); }
 
-        function prevQ() {
-            if (currentQIndex > 0) loadQ(currentQIndex - 1);
-        }
-
-        function finishExam() {
-            if (!confirm("Apakah Anda yakin ingin menyelesaikannya sekarang?")) return;
-
-            let score = 0;
+        async function finishExam() {
+            if (!confirm("Selesaikan ujian ini?")) return;
             let correctCount = 0;
-            let total = examQuestions.length;
-
             examQuestions.forEach((q, i) => {
-                if (q.type === 'pg' && studentAnswers[i] == q.key) {
-                    correctCount++;
-                }
+                if (q.type === 'pg' && studentAnswers[i] == q.key) correctCount++;
             });
+            let score = Math.round((correctCount / examQuestions.length) * 100);
 
-            score = Math.round((correctCount / total) * 100);
-
-            const payload = {
+            const res = await callApi('submitExam', {
                 nisn: currentUser.username,
                 nama: currentUser.name,
                 kelas: currentUser.kelas,
                 paket: currentPacket,
                 score: score,
                 answers: studentAnswers
-            };
-
-            google.script.run.withSuccessHandler(res => {
-                if (res.success) {
-                    document.getElementById('res-pkt-txt').innerText = currentPacket;
-                    document.getElementById('res-score-txt').innerText = score;
-                    renderResultChart(correctCount, total - correctCount);
-                    showScreen('screen-result');
-                }
-            }).submitExamResult(payload);
-        }
-
-        function renderResultChart(correct, incorrect) {
-            const ctx = document.getElementById('studentResultChart').getContext('2d');
-            if (studentChartInstance) studentChartInstance.destroy();
-
-            studentChartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Jawaban Benar', 'Salah / Kosong'],
-                    datasets: [{
-                        data: [correct, incorrect],
-                        backgroundColor: ['#10b981', '#ef4444']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
             });
-        }
 
-        // -----------------------------------------------------------
-        // ADMIN FLOW
-        // -----------------------------------------------------------
-        function loadAdminData() {
-            google.script.run.withSuccessHandler(res => {
-                if (res.success) {
-                    const tbody = document.getElementById('admin-table-body');
-                    tbody.innerHTML = '';
-
-                    res.students.forEach((s, idx) => {
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>${idx + 1}</td>
-                                <td>${s.nisn}</td>
-                                <td><b>${s.nama}</b></td>
-                                <td>${s.kelas}</td>
-                                <td>${s.scores['A'] !== undefined ? s.scores['A'] : '-'}</td>
-                                <td>${s.scores['B'] !== undefined ? s.scores['B'] : '-'}</td>
-                                <td>${s.scores['C'] !== undefined ? s.scores['C'] : '-'}</td>
-                                <td>
-                                    <button class="btn btn-danger" style="padding: 4px 8px; font-size:11px;" onclick="resetStudent('${s.nisn}')">Reset</button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-
-                    ['A', 'B', 'C'].forEach(p => {
-                        const btn = document.getElementById(`btn-lock-${p}`);
-                        if (res.lockedPackets[p]) {
-                            btn.innerText = `Buka Paket ${p}`;
-                            btn.className = "btn btn-success";
-                        } else {
-                            btn.innerText = `Kunci Paket ${p}`;
-                            btn.className = "btn btn-danger";
-                        }
-                    });
-                }
-            }).getAdminDashboardData();
-        }
-
-        function toggleLock(packet) {
-            google.script.run.withSuccessHandler(res => {
-                if (res.success) loadAdminData();
-            }).togglePacketLock(packet);
-        }
-
-        function resetStudent(nisn) {
-            if (confirm(`Reset data siswa NISN: ${nisn}?`)) {
-                google.script.run.withSuccessHandler(res => {
-                    if (res.success) loadAdminData();
-                }).resetStudentData(nisn);
+            if (res.success) {
+                document.getElementById('res-pkt-txt').innerText = currentPacket;
+                document.getElementById('res-score-txt').innerText = score;
+                showScreen('screen-result');
             }
         }
 
-        function resetAll() {
-            if (confirm("Yakin ingin mereset SELURUH data nilai dan aktivitas?")) {
-                google.script.run.withSuccessHandler(res => {
-                    if (res.success) loadAdminData();
-                }).resetAllData();
+        async function loadAdminData() {
+            const res = await callApi('getAdminData');
+            if (res.success) {
+                const tbody = document.getElementById('admin-table-body');
+                tbody.innerHTML = '';
+                res.students.forEach((s, idx) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td>${s.nisn}</td>
+                            <td><b>${s.nama}</b></td>
+                            <td>${s.kelas}</td>
+                            <td>${s.scores['A'] !== undefined ? s.scores['A'] : '-'}</td>
+                            <td>${s.scores['B'] !== undefined ? s.scores['B'] : '-'}</td>
+                            <td>${s.scores['C'] !== undefined ? s.scores['C'] : '-'}</td>
+                            <td><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="resetStudent('${s.nisn}')">Reset</button></td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        async function resetStudent(nisn) {
+            if (confirm(`Reset data siswa ${nisn}?`)) {
+                await callApi('resetStudent', { nisn });
+                loadAdminData();
+            }
+        }
+
+        async function resetAll() {
+            if (confirm("Reset seluruh data database?")) {
+                await callApi('resetAll');
+                loadAdminData();
             }
         }
     </script>
